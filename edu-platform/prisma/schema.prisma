@@ -2,7 +2,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"   // padrão do monorepo
+  output   = "../packages/infrastructure/src/generated/client"   // caminho customizado
 }
 
 datasource db {

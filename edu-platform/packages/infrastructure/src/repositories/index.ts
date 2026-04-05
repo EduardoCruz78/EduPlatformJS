@@ -1,3 +1,5 @@
-// packages/infrastructure/src/index.ts
-export { default as prisma } from './prisma/client.js'   // adicione .js no final
-export * from './repositories/index.js'
+// packages/infrastructure/src/repositories/index.ts
+export * from './user.repository.js';
+// Adicione aqui os outros repositórios quando criar:
+// export * from './series.repository.js';
+// etc.

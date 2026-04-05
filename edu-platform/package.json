@@ -7,7 +7,6 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "devDependencies": {
-    "@types/minimatch": "^6.0.0",
     "@types/node": "^25.5.2",
     "prettier": "^3.1.1",
     "prisma": "^7.6.0",
@@ -16,16 +15,16 @@
   "engines": {
     "node": ">=18"
   },
-  "name": "with-react-native-web",
-  "packageManager": "npm@10.9.3",
+  "name": "edu-platform",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "dependencies": {
-    "@edu-platform/core": "workspace:*",
-    "@edu-platform/infrastructure": "workspace:*",
+    "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
+    "dotenv": "^17.4.0",
+    "pg": "^8.20.0",
     "zod": "^4.3.6"
   }
 }

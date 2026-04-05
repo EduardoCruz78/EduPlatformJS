@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "paths": {
+      "@edu-platform/core": ["./packages/core/src"],
+      "@edu-platform/infrastructure": ["./packages/infrastructure/src"]
+    }
+  },
+  "include": ["packages/**/*", "prisma.config.ts", "apps/**/*"],
+  "exclude": ["node_modules", "dist", ".next", "build"]
+}
