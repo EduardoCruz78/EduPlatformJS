@@ -30,17 +30,26 @@ export interface Series {
   subjects?: Subject[];
 }
 
+// ... mantenha o resto igual até aqui
+
 export interface Subject {
   id: number;
   name: string;
-  seriesId?: number;
-  series?: Series;
+  seriesId?: number | null;
+  series?: Series | null;
+}
+
+export interface Series {
+  id: number;
+  name: string;
+  subjects?: Subject[];
 }
 
 export interface Topic {
   id: number;
   name: string;
   contents?: Content[];
+  // topicSubjects e outros relacionamentos many-to-many não precisam estar aqui por enquanto
 }
 
 export interface Content {
@@ -53,7 +62,6 @@ export interface Content {
   topicId: number;
 }
 
-// Vestibular
 export interface Vestibular {
   id: number;
   name: string;
@@ -63,24 +71,23 @@ export interface VestibularContent {
   id: number;
   vestibularId: number;
   title: string;
-  type?: string;
-  link?: string;
-  pdfUrl?: string;
+  type?: string | null;
+  link?: string | null;
+  pdfUrl?: string | null;
   isShared: boolean;
-  originalContentId?: number;
+  originalContentId?: number | null;
 }
 
-// Accessibility
 export interface AccessibilityCategory {
   id: number;
   name: string;
-  description?: string;
+  description?: string | null;
 }
 
 export interface AccessibilityTheme {
   id: number;
   title: string;
-  content?: string;
+  content?: string | null;
   accessibilityCategoryId: number;
 }
 
