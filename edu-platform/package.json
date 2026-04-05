@@ -8,7 +8,9 @@
   },
   "devDependencies": {
     "@types/minimatch": "^6.0.0",
+    "@types/node": "^25.5.2",
     "prettier": "^3.1.1",
+    "prisma": "^7.6.0",
     "turbo": "^2.9.3"
   },
   "engines": {
@@ -19,5 +21,11 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@edu-platform/core": "workspace:*",
+    "@edu-platform/infrastructure": "workspace:*",
+    "@prisma/client": "^7.6.0",
+    "zod": "^4.3.6"
+  }
 }
