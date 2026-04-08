@@ -1,5 +1,5 @@
 // packages/infrastructure/src/repositories/series.repository.ts
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client';
 import type { Series } from '@edu-platform/core';
 
 export class SeriesRepository {

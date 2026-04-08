@@ -1,5 +1,5 @@
 // packages/infrastructure/src/repositories/vestibular.repository.ts
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client';
 import type { Vestibular, VestibularContent } from '@edu-platform/core';
 
 export class VestibularRepository {

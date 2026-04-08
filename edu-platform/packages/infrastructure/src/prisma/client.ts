@@ -1,6 +1,6 @@
 // packages/infrastructure/src/prisma/client.ts
-import { PrismaClient } from '../generated/client';   // ← caminho novo
-import { PrismaPg } from '@prisma/adapter-pg';       // driver adapter
+import { PrismaClient } from '../generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const connectionString = process.env.DATABASE_URL!;
 
@@ -16,7 +16,7 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
-    log: ['query'],
+    log: process.env.NODE_ENV === 'development' ? ['query'] : [],
   });
 
 if (process.env.NODE_ENV !== 'production') {

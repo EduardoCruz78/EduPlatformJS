@@ -1,5 +1,5 @@
 // packages/infrastructure/src/repositories/user.repository.ts
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client';
 import type { User, CreateUserInput } from '@edu-platform/core';
 
 export class UserRepository {

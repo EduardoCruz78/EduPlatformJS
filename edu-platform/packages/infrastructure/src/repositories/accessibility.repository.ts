@@ -1,5 +1,5 @@
 // packages/infrastructure/src/repositories/accessibility.repository.ts
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client';
 import type { AccessibilityCategory, AccessibilityTheme } from '@edu-platform/core';
 
 export class AccessibilityRepository {

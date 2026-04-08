@@ -1,5 +1,5 @@
 // packages/infrastructure/src/repositories/topic.repository.ts
-import { prisma } from '../prisma/client.js';
+import { prisma } from '../prisma/client';
 import type { Topic } from '@edu-platform/core';
 
 export class TopicRepository {
