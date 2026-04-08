@@ -30,7 +30,6 @@ export interface Series {
   subjects?: Subject[];
 }
 
-// ... mantenha o resto igual até aqui
 
 export interface Subject {
   id: number;
