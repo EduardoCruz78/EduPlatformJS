@@ -5,23 +5,64 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// ====================== USER ======================
+// ====================== AUTH.JS (obrigatório) ======================
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ====================== USER (atualizado) ======================
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  providerId String    @unique
-  name      String
-  email     String     @unique
-  checklists Checklist[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id            String    @id @default(uuid()) @db.Uuid
+  providerId    String    @unique
+  name          String
+  email         String    @unique
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  checklists    Checklist[]
 
   @@map("users")
 }
 
-// ====================== CHECKLIST ======================
+// ====================== SEUS MODELOS (mantidos iguais) ======================
 model Checklist {
   id        Int      @id @default(autoincrement())
   userId    String   @db.Uuid
@@ -29,76 +70,60 @@ model Checklist {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-
   @@unique([userId, contentId])
   @@map("checklists")
 }
 
-// ====================== SERIES ======================
-model Series {
-  id        Int       @id @default(autoincrement())
-  name      String
-  subjects  Subject[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  @@map("series")
-}
 
 model Subject {
-  id                 Int             @id @default(autoincrement())
-  name               String
-  seriesId           Int?
-  series             Series?         @relation(fields: [seriesId], references: [id])
-  topicSubjects      TopicSubject[]
-  vestibularSubjects VestibularSubject[]
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-
+  id                  Int             @id @default(autoincrement())
+  name                String
+  seriesId            Int?
+  series              Series?         @relation(fields: [seriesId], references: [id])
+  topicSubjects       TopicSubject[]
+  vestibularSubjects  VestibularSubject[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
   @@map("subjects")
 }
 
 model Topic {
-  id                         Int                       @id @default(autoincrement())
-  name                       String
-  contents                   Content[]
-  topicSubjects              TopicSubject[]
-  accessibilityCategoryTopics AccessibilityCategoryTopic[]
-  createdAt                  DateTime                  @default(now())
-  updatedAt                  DateTime                  @updatedAt
-
+  id                           Int                        @id @default(autoincrement())
+  name                         String
+  contents                     Content[]
+  topicSubjects                TopicSubject[]
+  accessibilityCategoryTopics  AccessibilityCategoryTopic[]
+  createdAt                    DateTime                   @default(now())
+  updatedAt                    DateTime                   @updatedAt
   @@map("topics")
 }
 
 model Content {
-  id                Int                @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   title             String
   type              String
   link              String
   thumbnailUrl      String
   pdfUrl            String?
   topicId           Int
-  topic             Topic              @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topic             Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   checklists        Checklist[]
   vestibularContents VestibularContent[]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   @@map("contents")
 }
 
-// ====================== MANY-TO-MANY TOPIC <-> SUBJECT ======================
+// Many-to-Many e Vestibular / Accessibility (mantidos iguais)
 model TopicSubject {
-  topicId    Int
-  subjectId  Int
-  topic      Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  subject    Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
+  topicId   Int
+  subjectId Int
+  topic     Topic   @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   @@id([topicId, subjectId])
   @@map("topic_subjects")
 }
 
-// ====================== VESTIBULAR ======================
 model Vestibular {
   id                 Int                 @id @default(autoincrement())
   name               String
@@ -107,7 +132,6 @@ model Vestibular {
   vestibularTopics   VestibularTopic[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
-
   @@map("vestibulares")
 }
 
@@ -116,54 +140,49 @@ model VestibularSubject {
   subjectId    Int
   vestibular   Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
   subject      Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
   @@id([vestibularId, subjectId])
   @@map("vestibular_subjects")
 }
 
 model VestibularContent {
-  id                Int       @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   vestibularId      Int
   title             String
   type              String?
   link              String?
   pdfUrl            String?
-  isShared          Boolean   @default(false)
+  isShared          Boolean  @default(false)
   originalContentId Int?
   vestibular        Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
-  originalContent   Content?  @relation(fields: [originalContentId], references: [id])
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
+  originalContent   Content? @relation(fields: [originalContentId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   @@map("vestibular_contents")
 }
 
 model VestibularTopic {
-  id             Int       @id @default(autoincrement())
-  vestibularId   Int
-  name           String
+  id              Int        @id @default(autoincrement())
+  vestibularId    Int
+  name            String
   originalTopicId Int?
-  isShared       Boolean   @default(false)
-  notes          String?
-  tags           String?
-  vestibular     Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
+  isShared        Boolean    @default(false)
+  notes           String?
+  tags            String?
+  vestibular      Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
   @@map("vestibular_topics")
 }
 
-// ====================== ACCESSIBILITY ======================
 model AccessibilityCategory {
-  id                   Int                          @id @default(autoincrement())
-  name                 String
-  description          String?
-  categoryTopics       AccessibilityCategoryTopic[]
-  needs                AccessibilityNeed[]
-  themes               AccessibilityTheme[]
-  createdAt            DateTime                     @default(now())
-  updatedAt            DateTime                     @updatedAt
-
+  id                          Int                          @id @default(autoincrement())
+  name                        String
+  description                 String?
+  categoryTopics              AccessibilityCategoryTopic[]
+  needs                       AccessibilityNeed[]
+  themes                      AccessibilityTheme[]
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
   @@map("accessibility_categories")
 }
 
@@ -172,33 +191,30 @@ model AccessibilityCategoryTopic {
   topicId                 Int
   accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
   topic                   Topic                 @relation(fields: [topicId], references: [id], onDelete: Cascade)
-
   @@id([accessibilityCategoryId, topicId])
   @@map("accessibility_category_topics")
 }
 
 model AccessibilityNeed {
-  id                  Int                 @id @default(autoincrement())
+  id                Int                 @id @default(autoincrement())
   accessibilityCategoryId Int
-  name                String
+  name              String
   accessibilityCategory AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
-  themes              AccessibilityTheme[]
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-
+  themes            AccessibilityTheme[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
   @@map("accessibility_needs")
 }
 
 model AccessibilityTheme {
-  id                    Int                  @id @default(autoincrement())
+  id                      Int                 @id @default(autoincrement())
   accessibilityCategoryId Int
-  accessibilityNeedId   Int?
-  title                 String
-  content               String?
-  accessibilityCategory AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
-  accessibilityNeed     AccessibilityNeed?   @relation(fields: [accessibilityNeedId], references: [id])
-  createdAt             DateTime             @default(now())
-  updatedAt             DateTime             @updatedAt
-
+  accessibilityNeedId     Int?
+  title                   String
+  content                 String?
+  accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
+  accessibilityNeed       AccessibilityNeed? @relation(fields: [accessibilityNeedId], references: [id])
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
   @@map("accessibility_themes")
 }
