@@ -6,6 +6,6 @@ export class GetAllSeriesUseCase {
   constructor(private readonly seriesRepository: SeriesRepository) {}
 
   async execute(): Promise<Series[]> {
-    return this.seriesRepository.findAll();
+    return this.seriesRepository.getAll();
   }
 }

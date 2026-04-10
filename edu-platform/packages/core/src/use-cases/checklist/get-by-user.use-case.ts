@@ -1,12 +1,11 @@
 // packages/core/src/use-cases/checklist/get-by-user.use-case.ts
-import { prisma } from '@edu-platform/infrastructure';
+import type { ChecklistRepository } from '@edu-platform/infrastructure';
 import type { Checklist } from '../../entities';
 
 export class GetChecklistByUserUseCase {
+  constructor(private readonly checklistRepository: ChecklistRepository) {}
+
   async execute(userId: string): Promise<Checklist[]> {
-    return await prisma.checklist.findMany({
-      where: { userId },
-      include: { content: true },
-    });
+    return this.checklistRepository.getByUser(userId);
   }
 }

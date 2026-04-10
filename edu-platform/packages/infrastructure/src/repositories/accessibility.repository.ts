@@ -1,16 +1,19 @@
-// packages/infrastructure/src/repositories/accessibility.repository.ts
 import { prisma } from '../prisma/client';
 import type { AccessibilityCategory, AccessibilityTheme } from '@edu-platform/core';
 
 export class AccessibilityRepository {
-  async findAllCategories(): Promise<AccessibilityCategory[]> {
-    return await prisma.accessibilityCategory.findMany({
-      include: { themes: true },
+  async getCategories(): Promise<AccessibilityCategory[]> {
+    return prisma.accessibilityCategory.findMany({
+      include: {
+        needs: true,
+        themes: true,                          // ← mantido e melhorado
+      },
+      orderBy: { name: 'asc' },
     });
   }
 
-  async findThemesByCategory(categoryId: number): Promise<AccessibilityTheme[]> {
-    return await prisma.accessibilityTheme.findMany({
+  async findThemesByCategory(categoryId: number): Promise<AccessibilityTheme[]> {  // ← método extra do original
+    return prisma.accessibilityTheme.findMany({
       where: { accessibilityCategoryId: categoryId },
     });
   }

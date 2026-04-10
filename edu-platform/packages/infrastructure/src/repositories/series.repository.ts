@@ -1,18 +1,18 @@
-// packages/infrastructure/src/repositories/series.repository.ts
 import { prisma } from '../prisma/client';
 import type { Series } from '@edu-platform/core';
 
 export class SeriesRepository {
-  async findAll(): Promise<Series[]> {
-    return await prisma.series.findMany({
-      include: { subjects: true },
+  async getAll(): Promise<Series[]> {
+    return prisma.series.findMany({
+      include: { subjects: true },           // ← mantido do original .NET
+      orderBy: { name: 'asc' },
     });
   }
 
   async findById(id: number): Promise<Series | null> {
-    return await prisma.series.findUnique({
+    return prisma.series.findUnique({
       where: { id },
-      include: { subjects: true },
+      include: { subjects: true },           // ← mantido do original .NET
     });
   }
 }

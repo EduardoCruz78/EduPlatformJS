@@ -1,15 +1,15 @@
-// packages/infrastructure/src/repositories/content.repository.ts
 import { prisma } from '../prisma/client';
 import type { Content } from '@edu-platform/core';
 
 export class ContentRepository {
-  async findByTopic(topicId: number): Promise<Content[]> {
-    return await prisma.content.findMany({
+  async getByTopic(topicId: number): Promise<Content[]> {
+    return prisma.content.findMany({
       where: { topicId },
+      orderBy: { title: 'asc' },
     });
   }
 
-  async findById(id: number): Promise<Content | null> {
-    return await prisma.content.findUnique({ where: { id } });
+  async findById(id: number): Promise<Content | null> {  // ← método extra do original
+    return prisma.content.findUnique({ where: { id } });
   }
 }

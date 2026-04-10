@@ -4,5 +4,7 @@ export * from './series.repository';
 export * from './subject.repository';
 export * from './topic.repository';
 export * from './content.repository';
+export * from './checklist.repository';
 export * from './vestibular.repository';
 export * from './accessibility.repository';
+
