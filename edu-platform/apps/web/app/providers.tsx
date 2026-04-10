@@ -6,10 +6,10 @@ import { TRPCProvider } from '@/trpc/react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <TRPCProvider>
-      <SessionProvider>
+    <SessionProvider>
+      <TRPCProvider>
         {children}
-      </SessionProvider>
-    </TRPCProvider>
+      </TRPCProvider>
+    </SessionProvider>
   );
 }

@@ -16,7 +16,7 @@ export default function ContentsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const topicIdParam = searchParams.get("topicId");
-  const topicId = topicIdParam ? Number(topicIdParam) : 0;
+  const topicId = Number(topicIdParam || 0);
 
   const { data: contents = [], isLoading, error } = trpc.content.getByTopic.useQuery(
     { topicId },

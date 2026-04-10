@@ -3,10 +3,13 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Link from "next/link";
 import { trpc } from "@/trpc/react";
 import type { Series } from "@edu-platform/core";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -20,34 +23,31 @@ export default function DashboardPage() {
     }
   }, [status, router]);
 
+  // 🔄 Loading
   if (status === "loading" || isLoading) {
     return (
       <div className="min-h-screen bg-background p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-pulse space-y-8">
-            <div className="h-10 w-80 bg-muted rounded-2xl" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <Card key={i}>
-                  <CardContent className="p-6">
-                    <Skeleton className="h-6 w-28" />
-                    <Skeleton className="h-14 w-20 mt-4" />
-                  </CardContent>
-                </Card>
+        <div className="max-w-6xl mx-auto animate-pulse space-y-8">
+          <div className="h-10 w-80 bg-muted rounded-2xl" />
+          <Card>
+            <CardContent className="p-8 space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-20 w-full rounded-3xl" />
               ))}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
+  // ❌ Error
   if (error) {
     return (
       <div className="min-h-screen bg-background p-8 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
-            <p className="text-destructive text-xl">Erro ao carregar as séries</p>
+            <p className="text-destructive text-xl">Erro ao carregar séries</p>
             <p className="text-muted-foreground mt-2">{error.message}</p>
             <button
               onClick={() => window.location.reload()}
@@ -61,6 +61,7 @@ export default function DashboardPage() {
     );
   }
 
+  // ✅ UI
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-6xl mx-auto">
@@ -68,84 +69,71 @@ export default function DashboardPage() {
         <div className="flex justify-between items-start mb-10">
           <div>
             <h1 className="text-4xl font-bold text-foreground">
-              Bem-vindo, {session?.user?.name} 👋
+              Bem-vindo, {session?.user?.name}
             </h1>
-            <p className="text-muted-foreground mt-1">Escolha uma série para começar</p>
+            <p className="text-muted-foreground mt-1">
+              Selecione uma série para começar
+            </p>
           </div>
 
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="text-destructive hover:text-destructive/80 font-medium flex items-center gap-2 transition"
-          >
-            Sair
-          </button>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/subjects"
+              className="text-primary hover:text-primary/80 font-medium"
+            >
+              Ver Matérias
+            </Link>
+
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="text-destructive hover:text-destructive/80 font-medium"
+            >
+              Sair
+            </button>
+          </div>
         </div>
 
-        {/* Cards de resumo + Séries */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Séries</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-5xl font-bold text-primary">{series.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Matérias</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-5xl font-bold text-emerald-600">99</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Tópicos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-5xl font-bold text-amber-600">321</div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Conteúdos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-5xl font-bold text-violet-600">321</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Lista de Séries */}
-        <Card className="mt-10">
+        {/* Conteúdo */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Séries Disponíveis</CardTitle>
+            <CardTitle className="text-2xl flex items-center gap-3">
+              Séries Disponíveis
+              <Badge variant="secondary">{series.length}</Badge>
+            </CardTitle>
           </CardHeader>
+
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {series.map((serie: Series) => (
-                <div
-                  key={serie.id}
-                  className="group bg-card hover:bg-accent border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex justify-between items-center cursor-pointer"
-                >
-                  <div>
-                    <span className="text-xl font-semibold">{serie.name}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-4xl font-bold text-primary">
-                      {serie.subjects?.length || 0}
+            {series.length === 0 ? (
+              <p className="text-muted-foreground py-12 text-center">
+                Nenhuma série encontrada.<br />
+                Rode o seed do Prisma.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {series.map((s: Series) => (
+                  <Link
+                    key={s.id}
+                    href={`/subjects?seriesId=${s.id}`}
+                    className="group bg-card hover:bg-accent border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex justify-between items-center"
+                  >
+                    <div>
+                      <span className="text-xl font-semibold text-foreground">
+                        {s.name}
+                      </span>
                     </div>
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                      matérias
+
+                    <div className="text-right">
+                      <div className="text-4xl font-bold text-primary">
+                        →
+                      </div>
+                      <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                        entrar
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
