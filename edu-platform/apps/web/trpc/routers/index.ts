@@ -1,5 +1,5 @@
 // apps/web/trpc/routers/index.ts
-import { router } from '../../lib/trpc';
+import { router, publicProcedure, protectedProcedure } from '../../lib/trpc';
 import { GetAllSeriesUseCase } from '@edu-platform/core/use-cases';
 import { GetSubjectsBySeriesUseCase } from '@edu-platform/core/use-cases';
 import { GetTopicsBySubjectUseCase } from '@edu-platform/core/use-cases';
@@ -19,7 +19,7 @@ import {
   AccessibilityRepository,
 } from '@edu-platform/infrastructure';
 
-// Instâncias dos repositórios (pode ser injetado via container no futuro)
+// Instâncias dos repositórios
 const seriesRepo = new SeriesRepository();
 const subjectRepo = new SubjectRepository();
 const topicRepo = new TopicRepository();
@@ -58,7 +58,7 @@ export const appRouter = router({
   content: router({
     getByTopic: publicProcedure
       .input((val: unknown) => val as { topicId: number })
-      .query(({ input }) => getContentsByTopic.execute(input)),
+      .query(({ input }) => getContentsByTopic.execute(input)), // ← aqui estava o erro
   }),
 
   checklist: router({
