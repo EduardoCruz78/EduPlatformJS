@@ -1,21 +1,11 @@
-// apps/web/app/layout.tsx
-import type { Metadata } from 'next';
-import { Providers } from './providers';
+import { Toaster } from "@/components/ui/sonner";
 
-export const metadata: Metadata = {
-  title: 'EduPlatform',
-  description: 'Plataforma educacional - clone em Next.js + tRPC',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body>
-        <Providers>{children}</Providers>
+      <body className="antialiased">
+        {children}
+        <Toaster />   {/* ← Toasts bonitos */}
       </body>
     </html>
   );

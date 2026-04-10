@@ -7,6 +7,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { trpc } from "@/trpc/react";
 import type { Content } from "@edu-platform/core";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 export default function ContentsPage() {
   const { data: session, status } = useSession();
@@ -28,16 +31,17 @@ export default function ContentsPage() {
 
   if (status === "loading" || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 w-72 bg-gray-200 rounded-xl mb-2" />
-            <div className="h-4 w-56 bg-gray-200 rounded-xl mb-8" />
-            <div className="bg-white rounded-3xl p-6 space-y-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-36 bg-gray-100 rounded-3xl" />
-              ))}
-            </div>
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse space-y-8">
+            <div className="h-10 w-80 bg-muted rounded-2xl" />
+            <Card>
+              <CardContent className="p-8 space-y-6">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-36 w-full rounded-3xl" />
+                ))}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -46,83 +50,85 @@ export default function ContentsPage() {
 
   if (error || topicId === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 text-xl">Selecione um tópico primeiro</p>
-          <Link
-            href="/topics"
-            className="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition"
-          >
-            ← Voltar aos Tópicos
-          </Link>
-        </div>
+      <div className="min-h-screen bg-background p-8 flex items-center justify-center">
+        <Card className="max-w-md w-full">
+          <CardContent className="p-8 text-center">
+            <p className="text-destructive text-xl">Selecione um tópico primeiro</p>
+            <Link
+              href="/topics"
+              className="mt-6 inline-block px-6 py-3 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition"
+            >
+              ← Voltar aos Tópicos
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-start mb-8">
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-start mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Conteúdos</h1>
-            <p className="text-gray-600 mt-1">Conteúdos do tópico selecionado</p>
+            <h1 className="text-4xl font-bold text-foreground">Conteúdos</h1>
+            <p className="text-muted-foreground mt-1">Conteúdos do tópico selecionado</p>
           </div>
 
           <div className="flex items-center gap-4">
             <Link
               href="/topics"
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2 transition"
+              className="text-primary hover:text-primary/80 font-medium flex items-center gap-2 transition"
             >
               ← Voltar aos Tópicos
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-red-600 hover:text-red-700 font-medium flex items-center gap-2 transition"
+              className="text-destructive hover:text-destructive/80 font-medium flex items-center gap-2 transition"
             >
               Sair
             </button>
           </div>
         </div>
 
-        <div className="bg-white shadow-xl rounded-3xl p-8">
-          <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-            Conteúdos
-            <span className="text-sm font-normal text-gray-500">({contents.length})</span>
-          </h2>
-
-          {contents.length === 0 ? (
-            <p className="text-gray-500 py-12 text-center">
-              Nenhum conteúdo neste tópico ainda.
-            </p>
-          ) : (
-            <div className="space-y-6">
-              {contents.map((content: Content) => (
-                <div
-                  key={content.id}
-                  className="bg-gray-50 hover:bg-white border border-transparent hover:border-gray-200 transition-all rounded-3xl p-6 flex gap-6"
-                >
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{content.title}</h3>
-                  </div>
-                  <div className="w-40 flex flex-col justify-between items-end">
-                    <div className="text-right">
-                      <div className="text-xs uppercase tracking-widest text-gray-400">Tipo</div>
-                      <div className="font-medium text-lg">{content.type}</div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-3">
+              Conteúdos
+              <Badge variant="secondary">{contents.length}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {contents.length === 0 ? (
+              <p className="text-muted-foreground py-12 text-center">
+                Nenhum conteúdo neste tópico ainda.
+              </p>
+            ) : (
+              <div className="space-y-6">
+                {contents.map((content: Content) => (
+                  <div
+                    key={content.id}
+                    className="bg-card border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex gap-6 items-center"
+                  >
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-foreground mb-1">
+                        {content.title}
+                      </h3>
+                      <Badge variant="outline" className="capitalize">
+                        {content.type}
+                      </Badge>
                     </div>
-                    <button className="px-6 py-3 bg-black text-white rounded-2xl text-sm font-medium hover:bg-gray-800">
-                      Acessar
-                    </button>
+                    <div className="w-40 flex flex-col justify-between items-end">
+                      <button className="px-6 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-medium hover:bg-primary/90 transition">
+                        Acessar
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <p className="text-center text-gray-400 text-sm mt-12">
-          Próxima tela: Checklist
-        </p>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
