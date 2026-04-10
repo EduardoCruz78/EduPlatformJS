@@ -1,6 +1,6 @@
 // apps/web/app/layout.tsx
 import type { Metadata } from 'next';
-import { TRPCProvider } from '@/trpc/react';
+import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'EduPlatform',
@@ -15,9 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        <TRPCProvider>
-          {children}
-        </TRPCProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
