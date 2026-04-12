@@ -1,11 +1,19 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
+  // ❌ NÃO adicionar url aqui
+  // URLs vêm do prisma.config.ts
 }
 
-// ====================== AUTH.JS (obrigatório) ======================
+
+
+
+// ====================== REST DO SCHEMA (IGUAL) ======================
 model Account {
   id                String  @id @default(cuid())
   userId            String  @db.Uuid
@@ -44,7 +52,6 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// ====================== USER (atualizado) ======================
 model User {
   id          String    @id @default(uuid()) @db.Uuid
   providerId  String    @unique
@@ -53,7 +60,6 @@ model User {
   image       String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-
   accounts    Account[]
   sessions    Session[]
   checklists  Checklist[]
@@ -61,26 +67,22 @@ model User {
   @@map("users")
 }
 
-// ====================== SEUS MODELOS ======================
 model Checklist {
   id        Int      @id @default(autoincrement())
   userId    String   @db.Uuid
   contentId Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   content   Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
 
   @@unique([userId, contentId])
   @@map("checklists")
 }
 
-// ====================== SERIES ======================
 model Series {
   id        Int       @id @default(autoincrement())
   name      String
   subjects  Subject[]
-
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -90,9 +92,9 @@ model Series {
 model Subject {
   id                 Int            @id @default(autoincrement())
   name               String
-  description        String?        // ✅ ADICIONE
-  imageUrl           String?        // ✅ ADICIONE
-  order              Int            @default(0) // ✅ ADICIONE
+  description        String?
+  imageUrl           String?
+  order              Int            @default(0)
   seriesId           Int?
   series             Series?        @relation(fields: [seriesId], references: [id])
   topicSubjects      TopicSubject[]
@@ -103,15 +105,12 @@ model Subject {
   @@map("subjects")
 }
 
-
-
 model Topic {
   id                        Int                      @id @default(autoincrement())
   name                      String
   contents                  Content[]
   topicSubjects             TopicSubject[]
   accessibilityCategoryTopics AccessibilityCategoryTopic[]
-
   createdAt                 DateTime                 @default(now())
   updatedAt                 DateTime                 @updatedAt
 
@@ -121,13 +120,13 @@ model Topic {
 model Content {
   id                Int               @id @default(autoincrement())
   title             String
-  description       String?           // ✅ ADICIONE
+  description       String?
   type              String
   link              String
   thumbnailUrl      String
-  videoUrl          String?           // ✅ ADICIONE
+  videoUrl          String?
   pdfUrl            String?
-  order             Int               @default(0) // ✅ ADICIONE
+  order             Int               @default(0)
   topicId           Int
   topic             Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   checklists        Checklist[]
@@ -138,7 +137,6 @@ model Content {
   @@map("contents")
 }
 
-// Many-to-Many e Vestibular / Accessibility
 model TopicSubject {
   topicId   Int
   subjectId Int
@@ -155,7 +153,6 @@ model Vestibular {
   vestibularSubjects VestibularSubject[]
   contents           VestibularContent[]
   vestibularTopics   VestibularTopic[]
-
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
@@ -183,7 +180,6 @@ model VestibularContent {
   originalContentId Int?
   vestibular       Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
   originalContent  Content?  @relation(fields: [originalContentId], references: [id])
-
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -199,7 +195,6 @@ model VestibularTopic {
   notes          String?
   tags           String?
   vestibular     Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
-
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
@@ -213,7 +208,6 @@ model AccessibilityCategory {
   categoryTopics AccessibilityCategoryTopic[]
   needs       AccessibilityNeed[]
   themes      AccessibilityTheme[]
-
   createdAt   DateTime                @default(now())
   updatedAt   DateTime                @updatedAt
 
@@ -236,7 +230,6 @@ model AccessibilityNeed {
   name        String
   accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
   themes      AccessibilityTheme[]
-
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
@@ -251,7 +244,6 @@ model AccessibilityTheme {
   content               String?
   accessibilityCategory AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
   accessibilityNeed     AccessibilityNeed?   @relation(fields: [accessibilityNeedId], references: [id])
-
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
 

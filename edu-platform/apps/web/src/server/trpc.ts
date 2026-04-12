@@ -1,8 +1,9 @@
 // apps/web/src/server/trpc.ts
 import { initTRPC } from "@trpc/server";
 import { ZodError } from "zod";
-import { auth } from "@/auth"; 
+import { auth } from "@/auth";
 
+// ✅ CORRIGIDO: Tipo correto do contexto
 interface CreateContextOptions {
   session: any;
 }
@@ -12,7 +13,7 @@ export async function createContext(opts?: CreateContextOptions) {
 
   return {
     session,
-    user: session?.user || null,
+    user: session?.user || null, // ✅ IMPORTANTE: Retornar 'user', não 'userId'
   };
 }
 

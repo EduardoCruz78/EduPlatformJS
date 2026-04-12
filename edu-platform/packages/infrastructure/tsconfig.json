@@ -13,9 +13,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/repositories/*": ["./src/repositories/*"],
-      "@/entities/*": ["./src/entities/*"],
-      "@/use-cases/*": ["./src/use-cases/*"],
-      "@/dtos/*": ["./src/dtos/*"]
+      "@/prisma/*": ["./src/prisma/*"],
+      "@edu-platform/core": ["../../packages/core/src/index.ts"]
     }
   },
   "include": ["src/**/*"],
