@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "@edu-platform/core": "*",
-    "@prisma/client": "^7.6.0"
+    "@prisma/client": "^7.6.0",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0"
   }
 }
