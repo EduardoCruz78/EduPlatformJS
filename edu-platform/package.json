@@ -1,5 +1,12 @@
 {
+  "name": "edu-platform",
+  "version": "1.0.0",
+  "packageManager": "npm@10.0.0",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -15,14 +22,6 @@
     "tailwindcss": "^4.2.2",
     "turbo": "^2.9.3"
   },
-  "engines": {
-    "node": ">=18"
-  },
-  "name": "edu-platform",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-pg": "^7.7.0",

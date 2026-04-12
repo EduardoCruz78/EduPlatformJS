@@ -90,16 +90,20 @@ model Series {
 model Subject {
   id                 Int            @id @default(autoincrement())
   name               String
+  description        String?        // ✅ ADICIONE
+  imageUrl           String?        // ✅ ADICIONE
+  order              Int            @default(0) // ✅ ADICIONE
   seriesId           Int?
   series             Series?        @relation(fields: [seriesId], references: [id])
   topicSubjects      TopicSubject[]
   vestibularSubjects VestibularSubject[]
-
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
   @@map("subjects")
 }
+
+
 
 model Topic {
   id                        Int                      @id @default(autoincrement())
@@ -117,15 +121,17 @@ model Topic {
 model Content {
   id                Int               @id @default(autoincrement())
   title             String
+  description       String?           // ✅ ADICIONE
   type              String
   link              String
   thumbnailUrl      String
+  videoUrl          String?           // ✅ ADICIONE
   pdfUrl            String?
+  order             Int               @default(0) // ✅ ADICIONE
   topicId           Int
   topic             Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
   checklists        Checklist[]
   vestibularContents VestibularContent[]
-
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 

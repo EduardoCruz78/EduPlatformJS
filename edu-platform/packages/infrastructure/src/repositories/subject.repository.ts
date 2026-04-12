@@ -10,7 +10,7 @@ export class SubjectRepository {
     });
   }
 
-  async findAll(): Promise<Subject[]> {        // ← método extra do original .NET
+  async findAll(): Promise<Subject[]> {
     return prisma.subject.findMany({
       include: { series: true },
     });
@@ -21,5 +21,21 @@ export class SubjectRepository {
       where: { id },
       include: { series: true },
     });
+  }
+
+  async findByName(name: string) {
+    return prisma.subject.findFirst({ where: { name } });
+  }
+
+  async create(data: any) {
+    return prisma.subject.create({ data });
+  }
+
+  async update(id: number, data: any) {
+    return prisma.subject.update({ where: { id }, data });
+  }
+
+  async delete(id: number) {
+    return prisma.subject.delete({ where: { id } });
   }
 }
