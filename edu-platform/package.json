@@ -14,18 +14,19 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^25.5.2",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.9",
     "prettier": "^3.1.1",
-    "prisma": "^7.6.0",
+    "prisma": "^7.7.0",
     "tailwindcss": "^4.2.2",
     "turbo": "^2.9.3"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-pg": "^7.7.0",
-    "@prisma/client": "^7.6.0",
+    "@prisma/client": "^7.7.0",
     "dotenv": "^17.4.0",
     "next-auth": "^5.0.0-beta.30",
     "pg": "^8.20.0",

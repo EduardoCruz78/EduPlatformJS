@@ -1,16 +1,25 @@
-import { router, publicProcedure } from "@/server/trpc";
+// apps/web/src/server/routers/checklist.ts
+import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
 import {
   CreateChecklistUseCase,
   DeleteChecklistUseCase,
+  GetChecklistByUserUseCase,
 } from "@edu-platform/core";
 import { checklistRepository } from "@edu-platform/infrastructure";
+import { typeConverters } from "@/server/utils/typeConverters";
 
 export const checklistRouter = router({
+  getByUser: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
+    const useCase = new GetChecklistByUserUseCase(checklistRepository);
+    return useCase.execute(userId);
+  }),
+
   getById: publicProcedure
     .input(z.number())
     .query(async ({ input }: { input: number }) => {
-      return checklistRepository.findById(input.toString());
+      return checklistRepository.findById(typeConverters.idToString(input));
     }),
 
   getByContentId: publicProcedure
@@ -44,6 +53,6 @@ export const checklistRouter = router({
     .input(z.number())
     .mutation(async ({ input }: { input: number }) => {
       const useCase = new DeleteChecklistUseCase(checklistRepository);
-      return useCase.execute(input.toString());
+      return useCase.execute(typeConverters.idToString(input));
     }),
 });

@@ -1,10 +1,11 @@
+// apps/web/app/topics/page.tsx
 'use client';
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { trpc } from "@/trpc/react";
+import { trpc } from "@/server/trpc/react";
 import type { Topic } from "@edu-platform/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,10 +14,15 @@ import { Badge } from "@/components/ui/badge";
 export default function TopicsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const subjectIdParam = searchParams.get("subjectId");
+  const subjectId = Number(subjectIdParam || 0);
 
-  const { data: topics = [], isLoading, error } = trpc.topic.getBySubject.useQuery({
-    subjectId: 0,
-  });
+  // ✅ CORRIGIDO: Passar objeto com subjectId
+  const { data: topics = [], isLoading, error } = trpc.topic.getBySubject.useQuery(
+    { subjectId },
+    { enabled: subjectId > 0 }
+  );
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -43,19 +49,18 @@ export default function TopicsPage() {
     );
   }
 
-  if (error) {
+  if (error || subjectId === 0) {
     return (
       <div className="min-h-screen bg-background p-8 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
-            <p className="text-destructive text-xl">Erro ao carregar os tópicos</p>
-            <p className="text-muted-foreground mt-2">{error.message}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-6 px-6 py-3 bg-destructive text-destructive-foreground rounded-2xl hover:bg-destructive/90 transition"
+            <p className="text-destructive text-xl">Selecione uma matéria primeiro</p>
+            <Link
+              href="/subjects"
+              className="mt-6 inline-block px-6 py-3 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition"
             >
-              Tentar novamente
-            </button>
+              ← Voltar às Matérias
+            </Link>
           </CardContent>
         </Card>
       </div>

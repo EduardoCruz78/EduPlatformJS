@@ -1,4 +1,5 @@
-import { router } from "@/server/trpc";
+// apps/web/src/server/routers/index.ts
+import { router } from "@/server/trpc";  // ✅ Import correto
 import { seriesRouter } from "./series";
 import { subjectRouter } from "./subject";
 import { topicRouter } from "./topic";

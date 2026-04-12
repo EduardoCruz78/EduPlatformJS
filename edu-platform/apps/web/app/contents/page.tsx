@@ -1,3 +1,4 @@
+// apps/web/app/contents/page.tsx
 'use client';
 
 import { useSession, signOut } from "next-auth/react";
@@ -5,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { trpc } from "@/trpc/react";
+import { trpc } from "@/server/trpc/react";
 import type { Content } from "@edu-platform/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +19,7 @@ export default function ContentsPage() {
   const topicIdParam = searchParams.get("topicId");
   const topicId = Number(topicIdParam || 0);
 
+  // ✅ CORRIGIDO: Passar objeto com topicId, não apenas number
   const { data: contents = [], isLoading, error } = trpc.content.getByTopic.useQuery(
     { topicId },
     { enabled: topicId > 0 }

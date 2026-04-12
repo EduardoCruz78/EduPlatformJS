@@ -1,3 +1,4 @@
+// apps/web/src/server/routers/subject.ts
 import { router, publicProcedure } from "@/server/trpc";
 import { z } from "zod";
 import {
@@ -18,10 +19,11 @@ export const subjectRouter = router({
       return subjectRepository.findById(input);
     }),
 
+  // ✅ CORRIGIDO: Espera objeto com seriesId
   getBySeries: publicProcedure
-    .input(z.number())
-    .query(async ({ input }: { input: number }) => {
-      return subjectRepository.getBySeries(input);
+    .input(z.object({ seriesId: z.number() }))
+    .query(async ({ input }: { input: { seriesId: number } }) => {
+      return subjectRepository.getBySeries(input.seriesId);
     }),
 
   create: publicProcedure

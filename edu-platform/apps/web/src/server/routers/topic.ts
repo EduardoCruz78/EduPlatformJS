@@ -1,20 +1,32 @@
+// apps/web/src/server/routers/topic.ts
 import { router, publicProcedure } from "@/server/trpc";
 import { z } from "zod";
-import { CreateTopicUseCase, UpdateTopicUseCase, DeleteTopicUseCase } from "@edu-platform/core";
+import {
+  CreateTopicUseCase,
+  UpdateTopicUseCase,
+  DeleteTopicUseCase,
+  GetAllTopicsUseCase,
+} from "@edu-platform/core";
 import { topicRepository, contentRepository } from "@edu-platform/infrastructure";
+import { typeConverters } from "@/server/utils/typeConverters";
 
 export const topicRouter = router({
   getAll: publicProcedure.query(async () => {
-    return topicRepository.getAll?.() || [];
+    const useCase = new GetAllTopicsUseCase(topicRepository);
+    return useCase.execute();
   }),
 
-  getById: publicProcedure.input(z.number()).query(async ({ input }) => {
-    return topicRepository.findById?.(input) || null;
-  }),
+  getById: publicProcedure
+    .input(z.number())
+    .query(async ({ input }) => {
+      return topicRepository.findById(typeConverters.idToString(input));
+    }),
 
-  getBySubject: publicProcedure.input(z.number()).query(async ({ input }) => {
-    return topicRepository.getBySubject(input);
-  }),
+  getBySubject: publicProcedure
+    .input(z.object({ subjectId: z.number() }))
+    .query(async ({ input }: { input: { subjectId: number } }) => {
+      return topicRepository.getBySubject(input.subjectId);
+    }),
 
   create: publicProcedure
     .input(
@@ -46,15 +58,19 @@ export const topicRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const { id, ...data } = input;
+      const { id, subjectIds, ...data } = input;
       const useCase = new UpdateTopicUseCase(topicRepository);
-      return useCase.execute({ id, ...data });
+      return useCase.execute({
+        id: typeConverters.idToString(id),
+        subjectIds: typeConverters.arrayToStrings(subjectIds),
+        ...data,
+      });
     }),
 
   delete: publicProcedure
     .input(z.number())
     .mutation(async ({ input }) => {
       const useCase = new DeleteTopicUseCase(topicRepository, contentRepository);
-      return useCase.execute(input);
+      return useCase.execute(typeConverters.idToString(input));
     }),
 });

@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { trpc } from "@/trpc/react";
+import { trpc } from "@/server/trpc/react";
 import type { Series } from "@edu-platform/core";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

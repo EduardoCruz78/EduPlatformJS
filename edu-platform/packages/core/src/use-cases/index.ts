@@ -1,3 +1,5 @@
+// packages/core/src/use-cases/index.ts
+
 // Series
 export { GetAllSeriesUseCase } from './series/get-all.use-case';
 export { CreateSeriesUseCase } from './series/CreateSeriesUseCase';
@@ -11,6 +13,7 @@ export { UpdateSubjectUseCase } from './subject/UpdateSubjectUseCase';
 export { DeleteSubjectUseCase } from './subject/DeleteSubjectUseCase';
 
 // Topic
+export { GetAllTopicsUseCase } from './topic/get-all.use-case'; // ✅ NOVO
 export { GetTopicsBySubjectUseCase } from './topic/get-by-subject.use-case';
 export { CreateTopicUseCase } from './topic/CreateTopicUseCase';
 export { UpdateTopicUseCase } from './topic/UpdateTopicUseCase';

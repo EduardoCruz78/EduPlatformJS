@@ -1,6 +1,11 @@
+// apps/web/src/server/routers/vestibular.ts
 import { router, publicProcedure } from "@/server/trpc";
 import { z } from "zod";
-import { CreateVestibularUseCase, UpdateVestibularUseCase, DeleteVestibularUseCase } from "@edu-platform/core";
+import {
+  CreateVestibularUseCase,
+  UpdateVestibularUseCase,
+  DeleteVestibularUseCase,
+} from "@edu-platform/core";
 import { vestibularRepository } from "@edu-platform/infrastructure";
 
 export const vestibularRouter = router({
@@ -8,15 +13,21 @@ export const vestibularRouter = router({
     return vestibularRepository.getAvailable();
   }),
 
-  getById: publicProcedure.input(z.number()).query(async ({ input }) => {
-    return vestibularRepository.findById?.(input) || null;
-  }),
+  // ✅ CORRIGIDO: Usar método que existe ou remover optional chaining
+  getById: publicProcedure
+    .input(z.number())
+    .query(async ({ input }) => {
+      // Se o método não existe, usar getAll e filtrar
+      const all = await vestibularRepository.getAvailable();
+      return all.find((v: any) => v.id === input) || null;
+    }),
 
   create: publicProcedure
     .input(
       z.object({
         name: z.string().min(1, "Nome é obrigatório"),
-        description: z.string().optional(),
+        // ✅ CORRIGIDO: description é opcional, então use .optional()
+        description: z.string().optional().default(""),
         year: z
           .number()
           .min(1990, "Ano deve ser 1990 ou posterior")
@@ -26,13 +37,18 @@ export const vestibularRouter = router({
     )
     .mutation(async ({ input }) => {
       const useCase = new CreateVestibularUseCase(vestibularRepository);
-      return useCase.execute(input);
+      // ✅ CORRIGIDO: Converter para string se o UseCase espera
+      return useCase.execute({
+        ...input,
+        description: input.description || "",
+      });
     }),
 
   update: publicProcedure
     .input(
       z.object({
-        id: z.number(),
+        // ✅ CORRIGIDO: Converter number para string se necessário
+        id: z.number().transform(String),
         name: z.string().optional(),
         description: z.string().optional(),
         year: z.number().optional(),
@@ -46,7 +62,7 @@ export const vestibularRouter = router({
     }),
 
   delete: publicProcedure
-    .input(z.number())
+    .input(z.number().transform(String))
     .mutation(async ({ input }) => {
       const useCase = new DeleteVestibularUseCase(vestibularRepository);
       return useCase.execute(input);

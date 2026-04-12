@@ -1,3 +1,4 @@
+// apps/web/src/server/routers/content.ts
 import { router, publicProcedure } from "@/server/trpc";
 import { z } from "zod";
 import {
@@ -11,18 +12,17 @@ import {
 } from "@edu-platform/infrastructure";
 
 export const contentRouter = router({
-  // ✅ Removido getAll (não existe no schema original)
-  
   getById: publicProcedure
     .input(z.number())
     .query(async ({ input }: { input: number }) => {
       return contentRepository.findById(input);
     }),
 
+  // ✅ CORRIGIDO: Espera objeto com topicId, não apenas number
   getByTopic: publicProcedure
-    .input(z.number())
-    .query(async ({ input }: { input: number }) => {
-      return contentRepository.getByTopic(input);
+    .input(z.object({ topicId: z.number() }))
+    .query(async ({ input }: { input: { topicId: number } }) => {
+      return contentRepository.getByTopic(input.topicId);
     }),
 
   create: publicProcedure

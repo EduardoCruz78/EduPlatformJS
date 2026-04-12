@@ -1,10 +1,11 @@
+// apps/web/app/subjects/page.tsx
 'use client';
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { trpc } from "@/trpc/react";
+import { trpc } from "@/server/trpc/react";
 import type { Subject } from "@edu-platform/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,10 +14,15 @@ import { Badge } from "@/components/ui/badge";
 export default function SubjectsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const seriesIdParam = searchParams.get("seriesId");
+  const seriesId = Number(seriesIdParam || 0);
 
-  const { data: subjects = [], isLoading, error } = trpc.subject.getBySeries.useQuery({
-    seriesId: 0,
-  });
+  // ✅ CORRIGIDO: Passar objeto com seriesId
+  const { data: subjects = [], isLoading, error } = trpc.subject.getBySeries.useQuery(
+    { seriesId },
+    { enabled: seriesId > 0 }
+  );
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -41,19 +47,18 @@ export default function SubjectsPage() {
     );
   }
 
-  if (error) {
+  if (error || seriesId === 0) {
     return (
       <div className="min-h-screen bg-background p-8 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
-            <p className="text-destructive text-xl">Erro ao carregar as matérias</p>
-            <p className="text-muted-foreground mt-2">{error.message}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-6 px-6 py-3 bg-destructive text-destructive-foreground rounded-2xl hover:bg-destructive/90 transition"
+            <p className="text-destructive text-xl">Selecione uma série primeiro</p>
+            <Link
+              href="/dashboard"
+              className="mt-6 inline-block px-6 py-3 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition"
             >
-              Tentar novamente
-            </button>
+              ← Voltar ao Dashboard
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -92,18 +97,19 @@ export default function SubjectsPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {subjects.map((subject: Subject) => (
-                <div
+                <Link
                   key={subject.id}
+                  href={`/topics?subjectId=${subject.id}`}
                   className="group bg-card hover:bg-accent border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex justify-between items-center cursor-pointer"
                 >
                   <div>
                     <span className="text-xl font-semibold">{subject.name}</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl font-bold text-emerald-600">?</div>
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground">temas</div>
+                    <div className="text-4xl font-bold text-emerald-600">→</div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground">entrar</div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </CardContent>
