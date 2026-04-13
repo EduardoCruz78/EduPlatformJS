@@ -1,34 +1,18 @@
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
-  turbopack: {
-    resolveAlias: {
-      "react-native": "react-native-web",
-    },
-    resolveExtensions: [
-      ".web.js",
-      ".web.jsx",
-      ".web.ts",
-      ".web.tsx",
-      ".js",
-      ".jsx",
-      ".ts",
-      ".tsx",
-      ".json",
-    ],
-  },
-  webpack: (config) => {
+  transpilePackages: [
+    "@edu-platform/core",
+    "@edu-platform/infrastructure",
+  ],
+  webpack: (config, { isServer }) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      // Transform all direct `react-native` imports to `react-native-web`
-      "react-native$": "react-native-web",
+      "@edu-platform/core": require.resolve("../../packages/core/src/index.ts"),
+      "@edu-platform/infrastructure": require.resolve("../../packages/infrastructure/src/index.ts"),
     };
-    config.resolve.extensions = [
-      ".web.js",
-      ".web.jsx",
-      ".web.ts",
-      ".web.tsx",
-      ...config.resolve.extensions,
-    ];
     return config;
   },
 };
+
+module.exports = nextConfig;
