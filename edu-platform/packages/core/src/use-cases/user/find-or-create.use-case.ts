@@ -1,4 +1,4 @@
-// packages/core/src/use-cases/user/find-or-create.use-case.ts
+// packages/core/src/use-cases/user/find-or-create-checklist.use-case.ts
 import type { CreateUserInput } from '../../dtos';
 import {IUserRepository} from "../../repositories";
 

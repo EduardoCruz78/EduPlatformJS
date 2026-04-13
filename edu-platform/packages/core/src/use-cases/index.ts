@@ -2,39 +2,39 @@
 
 // Series
 export { GetAllSeriesUseCase } from './series/get-all.use-case';
-export { CreateSeriesUseCase } from './series/create.use-case';
-export { UpdateSeriesUseCase } from './series/UpdateSeriesUseCase';
-export { DeleteSeriesUseCase } from './series/DeleteSeriesUseCase';
+export { CreateSeriesUseCase } from './series/create-series.use-case';
+export { UpdateSeriesUseCase } from './series/update-series.use-case';
+export { DeleteSeriesUseCase } from './series/delete-series.use-case';
 
 // Subject
 export { GetSubjectsBySeriesUseCase } from './subject/get-by-series.use-case';
-export { CreateSubjectUseCase } from './subject/CreateSubjectUseCase';
-export { UpdateSubjectUseCase } from './subject/UpdateSubjectUseCase';
-export { DeleteSubjectUseCase } from './subject/delete.use-case';
+export { CreateSubjectUseCase } from './subject/create-subject.use-case';
+export { UpdateSubjectUseCase } from './subject/update-subject.use-case';
+export { DeleteSubjectUseCase } from './subject/delete-subject.use-case';
 
 // Topic
 export { GetAllTopicsUseCase } from './topic/get-all.use-case'; // ✅ NOVO
 export { GetTopicsBySubjectUseCase } from './topic/get-by-subject.use-case';
-export { CreateTopicUseCase } from './topic/create.use-case';
-export { UpdateTopicUseCase } from './topic/UpdateTopicUseCase';
-export { DeleteTopicUseCase } from './topic/DeleteTopicUseCase';
+export { CreateTopicUseCase } from './topic/create-topic.use-case';
+export { UpdateTopicUseCase } from './topic/update-topic.use-case';
+export { DeleteTopicUseCase } from './topic/delete-topic.use-case';
 
 // Content
 export { GetContentsByTopicUseCase } from './content/get-by-topic.use-case';
-export { CreateContentUseCase } from './content/CreateContentUseCase';
-export { UpdateContentUseCase } from './content/UpdateContentUseCase';
-export { DeleteContentUseCase } from './content/DeleteContentUseCase';
+export { CreateContentUseCase } from './content/create-content.use-case';
+export { UpdateContentUseCase } from './content/update-content.use-case';
+export { DeleteContentUseCase } from './content/delete-content.use-case';
 
 // Checklist
-export { CreateChecklistUseCase } from './checklist/create.use-case';
+export { CreateChecklistUseCase } from './checklist/create-checklist.use-case';
 export { GetChecklistByUserUseCase } from './checklist/get-by-user.use-case';
-export { DeleteChecklistUseCase } from './checklist/DeleteChecklistUseCase';
+export { DeleteChecklistUseCase } from './checklist/delete-checklist.use-case';
 
 // Vestibular
 export { GetAvailableVestibularsUseCase } from './vestibular/get-available.use-case';
-export { CreateVestibularUseCase } from './vestibular/CreateVestibularUseCase';
-export { UpdateVestibularUseCase } from './vestibular/UpdateVestibularUseCase';
-export { DeleteVestibularUseCase } from './vestibular/DeleteVestibularUseCase';
+export { CreateVestibularUseCase } from './vestibular/create-vestibular.use-case';
+export { UpdateVestibularUseCase } from './vestibular/update-vestibular.use-case';
+export { DeleteVestibularUseCase } from './vestibular/delete-vestibular.use-case';
 
 // User
 export { FindOrCreateUserUseCase } from './user/find-or-create.use-case';
