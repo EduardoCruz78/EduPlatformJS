@@ -1,23 +1,25 @@
 ﻿import {
-    ContentRepository,
-    ChecklistRepository,
     SeriesRepository,
     SubjectRepository,
     TopicRepository,
+    ContentRepository,
+    ChecklistRepository,
     VestibularRepository,
     UserRepository,
     AccessibilityRepository,
-} from './repositories';
+} from "./repositories";
 
-export const makeRepositories = () => {
+export function makeRepositories() {
     return {
-        contentRepository: new ContentRepository(),
-        checklistRepository: new ChecklistRepository(),
         seriesRepository: new SeriesRepository(),
         subjectRepository: new SubjectRepository(),
         topicRepository: new TopicRepository(),
+        contentRepository: new ContentRepository(),
+        checklistRepository: new ChecklistRepository(),
         vestibularRepository: new VestibularRepository(),
         userRepository: new UserRepository(),
         accessibilityRepository: new AccessibilityRepository(),
     };
-};
+}
+
+export type Repositories = ReturnType<typeof makeRepositories>;

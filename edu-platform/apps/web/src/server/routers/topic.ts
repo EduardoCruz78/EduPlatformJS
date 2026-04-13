@@ -1,76 +1,71 @@
-// apps/web/src/server/routers/topic.ts
-import { router, publicProcedure } from "@/server/trpc";
+import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
 import {
-  CreateTopicUseCase,
-  UpdateTopicUseCase,
-  DeleteTopicUseCase,
-  GetAllTopicsUseCase,
+    CreateTopicUseCase,
+    UpdateTopicUseCase,
+    DeleteTopicUseCase,
+    GetAllTopicsUseCase,
+    GetTopicsBySubjectUseCase,
 } from "@edu-platform/core";
-import { topicRepository, contentRepository } from "@edu-platform/infrastructure";
-import { typeConverters } from "@/server/utils/typeConverters";
 
 export const topicRouter = router({
-  getAll: publicProcedure.query(async () => {
-    const useCase = new GetAllTopicsUseCase(topicRepository);
-    return useCase.execute();
-  }),
-
-  getById: publicProcedure
-    .input(z.number())
-    .query(async ({ input }) => {
-      return topicRepository.findById(typeConverters.idToString(input));
+    getAll: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new GetAllTopicsUseCase(ctx.topicRepository);
+        return useCase.execute();
     }),
 
-  getBySubject: publicProcedure
-    .input(z.object({ subjectId: z.number() }))
-    .query(async ({ input }: { input: { subjectId: number } }) => {
-      return topicRepository.getBySubject(input.subjectId);
-    }),
+    getById: publicProcedure
+        .input(z.number())
+        .query(({ input, ctx }) => {
+            return ctx.topicRepository.findById(input);
+        }),
 
-  create: publicProcedure
-    .input(
-      z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        description: z.string().min(1, "Descrição é obrigatória"),
-        seriesId: z.number().min(1, "Série é obrigatória"),
-        subjectIds: z
-          .array(z.number())
-          .min(1, "Pelo menos uma matéria deve ser selecionada"),
-        imageUrl: z.string().optional(),
-        order: z.number().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const useCase = new CreateTopicUseCase(topicRepository);
-      return useCase.execute(input);
-    }),
+    getBySubject: publicProcedure
+        .input(z.object({ subjectId: z.number() }))
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetTopicsBySubjectUseCase(ctx.topicRepository);
+            return useCase.execute(input.subjectId);
+        }),
 
-  update: publicProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        description: z.string().optional(),
-        subjectIds: z.array(z.number()).optional(),
-        imageUrl: z.string().optional(),
-        order: z.number().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const { id, subjectIds, ...data } = input;
-      const useCase = new UpdateTopicUseCase(topicRepository);
-      return useCase.execute({
-        id: typeConverters.idToString(id),
-        subjectIds: typeConverters.arrayToStrings(subjectIds),
-        ...data,
-      });
-    }),
+    create: protectedProcedure
+        .input(
+            z.object({
+                name: z.string().min(1, "Nome é obrigatório"),
+                subjectIds: z.array(z.number()).min(1, "Selecione ao menos uma matéria"),
+                description: z.string().optional(),
+                seriesId: z.number().optional(),
+                imageUrl: z.string().optional(),
+                order: z.number().optional(),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new CreateTopicUseCase(ctx.topicRepository);
+            return useCase.execute(input);
+        }),
 
-  delete: publicProcedure
-    .input(z.number())
-    .mutation(async ({ input }) => {
-      const useCase = new DeleteTopicUseCase(topicRepository, contentRepository);
-      return useCase.execute(typeConverters.idToString(input));
-    }),
+    update: protectedProcedure
+        .input(
+            z.object({
+                id: z.number(),
+                name: z.string().optional(),
+                description: z.string().optional(),
+                subjectIds: z.array(z.number()).optional(),
+                imageUrl: z.string().optional(),
+                order: z.number().optional(),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new UpdateTopicUseCase(ctx.topicRepository);
+            return useCase.execute(input);
+        }),
+
+    delete: protectedProcedure
+        .input(z.number())
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new DeleteTopicUseCase(
+                ctx.topicRepository,
+                ctx.contentRepository
+            );
+            return useCase.execute(input);
+        }),
 });

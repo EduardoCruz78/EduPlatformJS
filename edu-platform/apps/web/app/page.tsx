@@ -1,4 +1,4 @@
-// apps/web/app/EditSubjectPage.tsx
+// apps/web/app/Page.tsx
 import Link from "next/link";
 
 export default function HomePage() {

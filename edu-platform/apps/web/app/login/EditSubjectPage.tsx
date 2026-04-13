@@ -1,4 +1,4 @@
-// apps/web/app/login/EditSubjectPage.tsx
+// apps/web/app/login/page.tsx
 import { loginWithGoogle } from "../actions/auth";
 
 export default function LoginPage() {

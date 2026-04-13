@@ -1,58 +1,60 @@
-// apps/web/src/server/routers/checklist.ts
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
+import { router, protectedProcedure, publicProcedure } from "@/server/trpc";
 import { z } from "zod";
 import {
-  CreateChecklistUseCase,
-  DeleteChecklistUseCase,
-  GetChecklistByUserUseCase,
+    CreateChecklistUseCase,
+    DeleteChecklistUseCase,
+    GetChecklistByUserUseCase,
 } from "@edu-platform/core";
-import { checklistRepository } from "@edu-platform/infrastructure";
-import { typeConverters } from "@/server/utils/typeConverters";
 
 export const checklistRouter = router({
-  getByUser: protectedProcedure.query(async ({ ctx }) => {
-    const userId = ctx.user.id;
-    const useCase = new GetChecklistByUserUseCase(checklistRepository);
-    return useCase.execute(userId);
-  }),
+    getByUser: protectedProcedure.query(async ({ ctx }) => {
+        const userId = ctx.user?.id;
 
-  getById: publicProcedure
-    .input(z.number())
-    .query(async ({ input }: { input: number }) => {
-      return checklistRepository.findById(typeConverters.idToString(input));
+        if (!userId) {
+            throw new Error("Não autenticado");
+        }
+
+        const useCase = new GetChecklistByUserUseCase(ctx.checklistRepository);
+        return useCase.execute(userId);
     }),
 
-  getByContentId: publicProcedure
-    .input(z.number())
-    .query(async ({ input }: { input: number }) => {
-      return checklistRepository.findByContentId(input);
-    }),
+    getById: publicProcedure
+        .input(z.number())
+        .query(({ input, ctx }) => {
+            return ctx.checklistRepository.findById(input);
+        }),
 
-  create: publicProcedure
-    .input(
-      z.object({
-        title: z.string().min(1, "Título é obrigatório"),
-        description: z.string().optional(),
-        contentId: z.number().min(1, "Conteúdo é obrigatório"),
-        items: z
-          .array(
+    getByContentId: publicProcedure
+        .input(z.number())
+        .query(({ input, ctx }) => {
+            return ctx.checklistRepository.findByContentId(input);
+        }),
+
+    create: protectedProcedure
+        .input(
             z.object({
-              text: z.string().min(1, "Texto do item é obrigatório"),
-              order: z.number(),
+                contentId: z.number(),
             })
-          )
-          .min(1, "Pelo menos um item deve ser adicionado"),
-      })
-    )
-    .mutation(async ({ input }: { input: any }) => {
-      const useCase = new CreateChecklistUseCase(checklistRepository);
-      return useCase.execute(input);
-    }),
+        )
+        .mutation(async ({ input, ctx }) => {
+            const userId = ctx.user?.id;
 
-  delete: publicProcedure
-    .input(z.number())
-    .mutation(async ({ input }: { input: number }) => {
-      const useCase = new DeleteChecklistUseCase(checklistRepository);
-      return useCase.execute(typeConverters.idToString(input));
-    }),
+            if (!userId) {
+                throw new Error("Não autenticado");
+            }
+
+            const useCase = new CreateChecklistUseCase(ctx.checklistRepository);
+
+            return useCase.execute({
+                userId,
+                contentId: input.contentId,
+            });
+        }),
+
+    delete: protectedProcedure
+        .input(z.number())
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new DeleteChecklistUseCase(ctx.checklistRepository);
+            return useCase.execute(input);
+        }),
 });

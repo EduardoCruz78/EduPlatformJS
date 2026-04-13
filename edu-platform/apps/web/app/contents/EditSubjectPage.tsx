@@ -1,27 +1,28 @@
-// apps/web/app/topics/EditSubjectPage.tsx
+// apps/web/app/contents/page.tsx
 'use client';
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { trpc } from "@/server/trpc/react";
-import type { Topic } from "@edu-platform/core";
+import { useSearchParams } from "next/navigation";
+import { trpc } from '@/lib/trpc';
+import type { Content } from "@edu-platform/core";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
-export default function TopicsPage() {
+export default function ContentsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const subjectIdParam = searchParams.get("subjectId");
-  const subjectId = Number(subjectIdParam || 0);
+  const topicIdParam = searchParams.get("topicId");
+  const topicId = Number(topicIdParam || 0);
 
-  // ✅ CORRIGIDO: Passar objeto com subjectId
-  const { data: topics = [], isLoading, error } = trpc.topic.getBySubject.useQuery(
-    { subjectId },
-    { enabled: subjectId > 0 }
+  // ✅ CORRIGIDO: Passar objeto com topicId, não apenas number
+  const { data: contents = [], isLoading, error } = trpc.content.getByTopic.useQuery(
+    { topicId },
+    { enabled: topicId > 0 }
   );
 
   useEffect(() => {
@@ -37,9 +38,9 @@ export default function TopicsPage() {
           <div className="animate-pulse space-y-8">
             <div className="h-10 w-80 bg-muted rounded-2xl" />
             <Card>
-              <CardContent className="p-8">
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} className="h-24 w-full mb-4 rounded-3xl" />
+              <CardContent className="p-8 space-y-6">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="h-36 w-full rounded-3xl" />
                 ))}
               </CardContent>
             </Card>
@@ -49,17 +50,17 @@ export default function TopicsPage() {
     );
   }
 
-  if (error || subjectId === 0) {
+  if (error || topicId === 0) {
     return (
       <div className="min-h-screen bg-background p-8 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center">
-            <p className="text-destructive text-xl">Selecione uma matéria primeiro</p>
+            <p className="text-destructive text-xl">Selecione um tópico primeiro</p>
             <Link
-              href="/subjects"
+              href="/topics"
               className="mt-6 inline-block px-6 py-3 bg-primary text-primary-foreground rounded-2xl hover:bg-primary/90 transition"
             >
-              ← Voltar às Matérias
+              ← Voltar aos Tópicos
             </Link>
           </CardContent>
         </Card>
@@ -72,16 +73,16 @@ export default function TopicsPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-start mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Tópicos</h1>
-            <p className="text-muted-foreground mt-1">Escolha um tópico para ver os conteúdos</p>
+            <h1 className="text-4xl font-bold text-foreground">Conteúdos</h1>
+            <p className="text-muted-foreground mt-1">Conteúdos do tópico selecionado</p>
           </div>
 
           <div className="flex items-center gap-4">
             <Link
-              href="/subjects"
+              href="/topics"
               className="text-primary hover:text-primary/80 font-medium flex items-center gap-2 transition"
             >
-              ← Voltar às Matérias
+              ← Voltar aos Tópicos
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
@@ -95,28 +96,36 @@ export default function TopicsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-3">
-              Todos os Tópicos
-              <Badge variant="secondary">{topics.length}</Badge>
+              Conteúdos
+              <Badge variant="secondary">{contents.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {topics.length === 0 ? (
+            {contents.length === 0 ? (
               <p className="text-muted-foreground py-12 text-center">
-                Nenhum tópico encontrado. Rode o seed do Prisma!
+                Nenhum conteúdo neste tópico ainda.
               </p>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {topics.map((topic: Topic) => (
-                  <Link
-                    key={topic.id}
-                    href={`/contents?topicId=${topic.id}`}
-                    className="group bg-card hover:bg-accent border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex flex-col"
+              <div className="space-y-6">
+                {contents.map((content: Content) => (
+                  <div
+                    key={content.id}
+                    className="bg-card border border-border hover:border-primary/30 transition-all rounded-3xl p-6 flex gap-6 items-center"
                   >
-                    <span className="text-xl font-semibold text-foreground mb-3 line-clamp-2">
-                      {topic.name}
-                    </span>
-                    <p className="text-sm text-muted-foreground">Clique para ver os conteúdos</p>
-                  </Link>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-foreground mb-1">
+                        {content.title}
+                      </h3>
+                      <Badge variant="outline" className="capitalize">
+                        {content.type}
+                      </Badge>
+                    </div>
+                    <div className="w-40 flex flex-col justify-between items-end">
+                      <button className="px-6 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-medium hover:bg-primary/90 transition">
+                        Acessar
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

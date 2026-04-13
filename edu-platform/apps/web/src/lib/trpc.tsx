@@ -1,5 +1,3 @@
-// apps/web/src/lib/trpc.tsx
-
 'use client';
 
 import { createTRPCReact } from '@trpc/react-query';

@@ -16,13 +16,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { trpc } from '@/lib/trpc';
@@ -30,15 +23,12 @@ import { trpc } from '@/lib/trpc';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-// ================= SCHEMA =================
 const updateSubjectSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório').min(3, 'Mínimo 3 caracteres'),
-  seriesId: z.string().optional(),
 });
 
 type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>;
 
-// ================= PAGE =================
 export default function EditSubjectPage() {
   const router = useRouter();
   const params = useParams();
@@ -46,10 +36,8 @@ export default function EditSubjectPage() {
 
   const subjectId = Number(params.id);
 
-  const { data: series } = trpc.series.getAll.useQuery();
-
   const { data: subject, isLoading } = trpc.subject.getById.useQuery(
-      { id: subjectId },
+      subjectId,
       { enabled: !Number.isNaN(subjectId) }
   );
 
@@ -57,7 +45,6 @@ export default function EditSubjectPage() {
     resolver: zodResolver(updateSubjectSchema),
     defaultValues: {
       name: '',
-      seriesId: undefined,
     },
   });
 
@@ -65,7 +52,6 @@ export default function EditSubjectPage() {
     if (subject) {
       form.reset({
         name: subject.name,
-        seriesId: subject.seriesId?.toString(),
       });
     }
   }, [subject, form]);
@@ -92,7 +78,6 @@ export default function EditSubjectPage() {
     await updateSubjectMutation.mutateAsync({
       id: subjectId,
       name: data.name,
-      seriesId: data.seriesId ? parseInt(data.seriesId, 10) : undefined,
     });
   };
 
@@ -108,7 +93,7 @@ export default function EditSubjectPage() {
       <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Link href="/admin/subjects">
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4" />
             </Button>
           </Link>
@@ -140,31 +125,38 @@ export default function EditSubjectPage() {
                 >
                   <Input {...form.register('name')} />
 
-                  <Select
-                      onValueChange={(value) =>
-                          form.setValue(
-                              'seriesId',
-                              value === 'none' ? undefined : value
-                          )
-                      }
-                      value={form.watch('seriesId') ?? 'none'}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
+                  {form.formState.errors.root && (
+                      <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
+                        {form.formState.errors.root.message}
+                      </div>
+                  )}
 
-                    <SelectContent>
-                      <SelectItem value="none">Nenhuma</SelectItem>
+                  <div className="flex gap-3 justify-end">
+                    <Link href="/admin/subjects">
+                      <Button
+                          type="button"
+                          variant="outline"
+                          disabled={updateSubjectMutation.isPending}
+                      >
+                        Cancelar
+                      </Button>
+                    </Link>
 
-                      {series?.map((s: any) => (
-                          <SelectItem key={s.id} value={s.id.toString()}>
-                            {s.name}
-                          </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Button type="submit">Salvar</Button>
+                    <Button
+                        type="submit"
+                        disabled={updateSubjectMutation.isPending}
+                        className="flex items-center gap-2"
+                    >
+                      {updateSubjectMutation.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Atualizando...
+                          </>
+                      ) : (
+                          'Salvar'
+                      )}
+                    </Button>
+                  </div>
                 </form>
             )}
           </CardContent>

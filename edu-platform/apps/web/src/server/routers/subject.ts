@@ -1,69 +1,67 @@
-import { router, publicProcedure } from "@/server/trpc";
+import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
 import { z } from "zod";
-
 import {
     CreateSubjectUseCase,
     UpdateSubjectUseCase,
     DeleteSubjectUseCase,
+    GetSubjectsBySeriesUseCase,
 } from "@edu-platform/core";
 
-import {
-    subjectRepository,
-    topicRepository,
-} from "@edu-platform/infrastructure";
-
 export const subjectRouter = router({
-    getAll: publicProcedure.query(async () => {
-        return subjectRepository.findAll();
+    getAll: publicProcedure.query(({ ctx }) => {
+        return ctx.subjectRepository.findAll();
     }),
 
     getById: publicProcedure
-        .input(z.object({ id: z.number() }))
-        .query(async ({ input }) => {
-            return subjectRepository.findById(input.id);
+        .input(z.number())
+        .query(({ input, ctx }) => {
+            return ctx.subjectRepository.findById(input);
         }),
 
     getBySeries: publicProcedure
         .input(z.object({ seriesId: z.number() }))
-        .query(async ({ input }) => {
-            return subjectRepository.getBySeries(input.seriesId);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetSubjectsBySeriesUseCase(ctx.subjectRepository);
+            return useCase.execute(input.seriesId);
         }),
 
-    create: publicProcedure
+    create: protectedProcedure
         .input(
             z.object({
                 name: z.string().min(1, "Nome é obrigatório"),
+                description: z.string().optional(),
+                imageUrl: z.string().optional(),
+                order: z.number().optional(),
                 seriesId: z.number().optional(),
             })
         )
-        .mutation(async ({ input }) => {
-            const useCase = new CreateSubjectUseCase(subjectRepository);
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new CreateSubjectUseCase(ctx.subjectRepository);
             return useCase.execute(input);
         }),
 
-    update: publicProcedure
+    update: protectedProcedure
         .input(
             z.object({
                 id: z.number(),
                 name: z.string().optional(),
-                seriesId: z.number().optional(),
+                description: z.string().optional(),
+                imageUrl: z.string().optional(),
+                order: z.number().optional(),
             })
         )
-        .mutation(async ({ input }) => {
-            const { id, ...data } = input;
-
-            const useCase = new UpdateSubjectUseCase(subjectRepository);
-            return useCase.execute({ id, ...data });
+        .mutation(async ({ input, ctx }) => {
+            const useCase = new UpdateSubjectUseCase(ctx.subjectRepository);
+            return useCase.execute(input);
         }),
 
-    delete: publicProcedure
-        .input(z.object({ id: z.number() }))
-        .mutation(async ({ input }) => {
+    delete: protectedProcedure
+        .input(z.number())
+        .mutation(async ({ input, ctx }) => {
             const useCase = new DeleteSubjectUseCase(
-                subjectRepository,
-                topicRepository
+                ctx.subjectRepository,
+                ctx.topicRepository
             );
-
-            return useCase.execute(input.id);
+            return useCase.execute(input);
         }),
 });
