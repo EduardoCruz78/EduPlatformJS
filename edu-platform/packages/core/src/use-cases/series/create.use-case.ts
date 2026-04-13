@@ -2,7 +2,10 @@ import type { SeriesRepository } from '@edu-platform/infrastructure';
 
 export interface CreateSeriesInput {
   name: string;
-  description: string;
+
+  // Mantidos para não quebrar os chamadores atuais,
+  // mas não são persistidos porque o schema atual de Series só tem "name".
+  description?: string;
   imageUrl?: string | null;
   order?: number;
 }
@@ -11,20 +14,19 @@ export class CreateSeriesUseCase {
   constructor(private readonly seriesRepository: SeriesRepository) {}
 
   async execute(input: CreateSeriesInput) {
-    if (!input.name?.trim()) {
-      throw new Error("Nome da série é obrigatório");
+    const name = input.name?.trim();
+
+    if (!name) {
+      throw new Error('Nome da série é obrigatório');
     }
 
-    const existingSeries = await this.seriesRepository.findByName(input.name);
+    const existingSeries = await this.seriesRepository.findByName(name);
     if (existingSeries) {
-      throw new Error("Série com este nome já existe");
+      throw new Error('Série com este nome já existe');
     }
 
     return this.seriesRepository.create({
-      name: input.name.trim(),
-      description: input.description.trim(),
-      imageUrl: input.imageUrl || null,
-      order: input.order || 0,
+      name,
     });
   }
 }

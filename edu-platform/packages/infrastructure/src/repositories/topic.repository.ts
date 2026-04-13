@@ -1,5 +1,3 @@
-// packages/infrastructure/src/repositories/topic.repository.ts
-
 import { prisma } from '../prisma/client';
 import type { Topic } from '@edu-platform/core';
 
@@ -47,14 +45,25 @@ export class TopicRepository {
     });
   }
 
-  // ✅ MÉTODO CORRIGIDO
+  async countBySubjectId(subjectId: number): Promise<number> {
+    return prisma.topic.count({
+      where: {
+        topicSubjects: {
+          some: {
+            subjectId,
+          },
+        },
+      },
+    });
+  }
+
   async countBySeriesId(seriesId: number): Promise<number> {
     return prisma.topic.count({
       where: {
         topicSubjects: {
           some: {
             subject: {
-              seriesId: seriesId,
+              seriesId,
             },
           },
         },
@@ -64,18 +73,22 @@ export class TopicRepository {
 
   async create(data: {
     name: string;
-    description: string;
     subjectIds: number[];
+
+    // Aceitos para compatibilidade com os chamadores atuais,
+    // mas ignorados porque o schema atual não tem esses campos.
+    description?: string;
+    seriesId?: number;
     imageUrl?: string | null;
     order?: number;
   }): Promise<Topic> {
-    const { subjectIds, ...topicData } = data;
+    const { subjectIds, name } = data;
 
     return prisma.topic.create({
       data: {
-        ...topicData,
+        name,
         topicSubjects: {
-          create: subjectIds.map((id) => ({ subjectId: id })),
+          create: [...new Set(subjectIds)].map((id) => ({ subjectId: id })),
         },
       },
       include: {
@@ -89,28 +102,39 @@ export class TopicRepository {
       id: number,
       data: {
         name?: string;
+        subjectIds?: number[];
+
+        // Mantidos por compatibilidade, mas não persistidos no schema atual.
         description?: string;
+        seriesId?: number;
         imageUrl?: string | null;
         order?: number;
-        subjectIds?: number[];
       }
   ): Promise<Topic> {
-    const { subjectIds, ...topicData } = data;
+    const { subjectIds, name } = data;
 
     if (subjectIds) {
       await prisma.topicSubject.deleteMany({ where: { topicId: id } });
 
-      await prisma.topicSubject.createMany({
-        data: subjectIds.map((subjectId) => ({
-          topicId: id,
-          subjectId,
-        })),
+      if (subjectIds.length > 0) {
+        await prisma.topicSubject.createMany({
+          data: [...new Set(subjectIds)].map((subjectId) => ({
+            topicId: id,
+            subjectId,
+          })),
+        });
+      }
+    }
+
+    if (name !== undefined) {
+      await prisma.topic.update({
+        where: { id },
+        data: { name },
       });
     }
 
-    return prisma.topic.update({
+    return prisma.topic.findUniqueOrThrow({
       where: { id },
-      data: topicData,
       include: {
         contents: true,
         topicSubjects: { include: { subject: true } },

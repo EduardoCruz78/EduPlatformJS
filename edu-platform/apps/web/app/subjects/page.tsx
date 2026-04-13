@@ -1,4 +1,4 @@
-// apps/web/app/subjects/page.tsx
+// apps/web/app/subjects/EditSubjectPage.tsx
 'use client';
 
 import { useSession, signOut } from "next-auth/react";

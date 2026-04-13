@@ -2,7 +2,7 @@
 
 // Series
 export { GetAllSeriesUseCase } from './series/get-all.use-case';
-export { CreateSeriesUseCase } from './series/CreateSeriesUseCase';
+export { CreateSeriesUseCase } from './series/create.use-case';
 export { UpdateSeriesUseCase } from './series/UpdateSeriesUseCase';
 export { DeleteSeriesUseCase } from './series/DeleteSeriesUseCase';
 
@@ -10,12 +10,12 @@ export { DeleteSeriesUseCase } from './series/DeleteSeriesUseCase';
 export { GetSubjectsBySeriesUseCase } from './subject/get-by-series.use-case';
 export { CreateSubjectUseCase } from './subject/CreateSubjectUseCase';
 export { UpdateSubjectUseCase } from './subject/UpdateSubjectUseCase';
-export { DeleteSubjectUseCase } from './subject/DeleteSubjectUseCase';
+export { DeleteSubjectUseCase } from './subject/delete.use-case';
 
 // Topic
 export { GetAllTopicsUseCase } from './topic/get-all.use-case'; // ✅ NOVO
 export { GetTopicsBySubjectUseCase } from './topic/get-by-subject.use-case';
-export { CreateTopicUseCase } from './topic/CreateTopicUseCase';
+export { CreateTopicUseCase } from './topic/create.use-case';
 export { UpdateTopicUseCase } from './topic/UpdateTopicUseCase';
 export { DeleteTopicUseCase } from './topic/DeleteTopicUseCase';
 

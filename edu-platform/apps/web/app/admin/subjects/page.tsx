@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { trpc } from '@/trpc/client';
+import { trpc } from '@/lib/trpc';
 import { Edit2, Trash2, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
