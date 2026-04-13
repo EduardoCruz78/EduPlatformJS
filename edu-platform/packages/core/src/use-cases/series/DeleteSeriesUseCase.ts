@@ -1,9 +1,9 @@
-import type { SeriesRepository, TopicRepository } from '@edu-platform/infrastructure';
+import {ISeriesRepository, ITopicRepository} from "../../repositories";
 
 export class DeleteSeriesUseCase {
   constructor(
-    private readonly seriesRepository: SeriesRepository,
-    private readonly topicRepository: TopicRepository
+    private readonly seriesRepository: ISeriesRepository,
+    private readonly topicRepository: ITopicRepository
   ) {}
 
   async execute(id: number) {

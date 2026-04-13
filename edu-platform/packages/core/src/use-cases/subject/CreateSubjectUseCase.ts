@@ -1,4 +1,4 @@
-import type { SubjectRepository } from '@edu-platform/infrastructure';
+import {ISubjectRepository} from "../../repositories";
 
 export interface CreateSubjectInput {
   name: string;
@@ -9,7 +9,7 @@ export interface CreateSubjectInput {
 }
 
 export class CreateSubjectUseCase {
-  constructor(private readonly subjectRepository: SubjectRepository) {}
+  constructor(private readonly subjectRepository: ISubjectRepository) {}
 
   async execute(input: CreateSubjectInput) {
     if (!input.name?.trim()) {

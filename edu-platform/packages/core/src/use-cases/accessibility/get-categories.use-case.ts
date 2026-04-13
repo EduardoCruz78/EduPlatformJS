@@ -1,9 +1,9 @@
 // packages/core/src/use-cases/accessibility/get-categories.use-case.ts
-import type { AccessibilityRepository } from '@edu-platform/infrastructure';
 import type { AccessibilityCategory } from '../../entities';
+import {IAccessibilityRepository} from "../../repositories/IAccessibilityRepository";
 
 export class GetAccessibilityCategoriesUseCase {
-  constructor(private readonly accessibilityRepository: AccessibilityRepository) {}
+  constructor(private readonly accessibilityRepository: IAccessibilityRepository) {}
 
   async execute(): Promise<AccessibilityCategory[]> {
     return this.accessibilityRepository.getCategories();

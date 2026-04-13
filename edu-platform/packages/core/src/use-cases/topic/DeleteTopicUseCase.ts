@@ -1,9 +1,10 @@
-import type { TopicRepository, ContentRepository } from '@edu-platform/infrastructure';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
+import {IContentRepository} from "../../repositories";
 
 export class DeleteTopicUseCase {
   constructor(
-    private readonly topicRepository: TopicRepository,
-    private readonly contentRepository: ContentRepository
+    private readonly topicRepository: ITopicRepository,
+    private readonly contentRepository: IContentRepository
   ) {}
 
   async execute(id: number) {

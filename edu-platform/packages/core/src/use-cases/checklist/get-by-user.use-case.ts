@@ -1,11 +1,10 @@
-// packages/core/src/use-cases/checklist/get-by-user.use-case.ts
-import type { ChecklistRepository } from '@edu-platform/infrastructure';
 import type { Checklist } from '../../entities';
+import { IChecklistRepository } from '../../repositories';
 
 export class GetChecklistByUserUseCase {
-  constructor(private readonly checklistRepository: ChecklistRepository) {}
+  constructor(private readonly checklistRepository: IChecklistRepository) {}
 
   async execute(userId: string): Promise<Checklist[]> {
-    return this.checklistRepository.getByUser(userId);
+    return this.checklistRepository.findByUserId(userId);
   }
 }

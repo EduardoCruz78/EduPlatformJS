@@ -1,6 +1,6 @@
 
 // ✅ CORRETO
-import type { TopicRepository } from '@edu-platform/infrastructure';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export interface UpdateTopicInput {
   id: number; // Mudei de string para number (consistente com o resto)
@@ -12,7 +12,7 @@ export interface UpdateTopicInput {
 }
 
 export class UpdateTopicUseCase {
-  constructor(private readonly topicRepository: TopicRepository) {}
+  constructor(private readonly topicRepository: ITopicRepository) {}
 
   async execute(input: UpdateTopicInput) {
     const topic = await this.topicRepository.findById(input.id);

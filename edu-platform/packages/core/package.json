@@ -2,16 +2,28 @@
   "name": "@edu-platform/core",
   "version": "0.0.0",
   "private": true,
+
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit"
   },
+
   "dependencies": {
     "zod": "^3.22.0"
   },
+
   "devDependencies": {
-    "@repo/typescript-config": "*",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

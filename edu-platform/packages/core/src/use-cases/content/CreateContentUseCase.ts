@@ -1,4 +1,4 @@
-import type { ContentRepository } from '@edu-platform/infrastructure';
+import {IContentRepository} from "../../repositories";
 
 export interface CreateContentInput {
   title: string;
@@ -13,7 +13,7 @@ export interface CreateContentInput {
 }
 
 export class CreateContentUseCase {
-  constructor(private readonly contentRepository: ContentRepository) {}
+  constructor(private readonly contentRepository: IContentRepository) {}
 
   async execute(input: CreateContentInput) {
     if (!input.title?.trim()) {

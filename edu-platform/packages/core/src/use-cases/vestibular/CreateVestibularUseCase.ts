@@ -1,6 +1,6 @@
 
 // ✅ CORRETO
-import type { VestibularRepository } from '@edu-platform/infrastructure';
+import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export interface CreateVestibularInput {
   name: string;
@@ -10,7 +10,7 @@ export interface CreateVestibularInput {
 }
 
 export class CreateVestibularUseCase {
-  constructor(private readonly vestibularRepository: VestibularRepository) {}
+  constructor(private readonly vestibularRepository: IVestibularRepository) {}
 
   async execute(input: CreateVestibularInput) {
     if (!input.name?.trim()) {

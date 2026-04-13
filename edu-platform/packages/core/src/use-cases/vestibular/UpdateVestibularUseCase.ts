@@ -1,5 +1,5 @@
 
-import type { VestibularRepository } from '@edu-platform/infrastructure';
+import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export interface UpdateVestibularInput {
   id: number; // Mudei de string para number
@@ -10,7 +10,7 @@ export interface UpdateVestibularInput {
 }
 
 export class UpdateVestibularUseCase {
-  constructor(private readonly vestibularRepository: VestibularRepository) {}
+  constructor(private readonly vestibularRepository: IVestibularRepository) {}
 
   async execute(input: UpdateVestibularInput) {
     const vestibular = await this.vestibularRepository.findById(input.id);

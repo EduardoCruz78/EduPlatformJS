@@ -1,23 +1,25 @@
-// packages/infrastructure/src/repositories/checklist.repository.ts
-
 import { prisma } from '../prisma/client';
-import type { Checklist, CreateChecklistInput } from '@edu-platform/core';
+import type {
+  Checklist,
+  CreateChecklistInput,
+  IChecklistRepository
+} from '@edu-platform/core';
 
-export class ChecklistRepository {
+export class ChecklistRepository implements IChecklistRepository {
   async create(data: CreateChecklistInput): Promise<Checklist> {
     return prisma.checklist.create({ data });
   }
 
-  async getByUser(userId: string): Promise<Checklist[]> {
+  async findByUserId(userId: string): Promise<Checklist[]> {
     return prisma.checklist.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findById(id: string): Promise<Checklist | null> {
+  async findById(id: number): Promise<Checklist | null> {
     return prisma.checklist.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
     });
   }
 
@@ -27,11 +29,13 @@ export class ChecklistRepository {
     });
   }
 
-  async delete(id: string) {
-    return prisma.checklist.delete({ where: { id: parseInt(id) } });
+  async delete(id: number): Promise<void> {
+    await prisma.checklist.delete({ where: { id } });
   }
 
-  async deleteByContentId(contentId: number) {
-    return prisma.checklist.deleteMany({ where: { contentId } });
+  async deleteByContentId(contentId: number): Promise<void> {
+    await prisma.checklist.deleteMany({
+      where: { contentId },
+    });
   }
 }

@@ -1,9 +1,9 @@
-import type { ChecklistRepository } from '@edu-platform/infrastructure';
+import {IChecklistRepository} from "../../repositories";
 
 export class DeleteChecklistUseCase {
-  constructor(private readonly checklistRepository: ChecklistRepository) {}
+  constructor(private readonly checklistRepository: IChecklistRepository) {}
 
-  async execute(id: string) {
+  async execute(id: number) {
     const checklist = await this.checklistRepository.findById(id);
     if (!checklist) {
       throw new Error("Checklist não encontrada");

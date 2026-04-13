@@ -1,10 +1,10 @@
 // packages/core/src/use-cases/content/get-by-topic.use-case.ts
-import type { ContentRepository } from '@edu-platform/infrastructure';
 import type { GetContentsByTopicInput } from '../../dtos';
 import type { Content } from '../../entities';
+import {IContentRepository} from "../../repositories";
 
 export class GetContentsByTopicUseCase {
-  constructor(private readonly contentRepository: ContentRepository) {}
+  constructor(private readonly contentRepository: IContentRepository) {}
 
   async execute(input: GetContentsByTopicInput): Promise<Content[]> {
     return this.contentRepository.getByTopic(input.topicId);

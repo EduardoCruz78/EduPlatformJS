@@ -8,4 +8,9 @@ export interface IUserRepository {
     providerId: string;
   }): Promise<any>;
   update(id: string, data: any): Promise<any>;
+  findOrCreate(data: {
+    email: string;
+    name: string;
+    providerId: string;
+  }): Promise<any>;
 }

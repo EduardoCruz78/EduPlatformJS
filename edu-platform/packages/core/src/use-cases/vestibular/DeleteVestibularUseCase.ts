@@ -1,9 +1,8 @@
 
 // ✅ CORRETO
-import type { VestibularRepository } from '@edu-platform/infrastructure';
-
+import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 export class DeleteVestibularUseCase {
-  constructor(private readonly vestibularRepository: VestibularRepository) {}
+  constructor(private readonly vestibularRepository: IVestibularRepository) {}
 
   async execute(id: number) { // Mudei de string para number
     const vestibular = await this.vestibularRepository.findById(id);

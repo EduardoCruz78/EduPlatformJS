@@ -1,4 +1,4 @@
-import type { TopicRepository } from '@edu-platform/infrastructure';
+import {ITopicRepository} from "../../repositories";
 
 export interface CreateTopicInput {
   name: string;
@@ -13,7 +13,7 @@ export interface CreateTopicInput {
 }
 
 export class CreateTopicUseCase {
-  constructor(private readonly topicRepository: TopicRepository) {}
+  constructor(private readonly topicRepository: ITopicRepository) {}
 
   async execute(input: CreateTopicInput) {
     const name = input.name?.trim();

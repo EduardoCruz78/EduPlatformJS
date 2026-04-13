@@ -1,4 +1,4 @@
-import type { ContentRepository } from '@edu-platform/infrastructure';
+import {IContentRepository} from "../../repositories";
 
 export interface UpdateContentInput {
   id: number;
@@ -12,7 +12,7 @@ export interface UpdateContentInput {
 }
 
 export class UpdateContentUseCase {
-  constructor(private readonly contentRepository: ContentRepository) {}
+  constructor(private readonly contentRepository: IContentRepository) {}
 
   async execute(input: UpdateContentInput) {
     const content = await this.contentRepository.findById(input.id);

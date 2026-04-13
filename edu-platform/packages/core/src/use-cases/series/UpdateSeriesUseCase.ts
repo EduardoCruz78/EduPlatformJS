@@ -1,4 +1,4 @@
-import type { SeriesRepository } from '@edu-platform/infrastructure';
+import {ISeriesRepository} from "../../repositories";
 
 export interface UpdateSeriesInput {
   id: number;
@@ -6,7 +6,7 @@ export interface UpdateSeriesInput {
 }
 
 export class UpdateSeriesUseCase {
-  constructor(private readonly seriesRepository: SeriesRepository) {}
+  constructor(private readonly seriesRepository: ISeriesRepository) {}
 
   async execute(input: UpdateSeriesInput) {
     const series = await this.seriesRepository.findById(input.id);

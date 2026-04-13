@@ -1,4 +1,4 @@
-import type { SubjectRepository } from '@edu-platform/infrastructure';
+import {ISubjectRepository} from "../../repositories";
 
 export interface UpdateSubjectInput {
   id: number;
@@ -9,7 +9,7 @@ export interface UpdateSubjectInput {
 }
 
 export class UpdateSubjectUseCase {
-  constructor(private readonly subjectRepository: SubjectRepository) {}
+  constructor(private readonly subjectRepository: ISubjectRepository) {}
 
   async execute(input: UpdateSubjectInput) {
     const subject = await this.subjectRepository.findById(input.id);

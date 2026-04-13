@@ -1,9 +1,9 @@
-import type { ContentRepository, ChecklistRepository } from '@edu-platform/infrastructure';
+import {IChecklistRepository, IContentRepository} from "../../repositories";
 
 export class DeleteContentUseCase {
   constructor(
-    private readonly contentRepository: ContentRepository,
-    private readonly checklistRepository: ChecklistRepository
+    private readonly contentRepository: IContentRepository,
+    private readonly checklistRepository: IChecklistRepository
   ) {}
 
   async execute(id: number) {

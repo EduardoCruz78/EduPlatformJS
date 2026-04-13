@@ -1,9 +1,9 @@
-import type { SubjectRepository, TopicRepository } from '@edu-platform/infrastructure';
+import {ISubjectRepository, ITopicRepository} from "../../repositories";
 
 export class DeleteSubjectUseCase {
   constructor(
-      private readonly subjectRepository: SubjectRepository,
-      private readonly topicRepository: TopicRepository
+      private readonly subjectRepository: ISubjectRepository,
+      private readonly topicRepository: ITopicRepository
   ) {}
 
   async execute(id: number) {

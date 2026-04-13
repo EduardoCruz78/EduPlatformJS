@@ -1,4 +1,4 @@
-import type { SeriesRepository } from '@edu-platform/infrastructure';
+import {ISeriesRepository} from "../../repositories";
 
 export interface CreateSeriesInput {
   name: string;
@@ -11,7 +11,7 @@ export interface CreateSeriesInput {
 }
 
 export class CreateSeriesUseCase {
-  constructor(private readonly seriesRepository: SeriesRepository) {}
+  constructor(private readonly seriesRepository: ISeriesRepository) {}
 
   async execute(input: CreateSeriesInput) {
     const name = input.name?.trim();
