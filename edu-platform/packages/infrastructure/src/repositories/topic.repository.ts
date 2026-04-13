@@ -1,4 +1,5 @@
 // packages/infrastructure/src/repositories/topic.repository.ts
+
 import { prisma } from '../prisma/client';
 import type { Topic } from '@edu-platform/core';
 
@@ -37,7 +38,7 @@ export class TopicRepository {
   }
 
   async findByName(name: string): Promise<Topic | null> {
-    return prisma.topic.findFirst({ 
+    return prisma.topic.findFirst({
       where: { name },
       include: {
         contents: true,
@@ -46,16 +47,30 @@ export class TopicRepository {
     });
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
+  // ✅ MÉTODO CORRIGIDO
+  async countBySeriesId(seriesId: number): Promise<number> {
+    return prisma.topic.count({
+      where: {
+        topicSubjects: {
+          some: {
+            subject: {
+              seriesId: seriesId,
+            },
+          },
+        },
+      },
+    });
+  }
+
   async create(data: {
     name: string;
     description: string;
-    seriesId: number;
     subjectIds: number[];
     imageUrl?: string | null;
     order?: number;
   }): Promise<Topic> {
     const { subjectIds, ...topicData } = data;
+
     return prisma.topic.create({
       data: {
         ...topicData,
@@ -70,26 +85,26 @@ export class TopicRepository {
     });
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
   async update(
-    id: number,
-    data: {
-      name?: string;
-      description?: string;
-      imageUrl?: string | null;
-      order?: number;
-      subjectIds?: number[];
-    }
+      id: number,
+      data: {
+        name?: string;
+        description?: string;
+        imageUrl?: string | null;
+        order?: number;
+        subjectIds?: number[];
+      }
   ): Promise<Topic> {
     const { subjectIds, ...topicData } = data;
 
-    // Se subjectIds foi fornecido, atualiza as relações
     if (subjectIds) {
-      // Remove todas as relações antigas
       await prisma.topicSubject.deleteMany({ where: { topicId: id } });
-      // Cria as novas relações
+
       await prisma.topicSubject.createMany({
-        data: subjectIds.map((subjectId) => ({ topicId: id, subjectId })),
+        data: subjectIds.map((subjectId) => ({
+          topicId: id,
+          subjectId,
+        })),
       });
     }
 
@@ -105,13 +120,5 @@ export class TopicRepository {
 
   async delete(id: number): Promise<void> {
     await prisma.topic.delete({ where: { id } });
-  }
-
-  async countByTopicId(topicId: number): Promise<number> {
-    return prisma.topicSubject.count({ where: { topicId } });
-  }
-
-  async countBySubjectId(subjectId: number): Promise<number> {
-    return prisma.topicSubject.count({ where: { subjectId } });
   }
 }

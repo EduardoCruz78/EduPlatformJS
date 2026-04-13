@@ -1,3 +1,5 @@
+// packages/infrastructure/src/repositories/series.repository.ts
+
 import { prisma } from '../prisma/client';
 import type { Series } from '@edu-platform/core';
 
@@ -16,19 +18,26 @@ export class SeriesRepository {
     });
   }
 
-  async findByName(name: string) {
-    return prisma.series.findFirst({ where: { name } });
+  async findByName(name: string): Promise<Series | null> {
+    return prisma.series.findFirst({
+      where: { name },
+    });
   }
 
-  async create(data: any) {
+  async create(data: { name: string }): Promise<Series> {
     return prisma.series.create({ data });
   }
 
-  async update(id: number, data: any) {
-    return prisma.series.update({ where: { id }, data });
+  async update(id: number, data: { name?: string }): Promise<Series> {
+    return prisma.series.update({
+      where: { id },
+      data,
+    });
   }
 
-  async delete(id: number) {
-    return prisma.series.delete({ where: { id } });
+  async delete(id: number): Promise<void> {
+    await prisma.series.delete({
+      where: { id },
+    });
   }
 }

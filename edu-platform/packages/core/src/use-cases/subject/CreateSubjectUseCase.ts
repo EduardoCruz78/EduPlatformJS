@@ -2,9 +2,10 @@ import type { SubjectRepository } from '@edu-platform/infrastructure';
 
 export interface CreateSubjectInput {
   name: string;
-  description: string;
+  description?: string;
   imageUrl?: string | null;
   order?: number;
+  seriesId?: number | null;
 }
 
 export class CreateSubjectUseCase {
@@ -15,16 +16,17 @@ export class CreateSubjectUseCase {
       throw new Error("Nome da matéria é obrigatório");
     }
 
-    const existingSubject = await this.subjectRepository.findByName(input.name);
+    const existingSubject = await this.subjectRepository.findByName(input.name.trim());
     if (existingSubject) {
       throw new Error("Matéria com este nome já existe");
     }
 
     return this.subjectRepository.create({
       name: input.name.trim(),
-      description: input.description.trim(),
-      imageUrl: input.imageUrl || null,
-      order: input.order || 0,
+      description: input.description?.trim() ?? null,
+      imageUrl: input.imageUrl ?? null,
+      order: input.order ?? 0,
+      seriesId: input.seriesId ?? null,
     });
   }
 }

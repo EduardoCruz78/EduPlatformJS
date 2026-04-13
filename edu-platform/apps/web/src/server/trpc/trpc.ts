@@ -1,19 +1,15 @@
-// apps/web/src/server/trpc.ts
-import { initTRPC } from "@trpc/server";
-import { ZodError } from "zod";
-import { auth } from "@/auth";
+// apps/web/src/server/trpc/trpc.ts
 
-// ✅ CORRIGIDO: Tipo correto do contexto
-interface CreateContextOptions {
-  session: any;
-}
+import { initTRPC } from '@trpc/server';
+import { ZodError } from 'zod';
+import { auth } from '@/lib/auth';
 
-export async function createContext(opts?: CreateContextOptions) {
-  const session = opts?.session || await auth();
+export async function createContext() {
+  const session = await auth();
 
   return {
     session,
-    user: session?.user || null, // ✅ IMPORTANTE: Retornar 'user', não 'userId'
+    user: session?.user || null,
   };
 }
 
@@ -26,7 +22,7 @@ const t = initTRPC.context<Context>().create({
       data: {
         ...shape.data,
         zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+            error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -34,10 +30,12 @@ const t = initTRPC.context<Context>().create({
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
 export const protectedProcedure = t.procedure.use(async (opts) => {
   if (!opts.ctx.user) {
-    throw new Error("Não autenticado");
+    throw new Error('Não autenticado');
   }
+
   return opts.next({
     ctx: {
       ...opts.ctx,
@@ -45,4 +43,5 @@ export const protectedProcedure = t.procedure.use(async (opts) => {
     },
   });
 });
+
 export const createCallerFactory = t.createCallerFactory;

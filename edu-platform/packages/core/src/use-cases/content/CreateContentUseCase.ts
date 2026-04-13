@@ -2,12 +2,13 @@ import type { ContentRepository } from '@edu-platform/infrastructure';
 
 export interface CreateContentInput {
   title: string;
-  description: string;
+  description?: string;
   topicId: number;
   type: "VIDEO" | "PDF" | "ARTICLE";
+  link: string;
+  thumbnailUrl: string;
   videoUrl?: string | null;
   pdfUrl?: string | null;
-  thumbnailUrl?: string | null;
   order?: number;
 }
 
@@ -23,15 +24,24 @@ export class CreateContentUseCase {
       throw new Error("Tópico é obrigatório");
     }
 
+    if (!input.link?.trim()) {
+      throw new Error("Link do conteúdo é obrigatório");
+    }
+
+    if (!input.thumbnailUrl?.trim()) {
+      throw new Error("Thumbnail é obrigatória");
+    }
+
     return this.contentRepository.create({
       title: input.title.trim(),
-      description: input.description.trim(),
+      description: input.description?.trim() ?? null,
       topicId: input.topicId,
       type: input.type,
-      videoUrl: input.videoUrl || null,
-      pdfUrl: input.pdfUrl || null,
-      thumbnailUrl: input.thumbnailUrl || null,
-      order: input.order || 0,
+      link: input.link.trim(),
+      thumbnailUrl: input.thumbnailUrl.trim(),
+      videoUrl: input.videoUrl ?? null,
+      pdfUrl: input.pdfUrl ?? null,
+      order: input.order ?? 0,
     });
   }
 }
