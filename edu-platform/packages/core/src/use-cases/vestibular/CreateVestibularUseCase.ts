@@ -1,4 +1,6 @@
-import { VestibularRepository } from "@/infrastructure/repositories/VestibularRepository";
+
+// ✅ CORRETO
+import type { VestibularRepository } from '@edu-platform/infrastructure';
 
 export interface CreateVestibularInput {
   name: string;
@@ -8,7 +10,7 @@ export interface CreateVestibularInput {
 }
 
 export class CreateVestibularUseCase {
-  constructor(private vestibularRepository: VestibularRepository) {}
+  constructor(private readonly vestibularRepository: VestibularRepository) {}
 
   async execute(input: CreateVestibularInput) {
     if (!input.name?.trim()) {
@@ -19,8 +21,10 @@ export class CreateVestibularUseCase {
       throw new Error("Ano do vestibular deve ser válido");
     }
 
-    const existingVestibular =
-      await this.vestibularRepository.findByNameAndYear(input.name, input.year);
+    const existingVestibular = await this.vestibularRepository.findByNameAndYear(
+      input.name,
+      input.year
+    );
     if (existingVestibular) {
       throw new Error("Vestibular com este nome e ano já existe");
     }

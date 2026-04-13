@@ -1,7 +1,8 @@
-import { VestibularRepository } from "@/infrastructure/repositories/VestibularRepository";
+
+import type { VestibularRepository } from '@edu-platform/infrastructure';
 
 export interface UpdateVestibularInput {
-  id: string;
+  id: number; // Mudei de string para number
   name?: string;
   description?: string;
   year?: number;
@@ -9,7 +10,7 @@ export interface UpdateVestibularInput {
 }
 
 export class UpdateVestibularUseCase {
-  constructor(private vestibularRepository: VestibularRepository) {}
+  constructor(private readonly vestibularRepository: VestibularRepository) {}
 
   async execute(input: UpdateVestibularInput) {
     const vestibular = await this.vestibularRepository.findById(input.id);
@@ -29,8 +30,7 @@ export class UpdateVestibularUseCase {
       name: input.name?.trim() || vestibular.name,
       description: input.description?.trim() || vestibular.description,
       year: input.year || vestibular.year,
-      imageUrl:
-        input.imageUrl !== undefined ? input.imageUrl : vestibular.imageUrl,
+      imageUrl: input.imageUrl !== undefined ? input.imageUrl : vestibular.imageUrl,
     });
   }
 }

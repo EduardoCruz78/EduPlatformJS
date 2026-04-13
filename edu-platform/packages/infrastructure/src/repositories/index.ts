@@ -1,6 +1,5 @@
-import { prisma } from '../prisma/client';
+// packages/infrastructure/src/repositories/index.ts
 
-// Importar as classes
 import { SeriesRepository } from './series.repository';
 import { SubjectRepository } from './subject.repository';
 import { TopicRepository } from './topic.repository';
@@ -10,22 +9,24 @@ import { VestibularRepository } from './vestibular.repository';
 import { UserRepository } from './user.repository';
 import { AccessibilityRepository } from './accessibility.repository';
 
-// ✅ INSTANCIAR COM PRISMA (CRÍTICO!)
-export const seriesRepository = new SeriesRepository(prisma);
-export const subjectRepository = new SubjectRepository(prisma);
-export const topicRepository = new TopicRepository(prisma);
-export const contentRepository = new ContentRepository(prisma);
-export const checklistRepository = new ChecklistRepository(prisma);
-export const vestibularRepository = new VestibularRepository(prisma);
-export const userRepository = new UserRepository(prisma);
-export const accessibilityRepository = new AccessibilityRepository(prisma);
+// ✅ INSTANCIAR SEM ARGUMENTOS (padrão singleton)
+export const seriesRepository = new SeriesRepository();
+export const subjectRepository = new SubjectRepository();
+export const topicRepository = new TopicRepository();
+export const contentRepository = new ContentRepository();
+export const checklistRepository = new ChecklistRepository();
+export const vestibularRepository = new VestibularRepository();
+export const userRepository = new UserRepository();
+export const accessibilityRepository = new AccessibilityRepository();
 
 // Exportar as classes também
-export { SeriesRepository };
-export { SubjectRepository };
-export { TopicRepository };
-export { ContentRepository };
-export { ChecklistRepository };
-export { VestibularRepository };
-export { UserRepository };
-export { AccessibilityRepository };
+export {
+  SeriesRepository,
+  SubjectRepository,
+  TopicRepository,
+  ContentRepository,
+  ChecklistRepository,
+  VestibularRepository,
+  UserRepository,
+  AccessibilityRepository,
+};

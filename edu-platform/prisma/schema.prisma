@@ -147,11 +147,16 @@ model TopicSubject {
   @@map("topic_subjects")
 }
 
+
+
 model Vestibular {
   id                 Int                 @id @default(autoincrement())
   name               String
+  description        String?             // ← ADICIONE ESTA LINHA
+  year               Int?                // ← ADICIONE ESTA LINHA
+  imageUrl           String?             // ← ADICIONE ESTA LINHA
   vestibularSubjects VestibularSubject[]
-  contents           VestibularContent[]
+  vestibularContents VestibularContent[]
   vestibularTopics   VestibularTopic[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt

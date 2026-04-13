@@ -1,16 +1,18 @@
-import { TopicRepository } from "@/infrastructure/repositories/TopicRepository";
+
+// ✅ CORRETO
+import type { TopicRepository } from '@edu-platform/infrastructure';
 
 export interface UpdateTopicInput {
-  id: string;
+  id: number; // Mudei de string para number (consistente com o resto)
   name?: string;
   description?: string;
-  subjectIds?: string[];
+  subjectIds?: number[]; // Mudei de string[] para number[]
   imageUrl?: string | null;
   order?: number;
 }
 
 export class UpdateTopicUseCase {
-  constructor(private topicRepository: TopicRepository) {}
+  constructor(private readonly topicRepository: TopicRepository) {}
 
   async execute(input: UpdateTopicInput) {
     const topic = await this.topicRepository.findById(input.id);
@@ -25,9 +27,8 @@ export class UpdateTopicUseCase {
     return this.topicRepository.update(input.id, {
       name: input.name?.trim() || topic.name,
       description: input.description?.trim() || topic.description,
-      subjectIds: input.subjectIds || topic.subjects.map((s) => s.id),
-      imageUrl:
-        input.imageUrl !== undefined ? input.imageUrl : topic.imageUrl,
+      subjectIds: input.subjectIds || topic.subjects?.map((s: any) => s.id) || [],
+      imageUrl: input.imageUrl !== undefined ? input.imageUrl : topic.imageUrl,
       order: input.order !== undefined ? input.order : topic.order,
     });
   }
