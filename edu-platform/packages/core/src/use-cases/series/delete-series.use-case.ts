@@ -1,7 +1,8 @@
-import {
-  ISeriesRepository,
-  ITopicRepository,
-} from '../../repositories';
+// packages/core/src/use-cases/series/delete-series.use-case.ts
+
+import type { DeleteResponseDto } from '../../dtos';
+import type { ISeriesRepository } from '../../repositories/ISeriesRepository';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class DeleteSeriesUseCase {
   constructor(
@@ -9,7 +10,7 @@ export class DeleteSeriesUseCase {
       private readonly topicRepository: ITopicRepository
   ) {}
 
-  async execute(id: number) {
+  async execute(id: number): Promise<DeleteResponseDto> {
     const series = await this.seriesRepository.findById(id);
 
     if (!series) {

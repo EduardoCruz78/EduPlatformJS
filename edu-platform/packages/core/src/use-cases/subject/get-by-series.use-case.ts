@@ -1,6 +1,7 @@
 // packages/core/src/use-cases/subject/get-by-series.use-case.ts
+
 import type { Subject } from '../../entities';
-import {ISubjectRepository} from "../../repositories";
+import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
 
 export class GetSubjectsBySeriesUseCase {
   constructor(private readonly subjectRepository: ISubjectRepository) {}

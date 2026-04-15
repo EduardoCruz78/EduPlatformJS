@@ -1,9 +1,13 @@
 // packages/core/src/repositories/ISeriesRepository.ts
+
+import type { CreateSeriesInput, UpdateSeriesInput } from '../dtos';
+import type { Series } from '../entities';
+
 export interface ISeriesRepository {
-  getAll(): Promise<any[]>;
-  findById(id: number): Promise<any | null>;
-  findByName(name: string): Promise<any | null>;
-  create(data: any): Promise<any>;
-  update(id: number, data: any): Promise<any>;
+  getAll(): Promise<Series[]>;
+  findById(id: number): Promise<Series | null>;
+  findByName(name: string): Promise<Series | null>;
+  create(data: CreateSeriesInput): Promise<Series>;
+  update(id: number, data: Omit<UpdateSeriesInput, 'id'>): Promise<Series>;
   delete(id: number): Promise<void>;
 }

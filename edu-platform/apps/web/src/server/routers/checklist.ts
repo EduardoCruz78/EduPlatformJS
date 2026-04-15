@@ -4,6 +4,7 @@ import {
     CreateChecklistUseCase,
     DeleteChecklistUseCase,
     GetChecklistByUserUseCase,
+    GetChecklistsByContentIdUseCase,
 } from "@edu-platform/core";
 
 export const checklistRouter = router({
@@ -20,14 +21,17 @@ export const checklistRouter = router({
 
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
+        .query(async ({ input, ctx }) => {
             return ctx.checklistRepository.findById(input);
         }),
 
     getByContentId: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.checklistRepository.findByContentId(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetChecklistsByContentIdUseCase(
+                ctx.checklistRepository
+            );
+            return useCase.execute(input);
         }),
 
     create: protectedProcedure

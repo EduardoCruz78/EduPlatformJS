@@ -1,11 +1,14 @@
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
-import { z } from "zod";
+// apps/web/src/server/routers/series.ts
+
+import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { z } from 'zod';
 import {
     CreateSeriesUseCase,
-    UpdateSeriesUseCase,
     DeleteSeriesUseCase,
     GetAllSeriesUseCase,
-} from "@edu-platform/core";
+    GetSeriesByIdUseCase,
+    UpdateSeriesUseCase,
+} from '@edu-platform/core';
 
 export const seriesRouter = router({
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -15,17 +18,15 @@ export const seriesRouter = router({
 
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.seriesRepository.findById(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetSeriesByIdUseCase(ctx.seriesRepository);
+            return useCase.execute(input);
         }),
 
     create: protectedProcedure
         .input(
             z.object({
-                name: z.string().min(1, "Nome é obrigatório"),
-                description: z.string().optional(),
-                imageUrl: z.string().optional(),
-                order: z.number().optional(),
+                name: z.string().min(1, 'Nome é obrigatório'),
             })
         )
         .mutation(async ({ input, ctx }) => {

@@ -1,21 +1,27 @@
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
-import { z } from "zod";
+// apps/web/src/server/routers/subject.ts
+
+import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { z } from 'zod';
 import {
     CreateSubjectUseCase,
-    UpdateSubjectUseCase,
     DeleteSubjectUseCase,
+    GetAllSubjectsUseCase,
+    GetSubjectByIdUseCase,
     GetSubjectsBySeriesUseCase,
-} from "@edu-platform/core";
+    UpdateSubjectUseCase,
+} from '@edu-platform/core';
 
 export const subjectRouter = router({
-    getAll: publicProcedure.query(({ ctx }) => {
-        return ctx.subjectRepository.findAll();
+    getAll: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new GetAllSubjectsUseCase(ctx.subjectRepository);
+        return useCase.execute();
     }),
 
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.subjectRepository.findById(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetSubjectByIdUseCase(ctx.subjectRepository);
+            return useCase.execute(input);
         }),
 
     getBySeries: publicProcedure
@@ -28,7 +34,7 @@ export const subjectRouter = router({
     create: protectedProcedure
         .input(
             z.object({
-                name: z.string().min(1, "Nome é obrigatório"),
+                name: z.string().min(1, 'Nome é obrigatório'),
                 description: z.string().optional(),
                 imageUrl: z.string().optional(),
                 order: z.number().optional(),

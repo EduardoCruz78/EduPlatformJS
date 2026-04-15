@@ -1,51 +1,97 @@
-// packages/core/src/dtos/admin.dto.ts (Crie este arquivo e exporte no index.ts do dtos)
+// packages/core/src/dtos/admin.dto.ts
 
-// --- SERIES ---
+import type { ContentType } from '../entities';
+
 export interface CreateSeriesInput {
   name: string;
 }
+
 export interface UpdateSeriesInput {
   id: number;
-  name: string;
+  name?: string;
 }
 
-// --- SUBJECT ---
 export interface CreateSubjectInput {
   name: string;
-  seriesId: number;
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
+  seriesId?: number | null;
 }
+
 export interface UpdateSubjectInput {
   id: number;
   name?: string;
-  seriesId?: number;
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
+  seriesId?: number | null;
 }
 
-// --- TOPIC ---
 export interface CreateTopicInput {
   name: string;
   subjectIds: number[];
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
+  seriesId?: number | null;
 }
+
 export interface UpdateTopicInput {
   id: number;
   name?: string;
   subjectIds?: number[];
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
+  seriesId?: number | null;
 }
 
-// --- CONTENT ---
 export interface CreateContentInput {
   title: string;
-  type: string;
+  description?: string | null;
+  topicId: number;
+  type: ContentType;
   link: string;
   thumbnailUrl: string;
+  videoUrl?: string | null;
   pdfUrl?: string | null;
-  topicId: number;
+  order?: number;
 }
+
 export interface UpdateContentInput {
   id: number;
   title?: string;
-  type?: string;
-  link?: string;
-  thumbnailUrl?: string;
+  description?: string | null;
+  type?: ContentType;
+  videoUrl?: string | null;
   pdfUrl?: string | null;
-  topicId?: number;
+  thumbnailUrl?: string | null;
+  order?: number;
+}
+
+export interface CreateVestibularInput {
+  name: string;
+  description: string;
+  year: number;
+  imageUrl?: string | null;
+}
+
+export interface UpdateVestibularInput {
+  id: number;
+  name?: string;
+  description?: string;
+  year?: number;
+  imageUrl?: string | null;
+}
+
+export interface CreateChecklistInput {
+  userId: string;
+  contentId: number;
+}
+
+export interface CreateUserInput {
+  providerId: string;
+  name: string;
+  email: string;
 }

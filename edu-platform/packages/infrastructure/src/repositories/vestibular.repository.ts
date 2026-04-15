@@ -1,21 +1,18 @@
 // packages/infrastructure/src/repositories/vestibular.repository.ts
+
 import { prisma } from '../prisma/client';
-import type { Vestibular, VestibularContent } from '@edu-platform/core';
+import { VestibularMapper } from '../mappers/vestibular.mapper';
+import type {
+  CreateVestibularInput,
+  IVestibularRepository,
+  Vestibular,
+  VestibularContent,
+  UpdateVestibularInput,
+} from '@edu-platform/core';
 
-export class VestibularRepository {
-  async getAll(): Promise<Vestibular[]> {
-    return prisma.vestibular.findMany({
-      include: {
-        vestibularSubjects: { include: { subject: true } },
-        vestibularContents: true,
-        vestibularTopics: true,
-      },
-      orderBy: { name: 'asc' },
-    });
-  }
-
+export class VestibularRepository implements IVestibularRepository {
   async getAvailable(): Promise<Vestibular[]> {
-    return prisma.vestibular.findMany({
+    const data = await prisma.vestibular.findMany({
       include: {
         vestibularSubjects: { include: { subject: true } },
         vestibularContents: true,
@@ -23,11 +20,12 @@ export class VestibularRepository {
       },
       orderBy: { name: 'asc' },
     });
+
+    return VestibularMapper.toDomainList(data);
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
   async findById(id: number): Promise<Vestibular | null> {
-    return prisma.vestibular.findUnique({
+    const data = await prisma.vestibular.findUnique({
       where: { id },
       include: {
         vestibularSubjects: { include: { subject: true } },
@@ -35,15 +33,19 @@ export class VestibularRepository {
         vestibularTopics: true,
       },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return VestibularMapper.toDomain(data);
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
   async findByNameAndYear(name: string, year: number): Promise<Vestibular | null> {
-    return prisma.vestibular.findFirst({
+    const data = await prisma.vestibular.findFirst({
       where: {
         name,
-        // Se você quer filtrar por ano, precisa adicionar 'year' ao schema do Vestibular
-        // Por enquanto, apenas filtra por nome
+        year,
       },
       include: {
         vestibularSubjects: { include: { subject: true } },
@@ -51,20 +53,21 @@ export class VestibularRepository {
         vestibularTopics: true,
       },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return VestibularMapper.toDomain(data);
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
-  async create(data: {
-    name: string;
-    description: string;
-    year: number;
-    imageUrl?: string | null;
-  }): Promise<Vestibular> {
-    return prisma.vestibular.create({
+  async create(data: CreateVestibularInput): Promise<Vestibular> {
+    const created = await prisma.vestibular.create({
       data: {
         name: data.name,
         description: data.description,
-        // year: data.year, // ← Descomente quando adicionar 'year' ao schema
+        year: data.year,
+        imageUrl: data.imageUrl ?? null,
       },
       include: {
         vestibularSubjects: { include: { subject: true } },
@@ -72,37 +75,49 @@ export class VestibularRepository {
         vestibularTopics: true,
       },
     });
+
+    return VestibularMapper.toDomain(created);
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
-  async update(
-    id: number,
-    data: {
-      name?: string;
-      description?: string;
-      year?: number;
-      imageUrl?: string | null;
-    }
-  ): Promise<Vestibular> {
-    return prisma.vestibular.update({
+  async update(id: number, data: Omit<UpdateVestibularInput, 'id'>): Promise<Vestibular> {
+    const updated = await prisma.vestibular.update({
       where: { id },
-      data,
+      data: {
+        name: data.name,
+        description: data.description,
+        year: data.year,
+        imageUrl: data.imageUrl,
+      } as any,
       include: {
         vestibularSubjects: { include: { subject: true } },
         vestibularContents: true,
         vestibularTopics: true,
       },
     });
+
+    return VestibularMapper.toDomain(updated);
   }
 
-  // 👇 MÉTODO FALTANDO - ADICIONE AQUI
   async delete(id: number): Promise<void> {
     await prisma.vestibular.delete({ where: { id } });
   }
 
   async findContents(vestibularId: number): Promise<VestibularContent[]> {
-    return prisma.vestibularContent.findMany({
+    const data = await prisma.vestibularContent.findMany({
       where: { vestibularId },
     });
+
+    return data.map((item) =>
+        VestibularMapper.toVestibularContent({
+          id: item.id,
+          vestibularId: item.vestibularId,
+          title: item.title,
+          type: item.type,
+          link: item.link,
+          pdfUrl: item.pdfUrl,
+          originalContentId: item.originalContentId,
+          isShared: item.isShared,
+        })
+    );
   }
 }

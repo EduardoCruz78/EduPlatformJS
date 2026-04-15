@@ -1,19 +1,29 @@
-import { prisma } from '../prisma/client';
-import type { Topic } from '@edu-platform/core';
+// packages/infrastructure/src/repositories/topic.repository.ts
 
-export class TopicRepository {
+import { prisma } from '../prisma/client';
+import { TopicMapper } from '../mappers/topic.mapper';
+import type {
+  CreateTopicInput,
+  ITopicRepository,
+  Topic,
+  UpdateTopicInput,
+} from '@edu-platform/core';
+
+export class TopicRepository implements ITopicRepository {
   async getAll(): Promise<Topic[]> {
-    return prisma.topic.findMany({
+    const data = await prisma.topic.findMany({
       include: {
         contents: true,
         topicSubjects: { include: { subject: true } },
       },
       orderBy: { name: 'asc' },
     });
+
+    return TopicMapper.toDomainList(data);
   }
 
   async getBySubject(subjectId: number): Promise<Topic[]> {
-    return prisma.topic.findMany({
+    const data = await prisma.topic.findMany({
       where: {
         topicSubjects: { some: { subjectId } },
       },
@@ -23,26 +33,40 @@ export class TopicRepository {
       },
       orderBy: { name: 'asc' },
     });
+
+    return TopicMapper.toDomainList(data);
   }
 
   async findById(id: number): Promise<Topic | null> {
-    return prisma.topic.findUnique({
+    const data = await prisma.topic.findUnique({
       where: { id },
       include: {
         contents: true,
         topicSubjects: { include: { subject: true } },
       },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return TopicMapper.toDomain(data);
   }
 
   async findByName(name: string): Promise<Topic | null> {
-    return prisma.topic.findFirst({
+    const data = await prisma.topic.findFirst({
       where: { name },
       include: {
         contents: true,
         topicSubjects: { include: { subject: true } },
       },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return TopicMapper.toDomain(data);
   }
 
   async countBySubjectId(subjectId: number): Promise<number> {
@@ -71,24 +95,12 @@ export class TopicRepository {
     });
   }
 
-  async create(data: {
-    name: string;
-    subjectIds: number[];
-
-    // Aceitos para compatibilidade com os chamadores atuais,
-    // mas ignorados porque o schema atual não tem esses campos.
-    description?: string;
-    seriesId?: number;
-    imageUrl?: string | null;
-    order?: number;
-  }): Promise<Topic> {
-    const { subjectIds, name } = data;
-
-    return prisma.topic.create({
+  async create(data: CreateTopicInput): Promise<Topic> {
+    const created = await prisma.topic.create({
       data: {
-        name,
+        name: data.name,
         topicSubjects: {
-          create: [...new Set(subjectIds)].map((id) => ({ subjectId: id })),
+          create: [...new Set(data.subjectIds)].map((subjectId) => ({ subjectId })),
         },
       },
       include: {
@@ -96,29 +108,17 @@ export class TopicRepository {
         topicSubjects: { include: { subject: true } },
       },
     });
+
+    return TopicMapper.toDomain(created);
   }
 
-  async update(
-      id: number,
-      data: {
-        name?: string;
-        subjectIds?: number[];
-
-        // Mantidos por compatibilidade, mas não persistidos no schema atual.
-        description?: string;
-        seriesId?: number;
-        imageUrl?: string | null;
-        order?: number;
-      }
-  ): Promise<Topic> {
-    const { subjectIds, name } = data;
-
-    if (subjectIds) {
+  async update(id: number, data: Omit<UpdateTopicInput, 'id'>): Promise<Topic> {
+    if (data.subjectIds) {
       await prisma.topicSubject.deleteMany({ where: { topicId: id } });
 
-      if (subjectIds.length > 0) {
+      if (data.subjectIds.length > 0) {
         await prisma.topicSubject.createMany({
-          data: [...new Set(subjectIds)].map((subjectId) => ({
+          data: [...new Set(data.subjectIds)].map((subjectId) => ({
             topicId: id,
             subjectId,
           })),
@@ -126,20 +126,22 @@ export class TopicRepository {
       }
     }
 
-    if (name !== undefined) {
+    if (data.name !== undefined) {
       await prisma.topic.update({
         where: { id },
-        data: { name },
+        data: { name: data.name },
       });
     }
 
-    return prisma.topic.findUniqueOrThrow({
+    const updated = await prisma.topic.findUniqueOrThrow({
       where: { id },
       include: {
         contents: true,
         topicSubjects: { include: { subject: true } },
       },
     });
+
+    return TopicMapper.toDomain(updated);
   }
 
   async delete(id: number): Promise<void> {

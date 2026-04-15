@@ -1,9 +1,13 @@
 // packages/core/src/repositories/IVestibularRepository.ts
+
+import type { CreateVestibularInput, UpdateVestibularInput } from '../dtos';
+import type { Vestibular } from '../entities';
+
 export interface IVestibularRepository {
-  getAvailable(): Promise<any[]>;
-  findById(id: number): Promise<any | null>;
-  findByNameAndYear(name: string, year: number): Promise<any | null>;
-  create(data: any): Promise<any>;
-  update(id: number, data: any): Promise<any>;
+  getAvailable(): Promise<Vestibular[]>;
+  findById(id: number): Promise<Vestibular | null>;
+  findByNameAndYear(name: string, year: number): Promise<Vestibular | null>;
+  create(data: CreateVestibularInput): Promise<Vestibular>;
+  update(id: number, data: Omit<UpdateVestibularInput, 'id'>): Promise<Vestibular>;
   delete(id: number): Promise<void>;
 }

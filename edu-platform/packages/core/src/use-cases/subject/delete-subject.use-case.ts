@@ -1,4 +1,8 @@
-import {ISubjectRepository, ITopicRepository} from "../../repositories";
+// packages/core/src/use-cases/subject/delete-subject.use-case.ts
+
+import type { DeleteResponseDto } from '../../dtos';
+import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class DeleteSubjectUseCase {
   constructor(
@@ -6,27 +10,21 @@ export class DeleteSubjectUseCase {
       private readonly topicRepository: ITopicRepository
   ) {}
 
-  async execute(id: number) {
+  async execute(id: number): Promise<DeleteResponseDto> {
     const subject = await this.subjectRepository.findById(id);
 
     if (!subject) {
-      throw new Error("Matéria não encontrada");
+      throw new Error('Matéria não encontrada');
     }
 
-    // ⚠️ SEU ERRO REAL ESTAVA AQUI
     const topics = await this.topicRepository.getBySubject(id);
 
     if (topics.length > 0) {
-      throw new Error(
-          "Não é possível deletar uma matéria que possui tópicos associados"
-      );
+      throw new Error('Não é possível deletar uma matéria que possui tópicos associados');
     }
 
     await this.subjectRepository.delete(id);
 
-    return {
-      success: true,
-      message: "Matéria deletada com sucesso",
-    };
+    return { success: true };
   }
 }

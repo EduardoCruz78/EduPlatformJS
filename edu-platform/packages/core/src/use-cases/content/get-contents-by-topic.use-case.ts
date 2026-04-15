@@ -1,7 +1,8 @@
-// packages/core/src/use-cases/content/get-by-topic.use-case.ts
+// packages/core/src/use-cases/content/get-contents-by-topic.use-case.ts
+
 import type { GetContentsByTopicInput } from '../../dtos';
 import type { Content } from '../../entities';
-import {IContentRepository} from "../../repositories";
+import type { IContentRepository } from '../../repositories/IContentRepository';
 
 export class GetContentsByTopicUseCase {
   constructor(private readonly contentRepository: IContentRepository) {}

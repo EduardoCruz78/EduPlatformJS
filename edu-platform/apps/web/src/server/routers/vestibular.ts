@@ -1,14 +1,17 @@
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
-import { z } from "zod";
+// apps/web/src/server/routers/vestibular.ts
+
+import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { z } from 'zod';
 import {
     CreateVestibularUseCase,
-    UpdateVestibularUseCase,
     DeleteVestibularUseCase,
     GetAvailableVestibularsUseCase,
-} from "@edu-platform/core";
+    GetVestibularByIdUseCase,
+    UpdateVestibularUseCase,
+} from '@edu-platform/core';
 
 export const vestibularRouter = router({
-    getAll: publicProcedure.query(async ({ ctx }) => {
+    getAvailable: publicProcedure.query(async ({ ctx }) => {
         const useCase = new GetAvailableVestibularsUseCase(
             ctx.vestibularRepository
         );
@@ -17,16 +20,20 @@ export const vestibularRouter = router({
 
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.vestibularRepository.findById(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetVestibularByIdUseCase(ctx.vestibularRepository);
+            return useCase.execute(input);
         }),
 
     create: protectedProcedure
         .input(
             z.object({
-                name: z.string().min(1, "Nome é obrigatório"),
+                name: z.string().min(1, 'Nome é obrigatório'),
                 description: z.string().optional(),
-                year: z.number().min(1990, "Ano deve ser 1990 ou posterior").max(2100, "Ano deve ser 2100 ou anterior"),
+                year: z
+                    .number()
+                    .min(1990, 'Ano deve ser 1990 ou posterior')
+                    .max(2100, 'Ano deve ser 2100 ou anterior'),
                 imageUrl: z.string().optional(),
             })
         )
@@ -34,7 +41,7 @@ export const vestibularRouter = router({
             const useCase = new CreateVestibularUseCase(ctx.vestibularRepository);
             return useCase.execute({
                 name: input.name,
-                description: input.description ?? "",
+                description: input.description ?? '',
                 year: input.year,
                 imageUrl: input.imageUrl,
             });

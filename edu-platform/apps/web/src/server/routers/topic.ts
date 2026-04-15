@@ -1,12 +1,15 @@
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
-import { z } from "zod";
+// apps/web/src/server/routers/topic.ts
+
+import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { z } from 'zod';
 import {
     CreateTopicUseCase,
-    UpdateTopicUseCase,
     DeleteTopicUseCase,
     GetAllTopicsUseCase,
+    GetTopicByIdUseCase,
     GetTopicsBySubjectUseCase,
-} from "@edu-platform/core";
+    UpdateTopicUseCase,
+} from '@edu-platform/core';
 
 export const topicRouter = router({
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -16,8 +19,9 @@ export const topicRouter = router({
 
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.topicRepository.findById(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetTopicByIdUseCase(ctx.topicRepository);
+            return useCase.execute(input);
         }),
 
     getBySubject: publicProcedure
@@ -30,12 +34,8 @@ export const topicRouter = router({
     create: protectedProcedure
         .input(
             z.object({
-                name: z.string().min(1, "Nome é obrigatório"),
-                subjectIds: z.array(z.number()).min(1, "Selecione ao menos uma matéria"),
-                description: z.string().optional(),
-                seriesId: z.number().optional(),
-                imageUrl: z.string().optional(),
-                order: z.number().optional(),
+                name: z.string().min(1, 'Nome é obrigatório'),
+                subjectIds: z.array(z.number()).min(1, 'Selecione ao menos uma matéria'),
             })
         )
         .mutation(async ({ input, ctx }) => {

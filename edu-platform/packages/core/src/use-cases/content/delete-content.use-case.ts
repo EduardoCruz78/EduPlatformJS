@@ -1,7 +1,8 @@
-import {
-  IChecklistRepository,
-  IContentRepository,
-} from '../../repositories';
+// packages/core/src/use-cases/content/delete-content.use-case.ts
+
+import type { DeleteResponseDto } from '../../dtos';
+import type { IChecklistRepository } from '../../repositories/IChecklistRepository';
+import type { IContentRepository } from '../../repositories/IContentRepository';
 
 export class DeleteContentUseCase {
   constructor(
@@ -9,7 +10,7 @@ export class DeleteContentUseCase {
       private readonly checklistRepository: IChecklistRepository
   ) {}
 
-  async execute(id: number) {
+  async execute(id: number): Promise<DeleteResponseDto> {
     const content = await this.contentRepository.findById(id);
 
     if (!content) {
@@ -19,9 +20,6 @@ export class DeleteContentUseCase {
     await this.checklistRepository.deleteByContentId(id);
     await this.contentRepository.delete(id);
 
-    return {
-      success: true,
-      message: 'Conteúdo deletado com sucesso',
-    };
+    return { success: true };
   }
 }

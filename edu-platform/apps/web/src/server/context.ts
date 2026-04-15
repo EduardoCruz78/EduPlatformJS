@@ -10,7 +10,7 @@ export async function createContext() {
     user: session?.user
         ? {
           ...session.user,
-          id: session.user.id as string, // 🔥 garante tipagem
+          id: session.user.id as string,
         }
         : null,
     ...repositories,

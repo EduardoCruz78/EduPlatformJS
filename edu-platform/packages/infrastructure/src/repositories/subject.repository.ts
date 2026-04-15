@@ -1,19 +1,24 @@
 // packages/infrastructure/src/repositories/subject.repository.ts
 
 import { prisma } from '../prisma/client';
-import type { Subject } from '@edu-platform/core';
+import type {
+  CreateSubjectInput,
+  ISubjectRepository,
+  Subject,
+  UpdateSubjectInput,
+} from '@edu-platform/core';
 
-export class SubjectRepository {
-  async getBySeries(seriesId: number): Promise<Subject[]> {
+export class SubjectRepository implements ISubjectRepository {
+  async findAll(): Promise<Subject[]> {
     return prisma.subject.findMany({
-      where: { seriesId },
       include: { series: true },
       orderBy: { name: 'asc' },
     });
   }
 
-  async findAll(): Promise<Subject[]> {
+  async getBySeries(seriesId: number): Promise<Subject[]> {
     return prisma.subject.findMany({
+      where: { seriesId },
       include: { series: true },
       orderBy: { name: 'asc' },
     });
@@ -26,21 +31,14 @@ export class SubjectRepository {
     });
   }
 
-  // ✅ ADICIONADO (corrige TS2339)
   async findByName(name: string): Promise<Subject | null> {
     return prisma.subject.findFirst({
       where: { name },
+      include: { series: true },
     });
   }
 
-  // ✅ CREATE CORRIGIDO
-  async create(data: {
-    name: string;
-    description?: string | null;
-    imageUrl?: string | null;
-    order?: number;
-    seriesId?: number | null;
-  }): Promise<Subject> {
+  async create(data: CreateSubjectInput): Promise<Subject> {
     return prisma.subject.create({
       data: {
         name: data.name,
@@ -53,25 +51,15 @@ export class SubjectRepository {
     });
   }
 
-  // ✅ UPDATE CORRIGIDO
-  async update(
-      id: number,
-      data: {
-        name?: string;
-        description?: string | null;
-        imageUrl?: string | null;
-        order?: number;
-        seriesId?: number | null;
-      }
-  ): Promise<Subject> {
+  async update(id: number, data: Omit<UpdateSubjectInput, 'id'>): Promise<Subject> {
     return prisma.subject.update({
       where: { id },
       data: {
-        ...data,
-        description: data.description ?? undefined,
-        imageUrl: data.imageUrl ?? undefined,
-        order: data.order ?? undefined,
-        seriesId: data.seriesId ?? undefined,
+        name: data.name,
+        description: data.description === undefined ? undefined : data.description,
+        imageUrl: data.imageUrl === undefined ? undefined : data.imageUrl,
+        order: data.order === undefined ? undefined : data.order,
+        seriesId: data.seriesId === undefined ? undefined : data.seriesId,
       },
       include: { series: true },
     });

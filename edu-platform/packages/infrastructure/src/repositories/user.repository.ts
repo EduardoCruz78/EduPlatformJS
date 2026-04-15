@@ -1,33 +1,34 @@
 // packages/infrastructure/src/repositories/user.repository.ts
-import { prisma } from '../prisma/client';
-import type { User, CreateUserInput } from '@edu-platform/core';
 
-export class UserRepository {
+import { prisma } from '../prisma/client';
+import type { CreateUserInput, IUserRepository, User } from '@edu-platform/core';
+
+export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { id },
     });
-    return user;
   }
 
   async findByProviderId(providerId: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
+    return prisma.user.findUnique({
       where: { providerId },
     });
-    return user;
   }
 
   async create(data: CreateUserInput): Promise<User> {
-    return await prisma.user.create({
+    return prisma.user.create({
       data,
     });
   }
 
   async findOrCreate(data: CreateUserInput): Promise<User> {
-    let user = await this.findByProviderId(data.providerId);
-    if (!user) {
-      user = await this.create(data);
+    const user = await this.findByProviderId(data.providerId);
+
+    if (user) {
+      return user;
     }
-    return user;
+
+    return this.create(data);
   }
 }

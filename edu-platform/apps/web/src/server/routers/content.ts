@@ -1,19 +1,23 @@
-import { router, publicProcedure, protectedProcedure } from "@/server/trpc";
-import { z } from "zod";
+// apps/web/src/server/routers/content.ts
+
+import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import { z } from 'zod';
 import {
     CreateContentUseCase,
-    UpdateContentUseCase,
     DeleteContentUseCase,
+    GetContentByIdUseCase,
     GetContentsByTopicUseCase,
-} from "@edu-platform/core";
+    UpdateContentUseCase,
+} from '@edu-platform/core';
 
-const contentTypeSchema = z.enum(["VIDEO", "PDF", "ARTICLE"]);
+const contentTypeSchema = z.enum(['VIDEO', 'PDF', 'ARTICLE']);
 
 export const contentRouter = router({
     getById: publicProcedure
         .input(z.number())
-        .query(({ input, ctx }) => {
-            return ctx.contentRepository.findById(input);
+        .query(async ({ input, ctx }) => {
+            const useCase = new GetContentByIdUseCase(ctx.contentRepository);
+            return useCase.execute(input);
         }),
 
     getByTopic: publicProcedure
@@ -26,12 +30,12 @@ export const contentRouter = router({
     create: protectedProcedure
         .input(
             z.object({
-                title: z.string().min(1, "Título é obrigatório"),
+                title: z.string().min(1, 'Título é obrigatório'),
                 description: z.string().optional(),
-                topicId: z.number().min(1, "Tópico é obrigatório"),
+                topicId: z.number().min(1, 'Tópico é obrigatório'),
                 type: contentTypeSchema,
-                link: z.string().min(1, "Link é obrigatório"),
-                thumbnailUrl: z.string().min(1, "Thumbnail é obrigatória"),
+                link: z.string().min(1, 'Link é obrigatório'),
+                thumbnailUrl: z.string().min(1, 'Thumbnail é obrigatória'),
                 videoUrl: z.string().optional(),
                 pdfUrl: z.string().optional(),
                 order: z.number().optional(),

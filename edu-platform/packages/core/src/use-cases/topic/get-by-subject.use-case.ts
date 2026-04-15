@@ -1,6 +1,7 @@
 // packages/core/src/use-cases/topic/get-by-subject.use-case.ts
-import type { ITopicRepository } from '../../repositories/ITopicRepository';
+
 import type { Topic } from '../../entities';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class GetTopicsBySubjectUseCase {
   constructor(private readonly topicRepository: ITopicRepository) {}

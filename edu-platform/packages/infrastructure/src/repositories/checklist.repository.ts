@@ -1,9 +1,11 @@
-import { prisma } from "../prisma/client";
+// packages/infrastructure/src/repositories/checklist.repository.ts
+
+import { prisma } from '../prisma/client';
 import type {
   Checklist,
   CreateChecklistInput,
   IChecklistRepository,
-} from "@edu-platform/core";
+} from '@edu-platform/core';
 
 export class ChecklistRepository implements IChecklistRepository {
   async create(data: CreateChecklistInput): Promise<Checklist> {
@@ -13,7 +15,7 @@ export class ChecklistRepository implements IChecklistRepository {
   async findByUserId(userId: string): Promise<Checklist[]> {
     return prisma.checklist.findMany({
       where: { userId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -26,6 +28,7 @@ export class ChecklistRepository implements IChecklistRepository {
   async findByContentId(contentId: number): Promise<Checklist[]> {
     return prisma.checklist.findMany({
       where: { contentId },
+      orderBy: { createdAt: 'desc' },
     });
   }
 

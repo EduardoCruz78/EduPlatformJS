@@ -1,5 +1,7 @@
+// packages/core/src/use-cases/checklist/get-by-user.use-case.ts
+
 import type { Checklist } from '../../entities';
-import { IChecklistRepository } from '../../repositories';
+import type { IChecklistRepository } from '../../repositories/IChecklistRepository';
 
 export class GetChecklistByUserUseCase {
   constructor(private readonly checklistRepository: IChecklistRepository) {}

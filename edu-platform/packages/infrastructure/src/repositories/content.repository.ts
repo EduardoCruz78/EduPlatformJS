@@ -1,19 +1,34 @@
+// packages/infrastructure/src/repositories/content.repository.ts
+
 import { prisma } from '../prisma/client';
-import type { Content, IContentRepository } from '@edu-platform/core';
+import { ContentMapper } from '../mappers/content.mapper';
+import type {
+  Content,
+  CreateContentInput,
+  IContentRepository,
+  UpdateContentInput,
+} from '@edu-platform/core';
 
 export class ContentRepository implements IContentRepository {
   async getByTopic(topicId: number): Promise<Content[]> {
-    return prisma.content.findMany({
+    const data = await prisma.content.findMany({
       where: { topicId },
       orderBy: { order: 'asc' },
     });
+
+    return ContentMapper.toDomainList(data);
   }
 
   async findById(id: number): Promise<Content | null> {
-    return prisma.content.findUnique({
+    const data = await prisma.content.findUnique({
       where: { id },
-      include: { topic: true },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return ContentMapper.toDomain(data);
   }
 
   async countByTopicId(topicId: number): Promise<number> {
@@ -22,19 +37,39 @@ export class ContentRepository implements IContentRepository {
     });
   }
 
-  async create(data: any): Promise<Content> {
-    return prisma.content.create({
-      data,
-      include: { topic: true },
+  async create(data: CreateContentInput): Promise<Content> {
+    const created = await prisma.content.create({
+      data: {
+        title: data.title,
+        description: data.description ?? null,
+        topicId: data.topicId,
+        type: data.type,
+        link: data.link,
+        thumbnailUrl: data.thumbnailUrl,
+        videoUrl: data.videoUrl ?? null,
+        pdfUrl: data.pdfUrl ?? null,
+        order: data.order ?? 0,
+      },
     });
+
+    return ContentMapper.toDomain(created);
   }
 
-  async update(id: number, data: any): Promise<Content> {
-    return prisma.content.update({
+  async update(id: number, data: Omit<UpdateContentInput, 'id'>): Promise<Content> {
+    const updated = await prisma.content.update({
       where: { id },
-      data,
-      include: { topic: true },
+      data: {
+        title: data.title,
+        description: data.description === undefined ? undefined : data.description,
+        type: data.type,
+        videoUrl: data.videoUrl === undefined ? undefined : data.videoUrl,
+        pdfUrl: data.pdfUrl === undefined ? undefined : data.pdfUrl,
+        thumbnailUrl: data.thumbnailUrl === undefined ? undefined : data.thumbnailUrl,
+        order: data.order === undefined ? undefined : data.order,
+      } as any,
     });
+
+    return ContentMapper.toDomain(updated);
   }
 
   async delete(id: number): Promise<void> {

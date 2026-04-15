@@ -1,4 +1,6 @@
-﻿import {
+﻿// packages/infrastructure/src/container.ts
+
+import {
     SeriesRepository,
     SubjectRepository,
     TopicRepository,
@@ -7,7 +9,7 @@
     VestibularRepository,
     UserRepository,
     AccessibilityRepository,
-} from "./repositories";
+} from './repositories';
 
 export function makeRepositories() {
     return {

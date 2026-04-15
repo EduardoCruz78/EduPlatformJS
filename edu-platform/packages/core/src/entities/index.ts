@@ -1,94 +1,117 @@
 // packages/core/src/entities/index.ts
-// User
+
+export type ContentType = 'VIDEO' | 'PDF' | 'ARTICLE';
+
 export interface User {
   id: string;
   providerId: string;
   name: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  image?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-export interface CreateUserInput {
-  providerId: string;
-  name: string;
-  email: string;
-}
-
-// Checklist
-export interface Checklist {
-  id: number;
-  userId: string;
-  contentId: number;
-  createdAt: Date;
-}
-
-// Series, Subject, Topic, Content
 export interface Series {
   id: number;
   name: string;
   subjects?: Subject[];
 }
-
 
 export interface Subject {
   id: number;
   name: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
   seriesId?: number | null;
   series?: Series | null;
 }
 
-export interface Series {
-  id: number;
-  name: string;
-  subjects?: Subject[];
-}
-
-export interface Topic {
-  id: number;
-  name: string;
-  contents?: Content[];
-  // topicSubjects e outros relacionamentos many-to-many não precisam estar aqui por enquanto
+export interface TopicSubject {
+  topicId: number;
+  subjectId: number;
+  subject?: Subject | null;
 }
 
 export interface Content {
   id: number;
   title: string;
-  type: string;
+  description?: string | null;
+  topicId: number;
+  type: ContentType;
   link: string;
   thumbnailUrl: string;
+  videoUrl?: string | null;
   pdfUrl?: string | null;
+  order?: number;
+  topic?: Topic | null;
+}
+
+export interface Topic {
+  id: number;
+  name: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  order?: number;
+  contents?: Content[];
+  topicSubjects?: TopicSubject[];
+  subjects?: Subject[];
+}
+
+export interface Checklist {
+  id: number;
+  userId: string;
+  contentId: number;
+  createdAt: Date;
+  content?: Content | null;
+  user?: User | null;
+}
+
+export interface VestibularContent {
+  vestibularId: number;
+  contentId: number;
+  content?: Content | null;
+}
+
+export interface VestibularTopic {
+  vestibularId: number;
   topicId: number;
+  topic?: Topic | null;
+}
+
+export interface VestibularSubject {
+  vestibularId: number;
+  subjectId: number;
+  subject?: Subject | null;
 }
 
 export interface Vestibular {
   id: number;
   name: string;
+  description?: string | null;
+  year?: number | null;
+  imageUrl?: string | null;
+  vestibularSubjects?: VestibularSubject[];
+  vestibularContents?: VestibularContent[];
+  vestibularTopics?: VestibularTopic[];
 }
 
-export interface VestibularContent {
+export interface AccessibilityNeed {
   id: number;
-  vestibularId: number;
-  title: string;
-  type?: string | null;
-  link?: string | null;
-  pdfUrl?: string | null;
-  isShared: boolean;
-  originalContentId?: number | null;
+  name: string;
+  accessibilityCategoryId: number;
+}
+
+export interface AccessibilityTheme {
+  id: number;
+  name: string;
+  accessibilityCategoryId: number;
 }
 
 export interface AccessibilityCategory {
   id: number;
   name: string;
-  description?: string | null;
+  needs?: AccessibilityNeed[];
+  themes?: AccessibilityTheme[];
 }
-
-export interface AccessibilityTheme {
-  id: number;
-  title: string;
-  content?: string | null;
-  accessibilityCategoryId: number;
-}
-
-// Export DTOs
-export * from '../dtos';

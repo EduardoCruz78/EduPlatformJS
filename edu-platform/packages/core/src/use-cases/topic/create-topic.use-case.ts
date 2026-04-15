@@ -1,22 +1,14 @@
-import {ITopicRepository} from "../../repositories";
+// packages/core/src/use-cases/topic/create-topic.use-case.ts
 
-export interface CreateTopicInput {
-  name: string;
-  subjectIds: number[];
-
-  // Mantidos para não quebrar os chamadores atuais,
-  // mas não são persistidos porque o schema atual não possui esses campos.
-  description?: string;
-  seriesId?: number;
-  imageUrl?: string | null;
-  order?: number;
-}
+import type { CreateTopicInput } from '../../dtos';
+import type { Topic } from '../../entities';
+import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class CreateTopicUseCase {
   constructor(private readonly topicRepository: ITopicRepository) {}
 
-  async execute(input: CreateTopicInput) {
-    const name = input.name?.trim();
+  async execute(input: CreateTopicInput): Promise<Topic> {
+    const name = input.name.trim();
 
     if (!name) {
       throw new Error('Nome do tópico é obrigatório');
@@ -27,6 +19,7 @@ export class CreateTopicUseCase {
     }
 
     const existingTopic = await this.topicRepository.findByName(name);
+
     if (existingTopic) {
       throw new Error('Tópico com este nome já existe');
     }
@@ -34,6 +27,10 @@ export class CreateTopicUseCase {
     return this.topicRepository.create({
       name,
       subjectIds: [...new Set(input.subjectIds)],
+      description: input.description ?? null,
+      imageUrl: input.imageUrl ?? null,
+      order: input.order ?? 0,
+      seriesId: input.seriesId ?? null,
     });
   }
 }

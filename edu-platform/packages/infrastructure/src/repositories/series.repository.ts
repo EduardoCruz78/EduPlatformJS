@@ -1,9 +1,9 @@
 // packages/infrastructure/src/repositories/series.repository.ts
 
 import { prisma } from '../prisma/client';
-import type { Series } from '@edu-platform/core';
+import type { CreateSeriesInput, ISeriesRepository, Series } from '@edu-platform/core';
 
-export class SeriesRepository {
+export class SeriesRepository implements ISeriesRepository {
   async getAll(): Promise<Series[]> {
     return prisma.series.findMany({
       include: { subjects: true },
@@ -24,14 +24,22 @@ export class SeriesRepository {
     });
   }
 
-  async create(data: { name: string }): Promise<Series> {
-    return prisma.series.create({ data });
+  async create(data: CreateSeriesInput): Promise<Series> {
+    return prisma.series.create({
+      data: {
+        name: data.name,
+      },
+      include: { subjects: true },
+    });
   }
 
-  async update(id: number, data: { name?: string }): Promise<Series> {
+  async update(id: number, data: Omit<import('@edu-platform/core').UpdateSeriesInput, 'id'>): Promise<Series> {
     return prisma.series.update({
       where: { id },
-      data,
+      data: {
+        name: data.name,
+      },
+      include: { subjects: true },
     });
   }
 

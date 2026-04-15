@@ -1,6 +1,7 @@
-// packages/core/src/use-cases/user/find-or-create-checklist.use-case.ts
+// packages/core/src/use-cases/user/find-or-create-user.use-case.ts
+
 import type { CreateUserInput } from '../../dtos';
-import {IUserRepository} from "../../repositories";
+import type { IUserRepository } from '../../repositories/IUserRepository';
 
 export class FindOrCreateUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
