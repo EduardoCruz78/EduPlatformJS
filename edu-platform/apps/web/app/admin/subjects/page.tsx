@@ -61,7 +61,7 @@ export default function SubjectsPage() {
     if (!deleteId) return;
 
     setIsDeleting(true);
-    await deleteSubjectMutation.mutateAsync({ id: deleteId });
+    await deleteSubjectMutation.mutateAsync(deleteId);
   };
 
   const getSeriesName = (seriesId: number | null | undefined): string => {

@@ -81,7 +81,6 @@ export default function Page() {
     await mutation.mutateAsync({
       id: subjectId,
       name: data.name,
-      // ❌ REMOVIDO seriesId (não existe no DTO)
     });
   };
 

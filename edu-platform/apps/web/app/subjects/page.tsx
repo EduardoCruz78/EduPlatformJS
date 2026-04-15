@@ -29,7 +29,7 @@ const updateSubjectSchema = z.object({
 
 type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>;
 
-export default function EditSubjectPage() {
+export default function Page() {
   const router = useRouter();
   const params = useParams();
   const { data: session } = useSession();
