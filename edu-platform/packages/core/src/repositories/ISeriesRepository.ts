@@ -4,7 +4,7 @@ import type { CreateSeriesInput, UpdateSeriesInput } from '../dtos';
 import type { Series } from '../entities';
 
 export interface ISeriesRepository {
-  findAll(): Promise<Series[]>;
+  find(): Promise<Series[]>;
   findById(id: number): Promise<Series | null>;
   findByName(name: string): Promise<Series | null>;
   create(data: CreateSeriesInput): Promise<Series>;

@@ -4,7 +4,7 @@ import type { CreateTopicInput, UpdateTopicInput } from '../dtos';
 import type { Topic } from '../entities';
 
 export interface ITopicRepository {
-  findAll(): Promise<Topic[]>;
+  find(): Promise<Topic[]>;
   findById(id: number): Promise<Topic | null>;
   findByName(name: string): Promise<Topic | null>;
   findBySubject(subjectId: number): Promise<Topic[]>;

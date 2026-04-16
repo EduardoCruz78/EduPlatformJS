@@ -10,7 +10,7 @@ import type {
 } from '@edu-platform/core';
 
 export class ContentRepository implements IContentRepository {
-  async findAll(): Promise<Content[]> {
+  async find(): Promise<Content[]> {
     const data = await prisma.content.findMany({
       orderBy: [{ topicId: 'asc' }, { order: 'asc' }, { title: 'asc' }],
     });

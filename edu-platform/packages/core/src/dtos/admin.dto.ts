@@ -31,20 +31,12 @@ export interface UpdateSubjectInput {
 export interface CreateTopicInput {
   name: string;
   subjectIds: number[];
-  description?: string | null;
-  imageUrl?: string | null;
-  order?: number;
-  seriesId?: number | null;
 }
 
 export interface UpdateTopicInput {
   id: number;
   name?: string;
   subjectIds?: number[];
-  description?: string | null;
-  imageUrl?: string | null;
-  order?: number;
-  seriesId?: number | null;
 }
 
 export interface CreateContentInput {

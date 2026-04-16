@@ -41,7 +41,7 @@ type CreateSubjectFormData = z.infer<typeof createSubjectSchema>;
 export default function CreateSubjectPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data: series } = trpc.series.findAll.useQuery();
+  const { data: series } = trpc.series.find.useQuery();
 
   const form = useForm<CreateSubjectFormData>({
     resolver: zodResolver(createSubjectSchema),

@@ -5,31 +5,31 @@ import { z } from 'zod';
 import {
     CreateContentUseCase,
     DeleteContentUseCase,
-    GetAllContentsUseCase,
-    GetContentByIdUseCase,
-    GetContentsByTopicUseCase,
+    FindContentByIdUseCase,
+    FindContentsByTopicUseCase,
+    FindContentsUseCase,
     UpdateContentUseCase,
 } from '@edu-platform/core';
 
 const contentTypeSchema = z.enum(['VIDEO', 'PDF', 'ARTICLE']);
 
 export const contentRouter = router({
-    findAll: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new GetAllContentsUseCase(ctx.contentRepository);
+    find: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new FindContentsUseCase(ctx.contentRepository);
         return useCase.execute();
     }),
 
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetContentByIdUseCase(ctx.contentRepository);
+            const useCase = new FindContentByIdUseCase(ctx.contentRepository);
             return useCase.execute(input);
         }),
 
     findByTopic: publicProcedure
         .input(z.object({ topicId: z.number() }))
         .query(async ({ input, ctx }) => {
-            const useCase = new GetContentsByTopicUseCase(ctx.contentRepository);
+            const useCase = new FindContentsByTopicUseCase(ctx.contentRepository);
             return useCase.execute({ topicId: input.topicId });
         }),
 

@@ -35,7 +35,7 @@ export default function TopicsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data: topics, isLoading, refetch } = trpc.topic.findAll.useQuery();
+  const { data: topics, isLoading, refetch } = trpc.topic.find.useQuery();
 
   const deleteTopicMutation = trpc.topic.delete.useMutation({
     onSuccess: () => {

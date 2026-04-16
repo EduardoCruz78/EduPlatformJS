@@ -42,7 +42,7 @@ export class AccessibilityMapper {
         };
     }
 
-    static toCategory(data: PrismaAccessibilityCategory): AccessibilityCategory {
+    static toDomain(data: PrismaAccessibilityCategory): AccessibilityCategory {
         return {
             id: data.id,
             name: data.name,
@@ -51,7 +51,11 @@ export class AccessibilityMapper {
         };
     }
 
-    static toCategoryList(data: PrismaAccessibilityCategory[]): AccessibilityCategory[] {
-        return data.map((item) => this.toCategory(item));
+    static toDomainList(data: PrismaAccessibilityCategory[]): AccessibilityCategory[] {
+        return data.map((item) => this.toDomain(item));
+    }
+
+    static toThemeList(data: PrismaAccessibilityTheme[]): AccessibilityTheme[] {
+        return data.map((item) => this.toTheme(item));
     }
 }

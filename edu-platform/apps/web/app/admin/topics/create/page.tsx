@@ -33,7 +33,7 @@ type FormData = z.infer<typeof schema>;
 export default function CreateTopicPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data: subjects } = trpc.subject.findAll.useQuery();
+  const { data: subjects } = trpc.subject.find.useQuery();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),

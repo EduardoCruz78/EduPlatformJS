@@ -1,6 +1,7 @@
 // packages/infrastructure/src/repositories/checklist.repository.ts
 
 import { prisma } from '../prisma/client';
+import { ChecklistMapper } from '../mappers/checklist.mapper';
 import type {
   Checklist,
   CreateChecklistInput,
@@ -9,27 +10,39 @@ import type {
 
 export class ChecklistRepository implements IChecklistRepository {
   async create(data: CreateChecklistInput): Promise<Checklist> {
-    return prisma.checklist.create({ data });
+    const created = await prisma.checklist.create({ data });
+
+    return ChecklistMapper.toDomain(created);
   }
 
   async findByUserId(userId: string): Promise<Checklist[]> {
-    return prisma.checklist.findMany({
+    const data = await prisma.checklist.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
     });
+
+    return ChecklistMapper.toDomainList(data);
   }
 
   async findById(id: number): Promise<Checklist | null> {
-    return prisma.checklist.findUnique({
+    const data = await prisma.checklist.findUnique({
       where: { id },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return ChecklistMapper.toDomain(data);
   }
 
   async findByContentId(contentId: number): Promise<Checklist[]> {
-    return prisma.checklist.findMany({
+    const data = await prisma.checklist.findMany({
       where: { contentId },
       orderBy: { createdAt: 'desc' },
     });
+
+    return ChecklistMapper.toDomainList(data);
   }
 
   async delete(id: number): Promise<void> {

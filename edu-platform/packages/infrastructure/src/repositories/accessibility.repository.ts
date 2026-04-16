@@ -18,7 +18,7 @@ export class AccessibilityRepository implements IAccessibilityRepository {
       orderBy: { name: 'asc' },
     });
 
-    return AccessibilityMapper.toCategoryList(data);
+    return AccessibilityMapper.toDomainList(data);
   }
 
   async findThemesByCategory(categoryId: number): Promise<AccessibilityTheme[]> {
@@ -26,12 +26,12 @@ export class AccessibilityRepository implements IAccessibilityRepository {
       where: { accessibilityCategoryId: categoryId },
     });
 
-    return data.map((theme) =>
-        AccessibilityMapper.toTheme({
-          id: theme.id,
-          title: theme.title,
-          accessibilityCategoryId: theme.accessibilityCategoryId,
-        })
+    return AccessibilityMapper.toThemeList(
+      data.map((theme) => ({
+        id: theme.id,
+        title: theme.title,
+        accessibilityCategoryId: theme.accessibilityCategoryId,
+      }))
     );
   }
 }

@@ -53,7 +53,7 @@ export default function EditContentPage() {
   const rawId = params.id;
   const contentId = Number(Array.isArray(rawId) ? rawId[0] : rawId);
 
-  const { data: topics } = trpc.topic.findAll.useQuery();
+  const { data: topics } = trpc.topic.find.useQuery();
   const { data: content, isLoading } = trpc.content.findById.useQuery(contentId, {
     enabled: !Number.isNaN(contentId),
   });

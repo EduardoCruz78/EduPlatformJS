@@ -1,12 +1,10 @@
-// packages/core/src/use-cases/topic/get-all.use-case.ts
-
 import type { Topic } from '../../entities';
 import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
-export class GetAllTopicsUseCase {
+export class FindTopicByIdUseCase {
   constructor(private readonly topicRepository: ITopicRepository) {}
 
-  async execute(): Promise<Topic[]> {
-    return this.topicRepository.findAll();
+  async execute(id: number): Promise<Topic | null> {
+    return this.topicRepository.findById(id);
   }
 }

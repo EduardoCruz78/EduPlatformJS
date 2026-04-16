@@ -8,9 +8,10 @@ import type {
     VestibularSubject,
     VestibularTopic,
 } from '@edu-platform/core';
-import { SubjectMapper } from './subject.mapper';
+import { SubjectMapper } from './subject.mapper.ts';
 
 type PrismaVestibularSubject = {
+    vestibularId: number;
     subjectId: number;
     subject: {
         id: number;
@@ -61,9 +62,9 @@ type PrismaVestibular = {
 export class VestibularMapper {
     static toVestibularSubject(data: PrismaVestibularSubject): VestibularSubject {
         return {
-            vestibularId: data.subjectId,
+            vestibularId: data.vestibularId,
             subjectId: data.subjectId,
-            subject: SubjectMapper.toDomain(data.subject) as Subject,
+            subject: SubjectMapper.toDomain(data.subject),
         };
     }
 

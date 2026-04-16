@@ -10,7 +10,7 @@ import type {
 } from '@edu-platform/core';
 
 export class TopicRepository implements ITopicRepository {
-  async findAll(): Promise<Topic[]> {
+  async find(): Promise<Topic[]> {
     const data = await prisma.topic.findMany({
       include: {
         contents: true,
@@ -101,7 +101,7 @@ export class TopicRepository implements ITopicRepository {
   }
 
   async update(id: number, data: Omit<UpdateTopicInput, 'id'>): Promise<Topic> {
-    if (data.subjectIds) {
+    if (data.subjectIds !== undefined) {
       await prisma.topicSubject.deleteMany({ where: { topicId: id } });
 
       if (data.subjectIds.length > 0) {

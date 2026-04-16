@@ -3,9 +3,9 @@ import { z } from "zod";
 import {
     CreateChecklistUseCase,
     DeleteChecklistUseCase,
-    GetChecklistByIdUseCase,
-    GetChecklistByUserUseCase,
-    GetChecklistsByContentIdUseCase,
+    FindChecklistByIdUseCase,
+    FindChecklistsByContentIdUseCase,
+    FindChecklistsByUserIdUseCase,
 } from "@edu-platform/core";
 
 export const checklistRouter = router({
@@ -16,21 +16,21 @@ export const checklistRouter = router({
             throw new Error("Não autenticado");
         }
 
-        const useCase = new GetChecklistByUserUseCase(ctx.checklistRepository);
+        const useCase = new FindChecklistsByUserIdUseCase(ctx.checklistRepository);
         return useCase.execute(userId);
     }),
 
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetChecklistByIdUseCase(ctx.checklistRepository);
+            const useCase = new FindChecklistByIdUseCase(ctx.checklistRepository);
             return useCase.execute(input);
         }),
 
     findByContentId: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetChecklistsByContentIdUseCase(
+            const useCase = new FindChecklistsByContentIdUseCase(
                 ctx.checklistRepository
             );
             return useCase.execute(input);

@@ -5,29 +5,29 @@ import { z } from 'zod';
 import {
     CreateSubjectUseCase,
     DeleteSubjectUseCase,
-    GetAllSubjectsUseCase,
-    GetSubjectByIdUseCase,
-    GetSubjectsBySeriesUseCase,
+    FindSubjectByIdUseCase,
+    FindSubjectsBySeriesUseCase,
+    FindSubjectsUseCase,
     UpdateSubjectUseCase,
 } from '@edu-platform/core';
 
 export const subjectRouter = router({
-    findAll: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new GetAllSubjectsUseCase(ctx.subjectRepository);
+    find: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new FindSubjectsUseCase(ctx.subjectRepository);
         return useCase.execute();
     }),
 
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetSubjectByIdUseCase(ctx.subjectRepository);
+            const useCase = new FindSubjectByIdUseCase(ctx.subjectRepository);
             return useCase.execute(input);
         }),
 
     findBySeries: publicProcedure
         .input(z.object({ seriesId: z.number() }))
         .query(async ({ input, ctx }) => {
-            const useCase = new GetSubjectsBySeriesUseCase(ctx.subjectRepository);
+            const useCase = new FindSubjectsBySeriesUseCase(ctx.subjectRepository);
             return useCase.execute(input.seriesId);
         }),
 

@@ -1,9 +1,7 @@
-// packages/core/src/use-cases/subject/get-by-series.use-case.ts
-
 import type { Subject } from '../../entities';
 import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
 
-export class GetSubjectsBySeriesUseCase {
+export class FindSubjectsBySeriesUseCase {
   constructor(private readonly subjectRepository: ISubjectRepository) {}
 
   async execute(seriesId: number): Promise<Subject[]> {

@@ -48,8 +48,8 @@ export default function AdminContentsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data: contents, isLoading, refetch } = trpc.content.findAll.useQuery();
-  const { data: topics } = trpc.topic.findAll.useQuery();
+  const { data: contents, isLoading, refetch } = trpc.content.find.useQuery();
+  const { data: topics } = trpc.topic.find.useQuery();
 
   const deleteContentMutation = trpc.content.delete.useMutation({
     onSuccess: () => {

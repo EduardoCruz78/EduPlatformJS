@@ -39,7 +39,7 @@ export default function EditTopicPage() {
   const rawId = params.id;
   const topicId = Number(Array.isArray(rawId) ? rawId[0] : rawId);
 
-  const { data: subjects } = trpc.subject.findAll.useQuery();
+  const { data: subjects } = trpc.subject.find.useQuery();
   const { data: topic, isLoading } = trpc.topic.findById.useQuery(topicId, {
     enabled: !Number.isNaN(topicId),
   });

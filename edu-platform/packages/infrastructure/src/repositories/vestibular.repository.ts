@@ -10,7 +10,7 @@ import type {
 } from '@edu-platform/core';
 
 export class VestibularRepository implements IVestibularRepository {
-  async findAll(): Promise<Vestibular[]> {
+  async find(): Promise<Vestibular[]> {
     const data = await prisma.vestibular.findMany({
       include: {
         vestibularSubjects: { include: { subject: true } },

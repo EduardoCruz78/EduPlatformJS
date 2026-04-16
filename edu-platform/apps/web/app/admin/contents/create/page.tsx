@@ -47,7 +47,7 @@ type FormData = z.infer<typeof schema>;
 export default function CreateContentPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data: topics } = trpc.topic.findAll.useQuery();
+  const { data: topics } = trpc.topic.find.useQuery();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),

@@ -5,29 +5,29 @@ import { z } from 'zod';
 import {
     CreateTopicUseCase,
     DeleteTopicUseCase,
-    GetAllTopicsUseCase,
-    GetTopicByIdUseCase,
-    GetTopicsBySubjectUseCase,
+    FindTopicByIdUseCase,
+    FindTopicsBySubjectUseCase,
+    FindTopicsUseCase,
     UpdateTopicUseCase,
 } from '@edu-platform/core';
 
 export const topicRouter = router({
-    findAll: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new GetAllTopicsUseCase(ctx.topicRepository);
+    find: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new FindTopicsUseCase(ctx.topicRepository);
         return useCase.execute();
     }),
 
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetTopicByIdUseCase(ctx.topicRepository);
+            const useCase = new FindTopicByIdUseCase(ctx.topicRepository);
             return useCase.execute(input);
         }),
 
     findBySubject: publicProcedure
         .input(z.object({ subjectId: z.number() }))
         .query(async ({ input, ctx }) => {
-            const useCase = new GetTopicsBySubjectUseCase(ctx.topicRepository);
+            const useCase = new FindTopicsBySubjectUseCase(ctx.topicRepository);
             return useCase.execute(input.subjectId);
         }),
 
@@ -48,10 +48,7 @@ export const topicRouter = router({
             z.object({
                 id: z.number(),
                 name: z.string().optional(),
-                description: z.string().optional(),
                 subjectIds: z.array(z.number()).optional(),
-                imageUrl: z.string().optional(),
-                order: z.number().optional(),
             })
         )
         .mutation(async ({ input, ctx }) => {

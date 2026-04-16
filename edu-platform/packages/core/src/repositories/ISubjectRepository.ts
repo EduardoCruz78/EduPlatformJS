@@ -4,7 +4,7 @@ import type { CreateSubjectInput, UpdateSubjectInput } from '../dtos';
 import type { Subject } from '../entities';
 
 export interface ISubjectRepository {
-  findAll(): Promise<Subject[]>;
+  find(): Promise<Subject[]>;
   findById(id: number): Promise<Subject | null>;
   findByName(name: string): Promise<Subject | null>;
   findBySeries(seriesId: number): Promise<Subject[]>;

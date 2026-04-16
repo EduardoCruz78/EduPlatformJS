@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "types": ["node"],
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "allowJs": true,
     "strict": true,

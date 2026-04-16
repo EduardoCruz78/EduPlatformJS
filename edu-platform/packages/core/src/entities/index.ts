@@ -51,9 +51,6 @@ export interface Content {
 export interface Topic {
   id: number;
   name: string;
-  description?: string | null;
-  imageUrl?: string | null;
-  order?: number;
   contents?: Content[];
   topicSubjects?: TopicSubject[];
   subjects?: Subject[];

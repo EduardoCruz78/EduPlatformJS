@@ -5,21 +5,21 @@ import { z } from 'zod';
 import {
     CreateSeriesUseCase,
     DeleteSeriesUseCase,
-    GetAllSeriesUseCase,
-    GetSeriesByIdUseCase,
+    FindSeriesByIdUseCase,
+    FindSeriesUseCase,
     UpdateSeriesUseCase,
 } from '@edu-platform/core';
 
 export const seriesRouter = router({
-    findAll: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new GetAllSeriesUseCase(ctx.seriesRepository);
+    find: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new FindSeriesUseCase(ctx.seriesRepository);
         return useCase.execute();
     }),
 
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetSeriesByIdUseCase(ctx.seriesRepository);
+            const useCase = new FindSeriesByIdUseCase(ctx.seriesRepository);
             return useCase.execute(input);
         }),
 

@@ -27,10 +27,6 @@ export class CreateTopicUseCase {
     return this.topicRepository.create({
       name,
       subjectIds: [...new Set(input.subjectIds)],
-      description: input.description ?? null,
-      imageUrl: input.imageUrl ?? null,
-      order: input.order ?? 0,
-      seriesId: input.seriesId ?? null,
     });
   }
 }

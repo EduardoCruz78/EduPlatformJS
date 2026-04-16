@@ -35,7 +35,7 @@ export default function SeriesPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data: series, isLoading, refetch } = trpc.series.findAll.useQuery();
+  const { data: series, isLoading, refetch } = trpc.series.find.useQuery();
 
   const deleteSeriesMutation = trpc.series.delete.useMutation({
     onSuccess: () => {

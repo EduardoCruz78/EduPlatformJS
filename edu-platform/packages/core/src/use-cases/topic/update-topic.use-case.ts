@@ -21,31 +21,12 @@ export class UpdateTopicUseCase {
     const currentSubjectIds =
         topic.topicSubjects?.map((t) => t.subjectId) ?? [];
 
-    const description =
-        input.description === undefined
-            ? topic.description ?? null
-            : input.description === null
-                ? null
-                : input.description.trim() || null;
-
-    const imageUrl =
-        input.imageUrl === undefined
-            ? topic.imageUrl ?? null
-            : input.imageUrl;
-
-    const order =
-        input.order === undefined ? topic.order ?? 0 : input.order;
-
     return this.topicRepository.update(input.id, {
       name:
           input.name === undefined
               ? topic.name
               : input.name.trim() || topic.name,
       subjectIds: input.subjectIds ?? currentSubjectIds,
-      description,
-      imageUrl,
-      order,
-      seriesId: input.seriesId ?? null,
     });
   }
 }

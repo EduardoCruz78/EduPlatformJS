@@ -5,14 +5,14 @@ import { z } from 'zod';
 import {
     CreateVestibularUseCase,
     DeleteVestibularUseCase,
-    GetAvailableVestibularsUseCase,
-    GetVestibularByIdUseCase,
+    FindVestibularByIdUseCase,
+    FindVestibularsUseCase,
     UpdateVestibularUseCase,
 } from '@edu-platform/core';
 
 export const vestibularRouter = router({
-    findAll: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new GetAvailableVestibularsUseCase(
+    find: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new FindVestibularsUseCase(
             ctx.vestibularRepository
         );
         return useCase.execute();
@@ -21,7 +21,7 @@ export const vestibularRouter = router({
     findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            const useCase = new GetVestibularByIdUseCase(ctx.vestibularRepository);
+            const useCase = new FindVestibularByIdUseCase(ctx.vestibularRepository);
             return useCase.execute(input);
         }),
 

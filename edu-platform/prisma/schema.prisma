@@ -1,18 +1,11 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-
-
-
-
-// ====================== REST DO SCHEMA (IGUAL) ======================
 model Account {
   id                String  @id @default(cuid())
   userId            String  @db.Uuid
@@ -56,7 +49,7 @@ model User {
   providerId    String    @unique
   name          String
   email         String    @unique
-  emailVerified DateTime?          // ← adicione esta linha
+  emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -90,49 +83,49 @@ model Series {
 }
 
 model Subject {
-  id                 Int            @id @default(autoincrement())
+  id                 Int                 @id @default(autoincrement())
   name               String
   description        String?
   imageUrl           String?
-  order              Int            @default(0)
+  order              Int                 @default(0)
   seriesId           Int?
-  series             Series?        @relation(fields: [seriesId], references: [id])
+  series             Series?             @relation(fields: [seriesId], references: [id])
   topicSubjects      TopicSubject[]
   vestibularSubjects VestibularSubject[]
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@map("subjects")
 }
 
 model Topic {
-  id                        Int                      @id @default(autoincrement())
-  name                      String
-  contents                  Content[]
-  topicSubjects             TopicSubject[]
+  id                          Int                          @id @default(autoincrement())
+  name                        String
+  contents                    Content[]
+  topicSubjects               TopicSubject[]
   accessibilityCategoryTopics AccessibilityCategoryTopic[]
-  createdAt                 DateTime                 @default(now())
-  updatedAt                 DateTime                 @updatedAt
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
 
   @@map("topics")
 }
 
 model Content {
-  id                Int               @id @default(autoincrement())
-  title             String
-  description       String?
-  type              String
-  link              String
-  thumbnailUrl      String
-  videoUrl          String?
-  pdfUrl            String?
-  order             Int               @default(0)
-  topicId           Int
-  topic             Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  checklists        Checklist[]
+  id                 Int                 @id @default(autoincrement())
+  title              String
+  description        String?
+  type               String
+  link               String
+  thumbnailUrl       String
+  videoUrl           String?
+  pdfUrl             String?
+  order              Int                 @default(0)
+  topicId            Int
+  topic              Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  checklists         Checklist[]
   vestibularContents VestibularContent[]
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@map("contents")
 }
@@ -147,14 +140,12 @@ model TopicSubject {
   @@map("topic_subjects")
 }
 
-
-
 model Vestibular {
   id                 Int                 @id @default(autoincrement())
   name               String
-  description        String?             // ← ADICIONE ESTA LINHA
-  year               Int?                // ← ADICIONE ESTA LINHA
-  imageUrl           String?             // ← ADICIONE ESTA LINHA
+  description        String?
+  year               Int?
+  imageUrl           String?
   vestibularSubjects VestibularSubject[]
   vestibularContents VestibularContent[]
   vestibularTopics   VestibularTopic[]
@@ -175,46 +166,46 @@ model VestibularSubject {
 }
 
 model VestibularContent {
-  id               Int      @id @default(autoincrement())
-  vestibularId     Int
-  title            String
-  type             String?
-  link             String?
-  pdfUrl           String?
-  isShared         Boolean  @default(false)
+  id                Int        @id @default(autoincrement())
+  vestibularId      Int
+  title             String
+  type              String?
+  link              String?
+  pdfUrl            String?
+  isShared          Boolean    @default(false)
   originalContentId Int?
-  vestibular       Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
-  originalContent  Content?  @relation(fields: [originalContentId], references: [id])
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  vestibular        Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
+  originalContent   Content?   @relation(fields: [originalContentId], references: [id])
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   @@map("vestibular_contents")
 }
 
 model VestibularTopic {
-  id             Int        @id @default(autoincrement())
-  vestibularId   Int
-  name           String
+  id              Int        @id @default(autoincrement())
+  vestibularId    Int
+  name            String
   originalTopicId Int?
-  isShared       Boolean    @default(false)
-  notes          String?
-  tags           String?
-  vestibular     Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  isShared        Boolean    @default(false)
+  notes           String?
+  tags            String?
+  vestibular      Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@map("vestibular_topics")
 }
 
 model AccessibilityCategory {
-  id          Int                     @id @default(autoincrement())
-  name        String
-  description String?
+  id             Int                        @id @default(autoincrement())
+  name           String
+  description    String?
   categoryTopics AccessibilityCategoryTopic[]
-  needs       AccessibilityNeed[]
-  themes      AccessibilityTheme[]
-  createdAt   DateTime                @default(now())
-  updatedAt   DateTime                @updatedAt
+  needs          AccessibilityNeed[]
+  themes         AccessibilityTheme[]
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
 
   @@map("accessibility_categories")
 }
@@ -230,27 +221,27 @@ model AccessibilityCategoryTopic {
 }
 
 model AccessibilityNeed {
-  id          Int                @id @default(autoincrement())
+  id                      Int                   @id @default(autoincrement())
   accessibilityCategoryId Int
-  name        String
+  name                    String
   accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
-  themes      AccessibilityTheme[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  themes                  AccessibilityTheme[]
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
 
   @@map("accessibility_needs")
 }
 
 model AccessibilityTheme {
-  id                    Int                @id @default(autoincrement())
+  id                      Int                   @id @default(autoincrement())
   accessibilityCategoryId Int
-  accessibilityNeedId   Int?
-  title                 String
-  content               String?
-  accessibilityCategory AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
-  accessibilityNeed     AccessibilityNeed?   @relation(fields: [accessibilityNeedId], references: [id])
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+  accessibilityNeedId     Int?
+  title                   String
+  content                 String?
+  accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
+  accessibilityNeed       AccessibilityNeed?    @relation(fields: [accessibilityNeedId], references: [id])
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
 
   @@map("accessibility_themes")
 }

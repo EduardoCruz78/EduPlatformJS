@@ -36,7 +36,7 @@ export default function EditSubjectPage() {
   const { data: session, status } = useSession();
 
   const subjectId = Number(params.id);
-  const { data: series } = trpc.series.findAll.useQuery();
+  const { data: series } = trpc.series.find.useQuery();
   const { data: subject, isLoading } = trpc.subject.findById.useQuery(subjectId, {
     enabled: !Number.isNaN(subjectId),
   });

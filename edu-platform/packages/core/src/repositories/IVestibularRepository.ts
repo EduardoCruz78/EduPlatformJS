@@ -4,7 +4,7 @@ import type { CreateVestibularInput, UpdateVestibularInput } from '../dtos';
 import type { Vestibular } from '../entities';
 
 export interface IVestibularRepository {
-  findAll(): Promise<Vestibular[]>;
+  find(): Promise<Vestibular[]>;
   findById(id: number): Promise<Vestibular | null>;
   findByNameAndYear(name: string, year: number): Promise<Vestibular | null>;
   create(data: CreateVestibularInput): Promise<Vestibular>;

@@ -1,6 +1,7 @@
 // packages/infrastructure/src/repositories/subject.repository.ts
 
 import { prisma } from '../prisma/client';
+import { SubjectMapper } from '../mappers/subject.mapper';
 import type {
   CreateSubjectInput,
   ISubjectRepository,
@@ -9,37 +10,53 @@ import type {
 } from '@edu-platform/core';
 
 export class SubjectRepository implements ISubjectRepository {
-  async findAll(): Promise<Subject[]> {
-    return prisma.subject.findMany({
+  async find(): Promise<Subject[]> {
+    const data = await prisma.subject.findMany({
       include: { series: true },
       orderBy: { name: 'asc' },
     });
+
+    return SubjectMapper.toDomainList(data);
   }
 
   async findBySeries(seriesId: number): Promise<Subject[]> {
-    return prisma.subject.findMany({
+    const data = await prisma.subject.findMany({
       where: { seriesId },
       include: { series: true },
       orderBy: { name: 'asc' },
     });
+
+    return SubjectMapper.toDomainList(data);
   }
 
   async findById(id: number): Promise<Subject | null> {
-    return prisma.subject.findUnique({
+    const data = await prisma.subject.findUnique({
       where: { id },
       include: { series: true },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return SubjectMapper.toDomain(data);
   }
 
   async findByName(name: string): Promise<Subject | null> {
-    return prisma.subject.findFirst({
+    const data = await prisma.subject.findFirst({
       where: { name },
       include: { series: true },
     });
+
+    if (!data) {
+      return null;
+    }
+
+    return SubjectMapper.toDomain(data);
   }
 
   async create(data: CreateSubjectInput): Promise<Subject> {
-    return prisma.subject.create({
+    const created = await prisma.subject.create({
       data: {
         name: data.name,
         description: data.description ?? null,
@@ -49,10 +66,12 @@ export class SubjectRepository implements ISubjectRepository {
       },
       include: { series: true },
     });
+
+    return SubjectMapper.toDomain(created);
   }
 
   async update(id: number, data: Omit<UpdateSubjectInput, 'id'>): Promise<Subject> {
-    return prisma.subject.update({
+    const updated = await prisma.subject.update({
       where: { id },
       data: {
         name: data.name,
@@ -63,6 +82,8 @@ export class SubjectRepository implements ISubjectRepository {
       },
       include: { series: true },
     });
+
+    return SubjectMapper.toDomain(updated);
   }
 
   async delete(id: number): Promise<void> {

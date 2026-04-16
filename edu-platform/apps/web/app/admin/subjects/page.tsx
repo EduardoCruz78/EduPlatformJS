@@ -35,8 +35,8 @@ export default function SubjectsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Queries
-  const { data: subjects, isLoading, refetch } = trpc.subject.findAll.useQuery();
-  const { data: series } = trpc.series.findAll.useQuery();
+  const { data: subjects, isLoading, refetch } = trpc.subject.find.useQuery();
+  const { data: series } = trpc.series.find.useQuery();
 
   // Mutations
   const deleteSubjectMutation = trpc.subject.delete.useMutation({

@@ -44,7 +44,7 @@ export class TopicMapper {
         return {
             topicId: data.topicId,
             subjectId: data.subjectId,
-            subject: SubjectMapper.toDomain(data.subject) as Subject,
+            subject: SubjectMapper.toDomain(data.subject),
         };
     }
 
@@ -54,7 +54,7 @@ export class TopicMapper {
             name: data.name,
             contents: data.contents?.map((content) =>
                 ContentMapper.toDomain(content)
-            ) as Content[] | undefined,
+            ),
             topicSubjects: data.topicSubjects?.map((item) =>
                 this.toTopicSubject(item)
             ),
