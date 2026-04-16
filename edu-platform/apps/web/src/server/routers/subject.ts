@@ -38,7 +38,7 @@ export const subjectRouter = router({
                 description: z.string().optional(),
                 imageUrl: z.string().optional(),
                 order: z.number().optional(),
-                seriesId: z.number().optional(),
+                seriesId: z.number().nullable().optional(),
             })
         )
         .mutation(async ({ input, ctx }) => {
@@ -54,6 +54,7 @@ export const subjectRouter = router({
                 description: z.string().optional(),
                 imageUrl: z.string().optional(),
                 order: z.number().optional(),
+                seriesId: z.number().nullable().optional(),
             })
         )
         .mutation(async ({ input, ctx }) => {

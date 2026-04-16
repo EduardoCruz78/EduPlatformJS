@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { Series } from '@edu-platform/core';
 import { trpc } from '@/lib/trpc';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -38,7 +39,7 @@ type CreateSubjectFormData = z.infer<typeof createSubjectSchema>;
 
 export default function CreateSubjectPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { data: series } = trpc.series.getAll.useQuery();
 
   const form = useForm<CreateSubjectFormData>({
@@ -54,6 +55,9 @@ export default function CreateSubjectPage() {
       router.push('/admin/subjects');
     },
     onError: (error: any) => {
+      const message =
+        error instanceof Error ? error.message : 'Erro ao criar materia';
+
       form.setError('root', {
         message: error.message || 'Erro ao criar matéria',
       });
@@ -61,17 +65,24 @@ export default function CreateSubjectPage() {
   });
 
   useEffect(() => {
-    if (!session) {
+    if (status === 'unauthenticated') {
       router.push('/login');
     }
-  }, [session, router]);
+  }, [status, router]);
 
   const onSubmit = async (data: CreateSubjectFormData) => {
     await createSubjectMutation.mutateAsync({
       name: data.name,
-      seriesId: data.seriesId ? parseInt(data.seriesId, 10) : undefined,
+      seriesId:
+        data.seriesId && data.seriesId !== 'none'
+          ? Number(data.seriesId)
+          : undefined,
     });
   };
+
+  if (status === 'loading') {
+    return <div className="p-8 text-center">Carregando...</div>;
+  }
 
   if (!session) {
     return <div className="p-8 text-center">Redirecionando...</div>;
@@ -132,7 +143,7 @@ export default function CreateSubjectPage() {
                           <FormLabel>Série (Opcional)</FormLabel>
                           <Select
                               onValueChange={field.onChange}
-                              value={field.value || ''}
+                              value={field.value || 'none'}
                               disabled={createSubjectMutation.isPending}
                           >
                             <FormControl>
@@ -142,9 +153,9 @@ export default function CreateSubjectPage() {
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="none">Nenhuma</SelectItem>
-                              {series?.map((s: any) => (
-                                  <SelectItem key={s.id} value={s.id.toString()}>
-                                    {s.name}
+                              {series?.map((item: Series) => (
+                                  <SelectItem key={item.id} value={item.id.toString()}>
+                                    {item.name}
                                   </SelectItem>
                               ))}
                             </SelectContent>

@@ -4,7 +4,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import type { Content } from "@edu-platform/core";
@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
-export default function ContentsPage() {
+function ContentsPageContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -89,4 +89,12 @@ export default function ContentsPage() {
             </div>
         </div>
     );
+}
+
+export default function ContentsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background p-8" />}>
+      <ContentsPageContent />
+    </Suspense>
+  );
 }

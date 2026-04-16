@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
     CreateChecklistUseCase,
     DeleteChecklistUseCase,
+    GetChecklistByIdUseCase,
     GetChecklistByUserUseCase,
     GetChecklistsByContentIdUseCase,
 } from "@edu-platform/core";
@@ -22,7 +23,8 @@ export const checklistRouter = router({
     getById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
-            return ctx.checklistRepository.findById(input);
+            const useCase = new GetChecklistByIdUseCase(ctx.checklistRepository);
+            return useCase.execute(input);
         }),
 
     getByContentId: publicProcedure

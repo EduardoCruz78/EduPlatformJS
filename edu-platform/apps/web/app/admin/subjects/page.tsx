@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import type { Series, Subject } from '@edu-platform/core';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -29,7 +30,7 @@ import Link from 'next/link';
 
 export default function SubjectsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -44,18 +45,21 @@ export default function SubjectsPage() {
       setIsDeleting(false);
       refetch();
     },
-    onError: (error: any) => {
-      alert(`Erro ao deletar: ${error.message}`);
+    onError: (error: unknown) => {
+      const message =
+        error instanceof Error ? error.message : 'Erro ao deletar materia';
+
+      alert(`Erro ao deletar: ${message}`);
       setIsDeleting(false);
     },
   });
 
   // Verificar autenticação
   useEffect(() => {
-    if (!session) {
+    if (status === 'unauthenticated') {
       router.push('/login');
     }
-  }, [session, router]);
+  }, [status, router]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -66,8 +70,12 @@ export default function SubjectsPage() {
 
   const getSeriesName = (seriesId: number | null | undefined): string => {
     if (!seriesId) return 'N/A';
-    return series?.find((s: any) => s.id === seriesId)?.name || 'N/A';
+    return series?.find((item: Series) => item.id === seriesId)?.name || 'N/A';
   };
+
+  if (status === 'loading') {
+    return <div className="p-8 text-center">Carregando...</div>;
+  }
 
   if (!session) {
     return <div className="p-8 text-center">Redirecionando...</div>;
@@ -118,7 +126,7 @@ export default function SubjectsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {subjects.map((subject: any) => (
+                  {subjects.map((subject: Subject) => (
                     <TableRow key={subject.id}>
                       <TableCell className="font-mono text-sm">
                         {subject.id}

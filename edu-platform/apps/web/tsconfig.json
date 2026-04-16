@@ -26,12 +26,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/auth": ["./src/auth.ts"],
       "@/server/*": ["./src/server/*"],
       "@/components/*": ["./src/components/*"],
       "@/components/ui/*": ["./src/components/ui/*"],
       "@/lib/*": ["./src/lib/*"],
-      "@/trpc/*": ["./src/trpc/*"],
       "@edu-platform/core": ["../../packages/core/src/index.ts"],
       "@edu-platform/infrastructure": ["../../packages/infrastructure/src/index.ts"]
     },
