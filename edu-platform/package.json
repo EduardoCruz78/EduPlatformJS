@@ -10,6 +10,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "test": "npm run test:core && npm run test:infrastructure",
+    "test:core": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/core/src/**/*.test.ts\"",
+    "test:infrastructure": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/infrastructure/src/**/*.test.ts\"",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
