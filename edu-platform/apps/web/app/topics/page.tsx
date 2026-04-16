@@ -21,7 +21,7 @@ function TopicsPageContent() {
     data: topics = [],
     isLoading,
     error,
-  } = trpc.topic.getBySubject.useQuery(
+  } = trpc.topic.findBySubject.useQuery(
       { subjectId },
       { enabled: subjectId > 0 }
   );

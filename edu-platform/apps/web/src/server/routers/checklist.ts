@@ -9,7 +9,7 @@ import {
 } from "@edu-platform/core";
 
 export const checklistRouter = router({
-    getByUser: protectedProcedure.query(async ({ ctx }) => {
+    findByUserId: protectedProcedure.query(async ({ ctx }) => {
         const userId = ctx.user?.id;
 
         if (!userId) {
@@ -20,14 +20,14 @@ export const checklistRouter = router({
         return useCase.execute(userId);
     }),
 
-    getById: publicProcedure
+    findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetChecklistByIdUseCase(ctx.checklistRepository);
             return useCase.execute(input);
         }),
 
-    getByContentId: publicProcedure
+    findByContentId: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetChecklistsByContentIdUseCase(

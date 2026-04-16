@@ -7,6 +7,6 @@ export class GetAllTopicsUseCase {
   constructor(private readonly topicRepository: ITopicRepository) {}
 
   async execute(): Promise<Topic[]> {
-    return this.topicRepository.getAll();
+    return this.topicRepository.findAll();
   }
 }

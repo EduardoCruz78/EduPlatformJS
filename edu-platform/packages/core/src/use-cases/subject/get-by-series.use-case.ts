@@ -7,6 +7,6 @@ export class GetSubjectsBySeriesUseCase {
   constructor(private readonly subjectRepository: ISubjectRepository) {}
 
   async execute(seriesId: number): Promise<Subject[]> {
-    return this.subjectRepository.getBySeries(seriesId);
+    return this.subjectRepository.findBySeries(seriesId);
   }
 }

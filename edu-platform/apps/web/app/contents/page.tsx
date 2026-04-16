@@ -23,7 +23,7 @@ function ContentsPageContent() {
     data: contents = [],
     isLoading,
     error,
-  } = trpc.content.getByTopic.useQuery(
+  } = trpc.content.findByTopic.useQuery(
       { topicId },
       { enabled: topicId > 0 }
   );

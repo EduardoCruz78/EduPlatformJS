@@ -4,7 +4,7 @@ import { prisma } from '../prisma/client';
 import type { CreateSeriesInput, ISeriesRepository, Series } from '@edu-platform/core';
 
 export class SeriesRepository implements ISeriesRepository {
-  async getAll(): Promise<Series[]> {
+  async findAll(): Promise<Series[]> {
     return prisma.series.findMany({
       include: { subjects: true },
       orderBy: { name: 'asc' },

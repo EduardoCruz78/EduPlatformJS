@@ -7,6 +7,6 @@ export class GetAvailableVestibularsUseCase {
   constructor(private readonly vestibularRepository: IVestibularRepository) {}
 
   async execute(): Promise<Vestibular[]> {
-    return this.vestibularRepository.getAvailable();
+    return this.vestibularRepository.findAll();
   }
 }

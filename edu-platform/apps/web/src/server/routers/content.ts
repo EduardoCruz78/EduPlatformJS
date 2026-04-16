@@ -5,6 +5,7 @@ import { z } from 'zod';
 import {
     CreateContentUseCase,
     DeleteContentUseCase,
+    GetAllContentsUseCase,
     GetContentByIdUseCase,
     GetContentsByTopicUseCase,
     UpdateContentUseCase,
@@ -13,14 +14,19 @@ import {
 const contentTypeSchema = z.enum(['VIDEO', 'PDF', 'ARTICLE']);
 
 export const contentRouter = router({
-    getById: publicProcedure
+    findAll: publicProcedure.query(async ({ ctx }) => {
+        const useCase = new GetAllContentsUseCase(ctx.contentRepository);
+        return useCase.execute();
+    }),
+
+    findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetContentByIdUseCase(ctx.contentRepository);
             return useCase.execute(input);
         }),
 
-    getByTopic: publicProcedure
+    findByTopic: publicProcedure
         .input(z.object({ topicId: z.number() }))
         .query(async ({ input, ctx }) => {
             const useCase = new GetContentsByTopicUseCase(ctx.contentRepository);
@@ -52,7 +58,9 @@ export const contentRouter = router({
                 id: z.number(),
                 title: z.string().optional(),
                 description: z.string().optional(),
+                topicId: z.number().optional(),
                 type: contentTypeSchema.optional(),
+                link: z.string().optional(),
                 videoUrl: z.string().optional(),
                 pdfUrl: z.string().optional(),
                 thumbnailUrl: z.string().optional(),

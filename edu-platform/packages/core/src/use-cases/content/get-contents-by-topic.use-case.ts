@@ -8,6 +8,6 @@ export class GetContentsByTopicUseCase {
   constructor(private readonly contentRepository: IContentRepository) {}
 
   async execute(input: GetContentsByTopicInput): Promise<Content[]> {
-    return this.contentRepository.getByTopic(input.topicId);
+    return this.contentRepository.findByTopic(input.topicId);
   }
 }

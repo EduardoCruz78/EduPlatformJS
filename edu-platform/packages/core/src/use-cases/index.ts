@@ -10,6 +10,7 @@ export * from './checklist/get-by-user.use-case';
 
 export * from './content/create-content.use-case';
 export * from './content/delete-content.use-case';
+export * from './content/get-all.use-case';
 export * from './content/get-by-id.use-case';
 export * from './content/get-contents-by-topic.use-case';
 export * from './content/update-content.use-case';

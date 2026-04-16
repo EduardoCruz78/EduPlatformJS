@@ -15,7 +15,7 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const { data: series = [], isLoading, error } = trpc.series.getAll.useQuery();
+  const { data: series = [], isLoading, error } = trpc.series.findAll.useQuery();
 
   useEffect(() => {
     if (status === "unauthenticated") {

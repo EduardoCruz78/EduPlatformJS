@@ -12,7 +12,23 @@ export const AlertDialog = AlertDialogPrimitive.Root
 export const AlertDialogTrigger = AlertDialogPrimitive.Trigger
 export const AlertDialogPortal = AlertDialogPrimitive.Portal
 
-export function AlertDialogOverlay({ className, ...props }: any) {
+type AlertDialogOverlayProps = React.ComponentPropsWithoutRef<
+  typeof AlertDialogPrimitive.Overlay
+>
+
+type AlertDialogContentProps = React.ComponentPropsWithoutRef<
+  typeof AlertDialogPrimitive.Content
+>
+
+type AlertDialogActionProps = React.ComponentPropsWithoutRef<
+  typeof AlertDialogPrimitive.Action
+>
+
+type AlertDialogCancelProps = React.ComponentPropsWithoutRef<
+  typeof AlertDialogPrimitive.Cancel
+>
+
+export function AlertDialogOverlay({ className, ...props }: AlertDialogOverlayProps) {
     return (
         <AlertDialogPrimitive.Overlay
             className={cn("fixed inset-0 bg-black/50", className)}
@@ -21,7 +37,7 @@ export function AlertDialogOverlay({ className, ...props }: any) {
     )
 }
 
-export function AlertDialogContent({ className, ...props }: any) {
+export function AlertDialogContent({ className, ...props }: AlertDialogContentProps) {
     return (
         <AlertDialogPortal>
             <AlertDialogOverlay />
@@ -36,10 +52,10 @@ export function AlertDialogContent({ className, ...props }: any) {
 export const AlertDialogTitle = AlertDialogPrimitive.Title
 export const AlertDialogDescription = AlertDialogPrimitive.Description
 
-export function AlertDialogAction(props: any) {
+export function AlertDialogAction(props: AlertDialogActionProps) {
     return <Button asChild><AlertDialogPrimitive.Action {...props} /></Button>
 }
 
-export function AlertDialogCancel(props: any) {
+export function AlertDialogCancel(props: AlertDialogCancelProps) {
     return <Button variant="outline" asChild><AlertDialogPrimitive.Cancel {...props} /></Button>
 }

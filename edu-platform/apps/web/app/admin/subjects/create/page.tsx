@@ -6,6 +6,11 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import Link from 'next/link';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+
+import type { Series } from '@edu-platform/core';
+import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -25,13 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { Series } from '@edu-platform/core';
-import { trpc } from '@/lib/trpc';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 
 const createSubjectSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório').min(3, 'Mínimo 3 caracteres'),
+  name: z.string().min(1, 'Nome obrigatorio').min(3, 'Minimo 3 caracteres'),
   seriesId: z.string().optional(),
 });
 
@@ -40,7 +41,7 @@ type CreateSubjectFormData = z.infer<typeof createSubjectSchema>;
 export default function CreateSubjectPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { data: series } = trpc.series.getAll.useQuery();
+  const { data: series } = trpc.series.findAll.useQuery();
 
   const form = useForm<CreateSubjectFormData>({
     resolver: zodResolver(createSubjectSchema),
@@ -54,13 +55,11 @@ export default function CreateSubjectPage() {
     onSuccess: () => {
       router.push('/admin/subjects');
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
         error instanceof Error ? error.message : 'Erro ao criar materia';
 
-      form.setError('root', {
-        message: error.message || 'Erro ao criar matéria',
-      });
+      form.setError('root', { message });
     },
   });
 
@@ -72,7 +71,7 @@ export default function CreateSubjectPage() {
 
   const onSubmit = async (data: CreateSubjectFormData) => {
     await createSubjectMutation.mutateAsync({
-      name: data.name,
+      name: data.name.trim(),
       seriesId:
         data.seriesId && data.seriesId !== 'none'
           ? Number(data.seriesId)
@@ -89,120 +88,118 @@ export default function CreateSubjectPage() {
   }
 
   return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/subjects">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Nova Matéria</h1>
-            <p className="text-muted-foreground mt-2">
-              Crie uma nova matéria no sistema
-            </p>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Link href="/admin/subjects">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Nova Materia</h1>
+          <p className="mt-2 text-muted-foreground">
+            Crie uma nova materia no sistema
+          </p>
         </div>
-
-        <Card className="max-w-2xl">
-          <CardHeader>
-            <CardTitle>Informações da Matéria</CardTitle>
-            <CardDescription>
-              Preencha os dados para criar uma nova matéria
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome da Matéria *</FormLabel>
-                          <FormControl>
-                            <Input
-                                placeholder="Ex: Matemática, Português, História..."
-                                {...field}
-                                disabled={createSubjectMutation.isPending}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Nome único para identificar a matéria
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="seriesId"
-                    render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Série (Opcional)</FormLabel>
-                          <Select
-                              onValueChange={field.onChange}
-                              value={field.value || 'none'}
-                              disabled={createSubjectMutation.isPending}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Selecione uma série" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="none">Nenhuma</SelectItem>
-                              {series?.map((item: Series) => (
-                                  <SelectItem key={item.id} value={item.id.toString()}>
-                                    {item.name}
-                                  </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormDescription>
-                            Associe a matéria a uma série (opcional)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                {form.formState.errors.root && (
-                    <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
-                      {form.formState.errors.root.message}
-                    </div>
-                )}
-
-                <div className="flex gap-3 justify-end">
-                  <Link href="/admin/subjects">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        disabled={createSubjectMutation.isPending}
-                    >
-                      Cancelar
-                    </Button>
-                  </Link>
-                  <Button
-                      type="submit"
-                      disabled={createSubjectMutation.isPending}
-                      className="gap-2"
-                  >
-                    {createSubjectMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Criando...
-                        </>
-                    ) : (
-                        'Criar Matéria'
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
       </div>
+
+      <Card className="max-w-2xl">
+        <CardHeader>
+          <CardTitle>Informacoes da Materia</CardTitle>
+          <CardDescription>Preencha os dados para criar uma nova materia</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome da Materia</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ex: Matematica, Portugues, Historia..."
+                        {...field}
+                        disabled={createSubjectMutation.isPending}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Nome unico para identificar a materia
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="seriesId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Serie (Opcional)</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || 'none'}
+                      disabled={createSubjectMutation.isPending}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma serie" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Nenhuma</SelectItem>
+                        {series?.map((item: Series) => (
+                          <SelectItem key={item.id} value={String(item.id)}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Associe a materia a uma serie, se necessario
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {form.formState.errors.root && (
+                <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                  {form.formState.errors.root.message}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3">
+                <Link href="/admin/subjects">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={createSubjectMutation.isPending}
+                  >
+                    Cancelar
+                  </Button>
+                </Link>
+                <Button
+                  type="submit"
+                  disabled={createSubjectMutation.isPending}
+                  className="gap-2"
+                >
+                  {createSubjectMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Criando...
+                    </>
+                  ) : (
+                    'Criar Materia'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

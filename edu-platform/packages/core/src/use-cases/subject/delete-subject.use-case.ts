@@ -17,7 +17,7 @@ export class DeleteSubjectUseCase {
       throw new Error('Matéria não encontrada');
     }
 
-    const topics = await this.topicRepository.getBySubject(id);
+    const topics = await this.topicRepository.findBySubject(id);
 
     if (topics.length > 0) {
       throw new Error('Não é possível deletar uma matéria que possui tópicos associados');

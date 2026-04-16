@@ -12,19 +12,19 @@ import {
 } from '@edu-platform/core';
 
 export const topicRouter = router({
-    getAll: publicProcedure.query(async ({ ctx }) => {
+    findAll: publicProcedure.query(async ({ ctx }) => {
         const useCase = new GetAllTopicsUseCase(ctx.topicRepository);
         return useCase.execute();
     }),
 
-    getById: publicProcedure
+    findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetTopicByIdUseCase(ctx.topicRepository);
             return useCase.execute(input);
         }),
 
-    getBySubject: publicProcedure
+    findBySubject: publicProcedure
         .input(z.object({ subjectId: z.number() }))
         .query(async ({ input, ctx }) => {
             const useCase = new GetTopicsBySubjectUseCase(ctx.topicRepository);

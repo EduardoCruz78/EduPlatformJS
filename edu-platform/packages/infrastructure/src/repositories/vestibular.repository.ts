@@ -6,12 +6,11 @@ import type {
   CreateVestibularInput,
   IVestibularRepository,
   Vestibular,
-  VestibularContent,
   UpdateVestibularInput,
 } from '@edu-platform/core';
 
 export class VestibularRepository implements IVestibularRepository {
-  async getAvailable(): Promise<Vestibular[]> {
+  async findAll(): Promise<Vestibular[]> {
     const data = await prisma.vestibular.findMany({
       include: {
         vestibularSubjects: { include: { subject: true } },
@@ -87,7 +86,7 @@ export class VestibularRepository implements IVestibularRepository {
         description: data.description,
         year: data.year,
         imageUrl: data.imageUrl,
-      } as any,
+      },
       include: {
         vestibularSubjects: { include: { subject: true } },
         vestibularContents: true,
@@ -100,24 +99,5 @@ export class VestibularRepository implements IVestibularRepository {
 
   async delete(id: number): Promise<void> {
     await prisma.vestibular.delete({ where: { id } });
-  }
-
-  async findContents(vestibularId: number): Promise<VestibularContent[]> {
-    const data = await prisma.vestibularContent.findMany({
-      where: { vestibularId },
-    });
-
-    return data.map((item) =>
-        VestibularMapper.toVestibularContent({
-          id: item.id,
-          vestibularId: item.vestibularId,
-          title: item.title,
-          type: item.type,
-          link: item.link,
-          pdfUrl: item.pdfUrl,
-          originalContentId: item.originalContentId,
-          isShared: item.isShared,
-        })
-    );
   }
 }

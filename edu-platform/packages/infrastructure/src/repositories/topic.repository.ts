@@ -10,7 +10,7 @@ import type {
 } from '@edu-platform/core';
 
 export class TopicRepository implements ITopicRepository {
-  async getAll(): Promise<Topic[]> {
+  async findAll(): Promise<Topic[]> {
     const data = await prisma.topic.findMany({
       include: {
         contents: true,
@@ -22,7 +22,7 @@ export class TopicRepository implements ITopicRepository {
     return TopicMapper.toDomainList(data);
   }
 
-  async getBySubject(subjectId: number): Promise<Topic[]> {
+  async findBySubject(subjectId: number): Promise<Topic[]> {
     const data = await prisma.topic.findMany({
       where: {
         topicSubjects: { some: { subjectId } },
@@ -67,18 +67,6 @@ export class TopicRepository implements ITopicRepository {
     }
 
     return TopicMapper.toDomain(data);
-  }
-
-  async countBySubjectId(subjectId: number): Promise<number> {
-    return prisma.topic.count({
-      where: {
-        topicSubjects: {
-          some: {
-            subjectId,
-          },
-        },
-      },
-    });
   }
 
   async countBySeriesId(seriesId: number): Promise<number> {

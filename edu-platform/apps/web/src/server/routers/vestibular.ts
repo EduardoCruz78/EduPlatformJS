@@ -11,14 +11,14 @@ import {
 } from '@edu-platform/core';
 
 export const vestibularRouter = router({
-    getAvailable: publicProcedure.query(async ({ ctx }) => {
+    findAll: publicProcedure.query(async ({ ctx }) => {
         const useCase = new GetAvailableVestibularsUseCase(
             ctx.vestibularRepository
         );
         return useCase.execute();
     }),
 
-    getById: publicProcedure
+    findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetVestibularByIdUseCase(ctx.vestibularRepository);

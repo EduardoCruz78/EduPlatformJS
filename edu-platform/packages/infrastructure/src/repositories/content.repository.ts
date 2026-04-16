@@ -10,7 +10,15 @@ import type {
 } from '@edu-platform/core';
 
 export class ContentRepository implements IContentRepository {
-  async getByTopic(topicId: number): Promise<Content[]> {
+  async findAll(): Promise<Content[]> {
+    const data = await prisma.content.findMany({
+      orderBy: [{ topicId: 'asc' }, { order: 'asc' }, { title: 'asc' }],
+    });
+
+    return ContentMapper.toDomainList(data);
+  }
+
+  async findByTopic(topicId: number): Promise<Content[]> {
     const data = await prisma.content.findMany({
       where: { topicId },
       orderBy: { order: 'asc' },
@@ -61,12 +69,14 @@ export class ContentRepository implements IContentRepository {
       data: {
         title: data.title,
         description: data.description === undefined ? undefined : data.description,
+        topicId: data.topicId,
         type: data.type,
+        link: data.link,
         videoUrl: data.videoUrl === undefined ? undefined : data.videoUrl,
         pdfUrl: data.pdfUrl === undefined ? undefined : data.pdfUrl,
-        thumbnailUrl: data.thumbnailUrl === undefined ? undefined : data.thumbnailUrl,
+        thumbnailUrl: data.thumbnailUrl ?? undefined,
         order: data.order === undefined ? undefined : data.order,
-      } as any,
+      },
     });
 
     return ContentMapper.toDomain(updated);

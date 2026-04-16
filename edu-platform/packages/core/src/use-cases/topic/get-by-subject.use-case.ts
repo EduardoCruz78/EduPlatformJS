@@ -7,6 +7,6 @@ export class GetTopicsBySubjectUseCase {
   constructor(private readonly topicRepository: ITopicRepository) {}
 
   async execute(subjectId: number): Promise<Topic[]> {
-    return this.topicRepository.getBySubject(subjectId);
+    return this.topicRepository.findBySubject(subjectId);
   }
 }

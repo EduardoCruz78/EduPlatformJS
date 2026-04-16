@@ -63,7 +63,9 @@ export interface UpdateContentInput {
   id: number;
   title?: string;
   description?: string | null;
+  topicId?: number;
   type?: ContentType;
+  link?: string;
   videoUrl?: string | null;
   pdfUrl?: string | null;
   thumbnailUrl?: string | null;

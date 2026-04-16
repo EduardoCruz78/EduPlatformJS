@@ -1,89 +1,182 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, type Series, type Subject } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
+
+const seriesNames = [
+  '1 Ano - Ensino Fundamental',
+  '2 Ano - Ensino Fundamental',
+  '3 Ano - Ensino Fundamental',
+  '4 Ano - Ensino Fundamental',
+  '5 Ano - Ensino Fundamental',
+  '6 Ano - Ensino Fundamental',
+  '7 Ano - Ensino Fundamental',
+  '8 Ano - Ensino Fundamental',
+  '9 Ano - Ensino Fundamental',
+  '1 Serie - Ensino Medio',
+  '2 Serie - Ensino Medio',
+  '3 Serie - Ensino Medio',
+];
+
+const fundamentalSubjects = [
+  'Lingua Portuguesa',
+  'Matematica',
+  'Ciencias',
+  'Historia',
+  'Geografia',
+  'Ingles',
+  'Artes',
+  'Educacao Fisica',
+];
+
+const highSchoolSubjects = [
+  'Lingua Portuguesa',
+  'Matematica',
+  'Biologia',
+  'Fisica',
+  'Quimica',
+  'Historia',
+  'Geografia',
+  'Filosofia',
+  'Sociologia',
+];
+
+const contentTypes = ['VIDEO', 'PDF', 'ARTICLE'] as const;
+
+async function ensureSeries(name: string) {
+  const existing = await prisma.series.findFirst({
+    where: { name },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  return prisma.series.create({
+    data: { name },
+  });
+}
+
+async function ensureSubject(name: string, seriesId: number) {
+  const existing = await prisma.subject.findFirst({
+    where: { name, seriesId },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  return prisma.subject.create({
+    data: { name, seriesId },
+  });
+}
+
+async function ensureTopicForSubject(topicName: string, subjectId: number) {
+  const existingTopic = await prisma.topic.findFirst({
+    where: {
+      name: topicName,
+      topicSubjects: {
+        some: { subjectId },
+      },
+    },
+  });
+
+  if (existingTopic) {
+    return existingTopic;
+  }
+
+  const topic = await prisma.topic.create({
+    data: { name: topicName },
+  });
+
+  await prisma.topicSubject.create({
+    data: {
+      topicId: topic.id,
+      subjectId,
+    },
+  });
+
+  return topic;
+}
+
+async function ensureContent(topicId: number, topicName: string, order: number) {
+  const title = `Conteudo BNCC - ${topicName}`;
+  const existing = await prisma.content.findFirst({
+    where: { title, topicId },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  const type = contentTypes[order % contentTypes.length];
+
+  return prisma.content.create({
+    data: {
+      title,
+      type,
+      link: 'https://youtube.com/watch?v=bncc-exemplo',
+      thumbnailUrl: `https://picsum.photos/id/${200 + order}/600/400`,
+      topicId,
+      order,
+    },
+  });
+}
 
 async function main() {
-  console.log('🌱 Iniciando seed BNCC completo...')
+  console.log('Iniciando seed BNCC completo...');
 
-  // 1. Séries
-  const seriesData = [
-    { name: '1º Ano - Ensino Fundamental' }, { name: '2º Ano - Ensino Fundamental' },
-    { name: '3º Ano - Ensino Fundamental' }, { name: '4º Ano - Ensino Fundamental' },
-    { name: '5º Ano - Ensino Fundamental' }, { name: '6º Ano - Ensino Fundamental' },
-    { name: '7º Ano - Ensino Fundamental' }, { name: '8º Ano - Ensino Fundamental' },
-    { name: '9º Ano - Ensino Fundamental' },
-    { name: '1ª Série - Ensino Médio' }, { name: '2ª Série - Ensino Médio' },
-    { name: '3ª Série - Ensino Médio' },
-  ]
-  await prisma.series.createMany({ data: seriesData, skipDuplicates: true })
-  const allSeries = await prisma.series.findMany()
+  const allSeries: Series[] = [];
+  for (const name of seriesNames) {
+    const series = await ensureSeries(name);
+    allSeries.push(series);
+  }
 
-  // 2. Matérias (Subjects)
-  const subjectsData: any[] = []
-  allSeries.forEach((series) => {
-    const isFundamental = series.name.includes('Fundamental')
-    const materias = isFundamental
-      ? ['Língua Portuguesa', 'Matemática', 'Ciências', 'História', 'Geografia', 'Inglês', 'Artes', 'Educação Física']
-      : ['Língua Portuguesa', 'Matemática', 'Biologia', 'Física', 'Química', 'História', 'Geografia', 'Filosofia', 'Sociologia']
-    materias.forEach((name) => {
-      subjectsData.push({ name, seriesId: series.id })
-    })
-  })
-  await prisma.subject.createMany({ data: subjectsData, skipDuplicates: true })
-  const allSubjects = await prisma.subject.findMany({ include: { series: true } })
+  const allSubjects: Subject[] = [];
+  for (const series of allSeries) {
+    const subjectNames = series.name.includes('Fundamental')
+      ? fundamentalSubjects
+      : highSchoolSubjects;
 
-  // 3. Tópicos + relação many-to-many TopicSubject
-  const topicsData: any[] = []
-  const topicSubjectData: any[] = []
+    for (const name of subjectNames) {
+      const subject = await ensureSubject(name, series.id);
+      allSubjects.push(subject);
+    }
+  }
 
-  allSubjects.forEach((subject) => {
-    const baseTopics = getBaseTopics(subject.name)
-    baseTopics.forEach((name) => {
-      const topic = {
-        name,
-        // description não existe no model atual → removido
-      }
-      topicsData.push(topic)
-      // Depois vamos linkar com TopicSubject
-    })
-  })
+  for (const [subjectIndex, subject] of allSubjects.entries()) {
+    const baseTopics = getBaseTopics(subject.name);
 
-  await prisma.topic.createMany({ data: topicsData, skipDuplicates: true })
-  const allTopics = await prisma.topic.findMany()
+    for (const [topicIndex, topicName] of baseTopics.entries()) {
+      const topic = await ensureTopicForSubject(topicName, subject.id);
+      await ensureContent(topic.id, topic.name, subjectIndex + topicIndex);
+    }
+  }
 
-  // Link many-to-many (TopicSubject)
-  allSubjects.forEach((subject, subjIndex) => {
-    const topicsForThisSubject = allTopics.slice(subjIndex * 5, subjIndex * 5 + 5)
-    topicsForThisSubject.forEach((topic) => {
-      topicSubjectData.push({ topicId: topic.id, subjectId: subject.id })
-    })
-  })
-  await prisma.topicSubject.createMany({ data: topicSubjectData, skipDuplicates: true })
+  const [seriesCount, subjectCount, topicCount, contentCount] = await Promise.all([
+    prisma.series.count(),
+    prisma.subject.count(),
+    prisma.topic.count(),
+    prisma.content.count(),
+  ]);
 
-  // 4. Conteúdos
-  const contentsData: any[] = []
-  allTopics.forEach((topic, index) => {
-    contentsData.push({
-      title: `Conteúdo BNCC - ${topic.name}`,
-      type: index % 3 === 0 ? 'video' : index % 2 === 0 ? 'pdf' : 'exercicio',
-      link: 'https://youtube.com/watch?v=bncc-exemplo',
-      thumbnailUrl: `https://picsum.photos/id/${200 + index}/600/400`,
-      topicId: topic.id,
-    })
-  })
-  await prisma.content.createMany({ data: contentsData, skipDuplicates: true })
-
-  console.log('✅ Seed finalizado!')
-  console.log(`Séries: ${allSeries.length} | Matérias: ${allSubjects.length} | Tópicos: ${allTopics.length} | Conteúdos: ${contentsData.length}`)
+  console.log('Seed finalizado!');
+  console.log(
+    `Series: ${seriesCount} | Materias: ${subjectCount} | Topicos: ${topicCount} | Conteudos: ${contentCount}`
+  );
 }
 
 function getBaseTopics(subjectName: string): string[] {
-  if (subjectName === 'Língua Portuguesa') return ['Alfabetização', 'Gêneros textuais', 'Gramática', 'Produção textual']
-  if (subjectName === 'Matemática') return ['Números', 'Geometria', 'Frações', 'Álgebra']
-  // ... (adicione mais se quiser)
-  return ['Introdução', 'Conceitos básicos', 'Exercícios práticos']
+  if (subjectName === 'Lingua Portuguesa') {
+    return ['Alfabetizacao', 'Generos textuais', 'Gramatica', 'Producao textual'];
+  }
+
+  if (subjectName === 'Matematica') {
+    return ['Numeros', 'Geometria', 'Fracoes', 'Algebra'];
+  }
+
+  return ['Introducao', 'Conceitos basicos', 'Exercicios praticos'];
 }
 
 main()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());

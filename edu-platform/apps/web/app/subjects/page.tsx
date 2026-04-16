@@ -18,7 +18,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/lib/trpc';
 
 
-// legacy block removed
 /*
   name: z.string().min(1, 'Nome é obrigatório').min(3, 'Mínimo 3 caracteres'),
 });
@@ -29,7 +28,7 @@ type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>;
 function SubjectsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const seriesIdParam = searchParams.get('seriesId');
   const seriesId = Number(seriesIdParam || 0);
 
@@ -37,12 +36,12 @@ function SubjectsPageContent() {
     data: subjects = [],
     isLoading,
     error,
-  } = trpc.subject.getBySeries.useQuery(
+  } = trpc.subject.findBySeries.useQuery(
     { seriesId },
     { enabled: seriesId > 0 }
   );
 
-  const { data: series } = trpc.series.getById.useQuery(seriesId, {
+  const { data: series } = trpc.series.findById.useQuery(seriesId, {
     enabled: seriesId > 0,
   });
 

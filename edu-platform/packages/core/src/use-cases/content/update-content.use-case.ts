@@ -24,6 +24,14 @@ export class UpdateContentUseCase {
                 ? null
                 : input.description.trim() || null;
 
+    const link =
+        input.link === undefined
+            ? content.link
+            : input.link.trim() || content.link;
+
+    const topicId =
+        input.topicId === undefined ? content.topicId : input.topicId;
+
     const videoUrl =
         input.videoUrl === undefined
             ? content.videoUrl ?? null
@@ -47,7 +55,9 @@ export class UpdateContentUseCase {
     return this.contentRepository.update(input.id, {
       title,
       description,
+      topicId,
       type: input.type ?? content.type,
+      link,
       videoUrl,
       pdfUrl,
       thumbnailUrl,

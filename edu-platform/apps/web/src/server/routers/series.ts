@@ -11,12 +11,12 @@ import {
 } from '@edu-platform/core';
 
 export const seriesRouter = router({
-    getAll: publicProcedure.query(async ({ ctx }) => {
+    findAll: publicProcedure.query(async ({ ctx }) => {
         const useCase = new GetAllSeriesUseCase(ctx.seriesRepository);
         return useCase.execute();
     }),
 
-    getById: publicProcedure
+    findById: publicProcedure
         .input(z.number())
         .query(async ({ input, ctx }) => {
             const useCase = new GetSeriesByIdUseCase(ctx.seriesRepository);

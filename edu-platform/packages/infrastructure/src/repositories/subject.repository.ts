@@ -16,7 +16,7 @@ export class SubjectRepository implements ISubjectRepository {
     });
   }
 
-  async getBySeries(seriesId: number): Promise<Subject[]> {
+  async findBySeries(seriesId: number): Promise<Subject[]> {
     return prisma.subject.findMany({
       where: { seriesId },
       include: { series: true },

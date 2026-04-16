@@ -4,8 +4,9 @@ import type { CreateContentInput, UpdateContentInput } from '../dtos';
 import type { Content } from '../entities';
 
 export interface IContentRepository {
+  findAll(): Promise<Content[]>;
   findById(id: number): Promise<Content | null>;
-  getByTopic(topicId: number): Promise<Content[]>;
+  findByTopic(topicId: number): Promise<Content[]>;
   countByTopicId(topicId: number): Promise<number>;
   create(data: CreateContentInput): Promise<Content>;
   update(id: number, data: Omit<UpdateContentInput, 'id'>): Promise<Content>;
