@@ -1,8 +1,8 @@
 ﻿// packages/infrastructure/src/mappers/topic.mapper.ts
 
 import type { Content, Subject, Topic, TopicSubject } from '@edu-platform/core';
-import { ContentMapper } from './content.mapper';
-import { SubjectMapper } from './subject.mapper';
+import { ContentMapper } from './content.mapper.ts';
+import { SubjectMapper } from './subject.mapper.ts';
 
 type PrismaTopicSubject = {
     topicId: number;

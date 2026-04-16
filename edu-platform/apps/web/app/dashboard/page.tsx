@@ -16,6 +16,9 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const { data: series = [], isLoading, error } = trpc.series.find.useQuery();
+  const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
+    enabled: status === 'authenticated',
+  });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -79,6 +82,18 @@ export default function DashboardPage() {
             >
               Ver materias
             </Link>
+            <Link
+              href="/vestibulares"
+              className="font-medium text-primary hover:text-primary/80"
+            >
+              Vestibulares
+            </Link>
+            <Link
+              href="/checklist"
+              className="font-medium text-primary hover:text-primary/80"
+            >
+              Checklist
+            </Link>
 
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
@@ -125,6 +140,39 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </Link>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl">
+              Progresso recente
+              <Badge variant="secondary">{checklist.length}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {checklist.length === 0 ? (
+              <p className="text-muted-foreground">
+                Você ainda não marcou conteúdos como concluídos.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {checklist.slice(0, 5).map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-border bg-card p-4"
+                  >
+                    <p className="font-medium text-foreground">
+                      {item.content?.title || `Conteudo #${item.contentId}`}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.content?.type || 'Material'} concluído em{' '}
+                      {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
                 ))}
               </div>
             )}

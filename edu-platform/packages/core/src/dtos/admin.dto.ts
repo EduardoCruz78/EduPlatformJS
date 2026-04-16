@@ -79,6 +79,68 @@ export interface UpdateVestibularInput {
   imageUrl?: string | null;
 }
 
+export interface CreateAccessibilityCategoryInput {
+  name: string;
+  description?: string | null;
+}
+
+export interface CreateAccessibilityThemeInput {
+  accessibilityCategoryId: number;
+  accessibilityNeedId?: number | null;
+  title: string;
+  content?: string | null;
+}
+
+export interface AddAccessibilityCategoryTopicInput {
+  accessibilityCategoryId: number;
+  topicId: number;
+}
+
+export interface CreateVestibularSubjectInput {
+  vestibularId: number;
+  name: string;
+}
+
+export interface AttachVestibularSubjectInput {
+  vestibularId: number;
+  subjectId: number;
+}
+
+export interface DeleteVestibularSubjectInput {
+  vestibularId: number;
+  subjectId: number;
+}
+
+export interface CreateVestibularTopicInput {
+  vestibularId: number;
+  name: string;
+  notes?: string | null;
+  tags?: string | null;
+}
+
+export interface DeleteVestibularTopicInput {
+  vestibularId: number;
+  topicId: number;
+}
+
+export interface CreateVestibularContentInput {
+  vestibularId: number;
+  title: string;
+  type?: string | null;
+  link?: string | null;
+  pdfUrl?: string | null;
+}
+
+export interface ShareVestibularContentInput {
+  vestibularId: number;
+  contentId: number;
+}
+
+export interface DeleteVestibularContentInput {
+  vestibularId: number;
+  contentId: number;
+}
+
 export interface CreateChecklistInput {
   userId: string;
   contentId: number;

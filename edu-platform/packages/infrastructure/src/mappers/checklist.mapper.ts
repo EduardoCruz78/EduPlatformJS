@@ -1,6 +1,6 @@
 import type { Checklist } from '@edu-platform/core';
-import { ContentMapper } from './content.mapper';
-import { UserMapper } from './user.mapper';
+import { ContentMapper } from './content.mapper.ts';
+import { UserMapper } from './user.mapper.ts';
 
 type PrismaContent = {
   id: number;

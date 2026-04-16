@@ -38,6 +38,62 @@ function createVestibularRepositoryMock(options?: {
       calls.findByNameAndYear.push({ name, year });
       return options?.existingByNameAndYear ?? null;
     },
+    async findSubjects() {
+      return [];
+    },
+    async attachSubject() {
+      return;
+    },
+    async deleteSubject() {
+      return;
+    },
+    async findTopics() {
+      return [];
+    },
+    async createTopic(data) {
+      return {
+        id: 1,
+        vestibularId: data.vestibularId,
+        name: data.name,
+        notes: data.notes ?? null,
+        tags: data.tags ?? null,
+        isShared: false,
+        originalTopicId: null,
+      };
+    },
+    async deleteTopic() {
+      return;
+    },
+    async findContents() {
+      return [];
+    },
+    async createContent(data) {
+      return {
+        id: 1,
+        vestibularId: data.vestibularId,
+        title: data.title,
+        type: data.type ?? null,
+        link: data.link ?? null,
+        pdfUrl: data.pdfUrl ?? null,
+        isShared: false,
+        originalContentId: null,
+      };
+    },
+    async shareContent(data) {
+      return {
+        id: 1,
+        vestibularId: data.vestibularId,
+        title: 'Compartilhado',
+        type: 'ARTICLE',
+        link: null,
+        pdfUrl: null,
+        isShared: true,
+        originalContentId: data.contentId,
+      };
+    },
+    async deleteContent() {
+      return;
+    },
     async create(data: CreateVestibularInput) {
       calls.create.push(data);
       return {

@@ -1,5 +1,5 @@
 import type { Series, Subject } from '@edu-platform/core';
-import { SubjectMapper } from './subject.mapper';
+import { SubjectMapper } from './subject.mapper.ts';
 
 type PrismaSubject = {
   id: number;

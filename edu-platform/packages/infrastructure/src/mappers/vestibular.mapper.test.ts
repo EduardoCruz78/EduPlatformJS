@@ -32,3 +32,28 @@ test('VestibularMapper.toVestibularSubject preserves vestibularId from persisten
     },
   });
 });
+
+test('VestibularMapper.toVestibularContent keeps the vestibular content metadata', () => {
+  const content = VestibularMapper.toVestibularContent({
+    id: 9,
+    vestibularId: 42,
+    title: 'Lista exclusiva',
+    type: 'PDF',
+    link: null,
+    pdfUrl: 'https://example.com/lista.pdf',
+    originalContentId: null,
+    isShared: false,
+  });
+
+  assert.deepEqual(content, {
+    id: 9,
+    vestibularId: 42,
+    title: 'Lista exclusiva',
+    type: 'PDF',
+    link: null,
+    pdfUrl: 'https://example.com/lista.pdf',
+    isShared: false,
+    originalContentId: null,
+    content: null,
+  });
+});

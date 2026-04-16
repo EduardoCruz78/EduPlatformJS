@@ -6,10 +6,12 @@ import { cn } from '@/lib/utils';
 
 const links = [
   { href: '/admin', label: 'Painel' },
+  { href: '/admin/accessibility', label: 'Accessibility' },
   { href: '/admin/subjects', label: 'Materias' },
   { href: '/admin/series', label: 'Series' },
   { href: '/admin/topics', label: 'Topicos' },
   { href: '/admin/contents', label: 'Conteudos' },
+  { href: '/admin/vestibulares', label: 'Vestibulares' },
 ];
 
 export default function SidebarAdmin() {
