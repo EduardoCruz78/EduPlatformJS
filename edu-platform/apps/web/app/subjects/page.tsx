@@ -7,24 +7,10 @@ import Link from 'next/link';
 import type { Subject } from '@edu-platform/core';
 
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-
 import { trpc } from '@/lib/trpc';
 
-
-/*
-  name: z.string().min(1, 'Nome é obrigatório').min(3, 'Mínimo 3 caracteres'),
-});
-
-type UpdateSubjectFormData = z.infer<typeof updateSubjectSchema>;
-
-*/
 function SubjectsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,65 +22,11 @@ function SubjectsPageContent() {
     data: subjects = [],
     isLoading,
     error,
-  } = trpc.subject.findBySeries.useQuery(
-    { seriesId },
-    { enabled: seriesId > 0 }
-  );
+  } = trpc.subject.findBySeries.useQuery({ seriesId }, { enabled: seriesId > 0 });
 
   const { data: series } = trpc.series.findById.useQuery(seriesId, {
     enabled: seriesId > 0,
   });
-
-  /*
-  const form = useForm<UpdateSubjectFormData>({
-    resolver: zodResolver(updateSubjectSchema),
-    defaultValues: {
-      name: '',
-    },
-  });
-
-  useEffect(() => {
-    if (subject) {
-      form.reset({
-        name: subject.name,
-      });
-    }
-  }, [subject, form]);
-
-  const updateSubjectMutation = trpc.subject.update.useMutation({
-    onSuccess: () => {
-      router.push('/admin/subjects');
-    },
-    onError: (error: unknown) => {
-      const message =
-          error instanceof Error ? error.message : 'Erro ao atualizar matéria';
-
-      form.setError('root', { message });
-    },
-  });
-
-  useEffect(() => {
-    if (!session) {
-      router.push('/login');
-    }
-  }, [session, router]);
-
-  const onSubmit = async (data: UpdateSubjectFormData) => {
-    await updateSubjectMutation.mutateAsync({
-      id: subjectId,
-      name: data.name,
-    });
-  };
-
-  if (!session) {
-    return <div className="p-8 text-center">Redirecionando...</div>;
-  }
-
-  if (Number.isNaN(subjectId)) {
-    return <div className="p-8 text-center">ID inválido</div>;
-  }
-
-  */
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -146,7 +78,9 @@ function SubjectsPageContent() {
           <div>
             <h1 className="text-4xl font-bold text-foreground">Materias</h1>
             <p className="mt-1 text-muted-foreground">
-              {series ? `Selecione uma materia da serie ${series.name}` : 'Selecione uma materia'}
+              {series
+                ? `Selecione uma materia da serie ${series.name}`
+                : 'Selecione uma materia'}
             </p>
           </div>
 
@@ -192,7 +126,8 @@ function SubjectsPageContent() {
                           {subject.name}
                         </h2>
                         <p className="mt-2 text-sm text-muted-foreground">
-                          {subject.description || 'Clique para ver os topicos desta materia.'}
+                          {subject.description ||
+                            'Clique para ver os topicos desta materia.'}
                         </p>
                       </div>
                       {subject.series ? (
@@ -208,82 +143,6 @@ function SubjectsPageContent() {
       </div>
     </div>
   );
-  /*
-  return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/subjects">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-
-          <div>
-            <h1 className="text-3xl font-bold">Editar Matéria</h1>
-            <p className="text-muted-foreground mt-2">
-              Atualize as informações da matéria
-            </p>
-          </div>
-        </div>
-
-        <Card className="max-w-2xl">
-          <CardHeader>
-            <CardTitle>Informações</CardTitle>
-            <CardDescription>Modifique os dados</CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            {isLoading ? (
-                <div className="space-y-6">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-            ) : (
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
-                >
-                  <Input {...form.register('name')} />
-
-                  {form.formState.errors.root && (
-                      <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
-                        {form.formState.errors.root.message}
-                      </div>
-                  )}
-
-                  <div className="flex gap-3 justify-end">
-                    <Link href="/admin/subjects">
-                      <Button
-                          type="button"
-                          variant="outline"
-                          disabled={updateSubjectMutation.isPending}
-                      >
-                        Cancelar
-                      </Button>
-                    </Link>
-
-                    <Button
-                        type="submit"
-                        disabled={updateSubjectMutation.isPending}
-                        className="flex items-center gap-2"
-                    >
-                      {updateSubjectMutation.isPending ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Atualizando...
-                          </>
-                      ) : (
-                          'Salvar'
-                      )}
-                    </Button>
-                  </div>
-                </form>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-  );
-  */
 }
 
 export default function SubjectsPage() {

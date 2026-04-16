@@ -3,66 +3,62 @@
 import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
 import { z } from 'zod';
 import {
-    CreateTopicUseCase,
-    DeleteTopicUseCase,
-    FindTopicByIdUseCase,
-    FindTopicsBySubjectUseCase,
-    FindTopicsUseCase,
-    UpdateTopicUseCase,
+  CreateTopicUseCase,
+  DeleteTopicUseCase,
+  FindTopicByIdUseCase,
+  FindTopicsBySubjectUseCase,
+  FindTopicsUseCase,
+  UpdateTopicUseCase,
 } from '@edu-platform/core';
 
 export const topicRouter = router({
-    find: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new FindTopicsUseCase(ctx.topicRepository);
-        return useCase.execute();
+  find: publicProcedure.query(async ({ ctx }) => {
+    const useCase = new FindTopicsUseCase(ctx.topicRepository);
+    return useCase.execute();
+  }),
+
+  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+    const useCase = new FindTopicByIdUseCase(ctx.topicRepository);
+    return useCase.execute(input);
+  }),
+
+  findBySubject: publicProcedure
+    .input(z.object({ subjectId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const useCase = new FindTopicsBySubjectUseCase(ctx.topicRepository);
+      return useCase.execute(input.subjectId);
     }),
 
-    findById: publicProcedure
-        .input(z.number())
-        .query(async ({ input, ctx }) => {
-            const useCase = new FindTopicByIdUseCase(ctx.topicRepository);
-            return useCase.execute(input);
-        }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, 'Nome e obrigatorio'),
+        subjectIds: z.array(z.number()).min(1, 'Selecione ao menos uma materia'),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new CreateTopicUseCase(ctx.topicRepository);
+      return useCase.execute(input);
+    }),
 
-    findBySubject: publicProcedure
-        .input(z.object({ subjectId: z.number() }))
-        .query(async ({ input, ctx }) => {
-            const useCase = new FindTopicsBySubjectUseCase(ctx.topicRepository);
-            return useCase.execute(input.subjectId);
-        }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+        subjectIds: z.array(z.number()).optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new UpdateTopicUseCase(ctx.topicRepository);
+      return useCase.execute(input);
+    }),
 
-    create: protectedProcedure
-        .input(
-            z.object({
-                name: z.string().min(1, 'Nome é obrigatório'),
-                subjectIds: z.array(z.number()).min(1, 'Selecione ao menos uma matéria'),
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new CreateTopicUseCase(ctx.topicRepository);
-            return useCase.execute(input);
-        }),
-
-    update: protectedProcedure
-        .input(
-            z.object({
-                id: z.number(),
-                name: z.string().optional(),
-                subjectIds: z.array(z.number()).optional(),
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new UpdateTopicUseCase(ctx.topicRepository);
-            return useCase.execute(input);
-        }),
-
-    delete: protectedProcedure
-        .input(z.number())
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new DeleteTopicUseCase(
-                ctx.topicRepository,
-                ctx.contentRepository
-            );
-            return useCase.execute(input);
-        }),
+  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const useCase = new DeleteTopicUseCase(
+      ctx.topicRepository,
+      ctx.contentRepository
+    );
+    return useCase.execute(input);
+  }),
 });

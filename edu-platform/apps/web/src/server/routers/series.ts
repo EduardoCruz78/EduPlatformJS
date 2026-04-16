@@ -3,56 +3,52 @@
 import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
 import { z } from 'zod';
 import {
-    CreateSeriesUseCase,
-    DeleteSeriesUseCase,
-    FindSeriesByIdUseCase,
-    FindSeriesUseCase,
-    UpdateSeriesUseCase,
+  CreateSeriesUseCase,
+  DeleteSeriesUseCase,
+  FindSeriesByIdUseCase,
+  FindSeriesUseCase,
+  UpdateSeriesUseCase,
 } from '@edu-platform/core';
 
 export const seriesRouter = router({
-    find: publicProcedure.query(async ({ ctx }) => {
-        const useCase = new FindSeriesUseCase(ctx.seriesRepository);
-        return useCase.execute();
+  find: publicProcedure.query(async ({ ctx }) => {
+    const useCase = new FindSeriesUseCase(ctx.seriesRepository);
+    return useCase.execute();
+  }),
+
+  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+    const useCase = new FindSeriesByIdUseCase(ctx.seriesRepository);
+    return useCase.execute(input);
+  }),
+
+  create: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, 'Nome e obrigatorio'),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new CreateSeriesUseCase(ctx.seriesRepository);
+      return useCase.execute(input);
     }),
 
-    findById: publicProcedure
-        .input(z.number())
-        .query(async ({ input, ctx }) => {
-            const useCase = new FindSeriesByIdUseCase(ctx.seriesRepository);
-            return useCase.execute(input);
-        }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new UpdateSeriesUseCase(ctx.seriesRepository);
+      return useCase.execute(input);
+    }),
 
-    create: protectedProcedure
-        .input(
-            z.object({
-                name: z.string().min(1, 'Nome é obrigatório'),
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new CreateSeriesUseCase(ctx.seriesRepository);
-            return useCase.execute(input);
-        }),
-
-    update: protectedProcedure
-        .input(
-            z.object({
-                id: z.number(),
-                name: z.string().optional(),
-            })
-        )
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new UpdateSeriesUseCase(ctx.seriesRepository);
-            return useCase.execute(input);
-        }),
-
-    delete: protectedProcedure
-        .input(z.number())
-        .mutation(async ({ input, ctx }) => {
-            const useCase = new DeleteSeriesUseCase(
-                ctx.seriesRepository,
-                ctx.topicRepository
-            );
-            return useCase.execute(input);
-        }),
+  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+    const useCase = new DeleteSeriesUseCase(
+      ctx.seriesRepository,
+      ctx.topicRepository
+    );
+    return useCase.execute(input);
+  }),
 });

@@ -1,11 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import type { Series, Subject } from '@edu-platform/core';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -34,11 +40,9 @@ export default function SubjectsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Queries
   const { data: subjects, isLoading, refetch } = trpc.subject.find.useQuery();
   const { data: series } = trpc.series.find.useQuery();
 
-  // Mutations
   const deleteSubjectMutation = trpc.subject.delete.useMutation({
     onSuccess: () => {
       setDeleteId(null);
@@ -54,7 +58,6 @@ export default function SubjectsPage() {
     },
   });
 
-  // Verificar autenticação
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login');
@@ -62,14 +65,19 @@ export default function SubjectsPage() {
   }, [status, router]);
 
   const handleDelete = async () => {
-    if (!deleteId) return;
+    if (!deleteId) {
+      return;
+    }
 
     setIsDeleting(true);
     await deleteSubjectMutation.mutateAsync(deleteId);
   };
 
   const getSeriesName = (seriesId: number | null | undefined): string => {
-    if (!seriesId) return 'N/A';
+    if (!seriesId) {
+      return 'N/A';
+    }
+
     return series?.find((item: Series) => item.id === seriesId)?.name || 'N/A';
   };
 
@@ -83,35 +91,33 @@ export default function SubjectsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Matérias</h1>
-          <p className="text-muted-foreground mt-2">
-            Gerencie todas as matérias do sistema
+          <h1 className="text-3xl font-bold tracking-tight">Materias</h1>
+          <p className="mt-2 text-muted-foreground">
+            Gerencie todas as materias do sistema
           </p>
         </div>
         <Link href="/admin/subjects/create">
           <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            Nova Matéria
+            <Plus className="h-4 w-4" />
+            Nova materia
           </Button>
         </Link>
       </div>
 
-      {/* Card com Tabela */}
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Matérias</CardTitle>
+          <CardTitle>Lista de materias</CardTitle>
           <CardDescription>
-            {subjects?.length || 0} matérias cadastradas no sistema
+            {subjects?.length || 0} materias cadastradas no sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="h-12 w-full" />
               ))}
             </div>
           ) : subjects && subjects.length > 0 ? (
@@ -121,8 +127,8 @@ export default function SubjectsPage() {
                   <TableRow>
                     <TableHead>ID</TableHead>
                     <TableHead>Nome</TableHead>
-                    <TableHead>Série</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    <TableHead>Serie</TableHead>
+                    <TableHead className="text-right">Acoes</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -141,7 +147,7 @@ export default function SubjectsPage() {
                         <div className="flex items-center justify-end gap-2">
                           <Link href={`/admin/subjects/${subject.id}/edit`}>
                             <Button variant="ghost" size="sm" className="gap-2">
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="h-4 w-4" />
                               Editar
                             </Button>
                           </Link>
@@ -151,7 +157,7 @@ export default function SubjectsPage() {
                             className="text-destructive hover:text-destructive"
                             onClick={() => setDeleteId(subject.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -161,11 +167,11 @@ export default function SubjectsPage() {
               </Table>
             </div>
           ) : (
-            <div className="text-center py-10">
-              <p className="text-muted-foreground">Nenhuma matéria cadastrada</p>
+            <div className="py-10 text-center">
+              <p className="text-muted-foreground">Nenhuma materia cadastrada</p>
               <Link href="/admin/subjects/create">
                 <Button variant="outline" className="mt-4">
-                  Criar primeira matéria
+                  Criar primeira materia
                 </Button>
               </Link>
             </div>
@@ -173,16 +179,21 @@ export default function SubjectsPage() {
         </CardContent>
       </Card>
 
-      {/* Dialog de Confirmação de Exclusão */}
-      <AlertDialog open={deleteId !== null} onOpenChange={(open: boolean) => {
-        if (!open) setDeleteId(null);
-      }}>
+      <AlertDialog
+        open={deleteId !== null}
+        onOpenChange={(open: boolean) => {
+          if (!open) {
+            setDeleteId(null);
+          }
+        }}
+      >
         <AlertDialogContent>
-          <AlertDialogTitle>Deletar Matéria</AlertDialogTitle>
+          <AlertDialogTitle>Deletar materia</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar esta matéria? Esta ação não pode ser desfeita.
+            Tem certeza que deseja deletar esta materia? Esta acao nao pode ser
+            desfeita.
           </AlertDialogDescription>
-          <div className="flex gap-3 justify-end">
+          <div className="flex justify-end gap-3">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
@@ -191,7 +202,7 @@ export default function SubjectsPage() {
             >
               {isDeleting ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Deletando...
                 </>
               ) : (
