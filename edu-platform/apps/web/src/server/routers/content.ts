@@ -53,6 +53,10 @@ export const contentRouter = router({
         thumbnailUrl: requiredUrlString('Thumbnail'),
         videoUrl: optionalUrlString(),
         pdfUrl: optionalUrlString(),
+        transcript: optionalTrimmedString(8000),
+        captionsUrl: optionalUrlString(),
+        librasUrl: optionalUrlString(),
+        audioDescriptionUrl: optionalUrlString(),
         order: positiveIntSchema.optional(),
       })
     )
@@ -73,6 +77,10 @@ export const contentRouter = router({
         videoUrl: optionalUrlString(),
         pdfUrl: optionalUrlString(),
         thumbnailUrl: optionalUrlString(),
+        transcript: optionalTrimmedString(8000),
+        captionsUrl: optionalUrlString(),
+        librasUrl: optionalUrlString(),
+        audioDescriptionUrl: optionalUrlString(),
         order: positiveIntSchema.optional(),
       })
     )

@@ -48,6 +48,10 @@ export interface CreateContentInput {
   thumbnailUrl: string;
   videoUrl?: string | null;
   pdfUrl?: string | null;
+  transcript?: string | null;
+  captionsUrl?: string | null;
+  librasUrl?: string | null;
+  audioDescriptionUrl?: string | null;
   order?: number;
 }
 
@@ -61,6 +65,10 @@ export interface UpdateContentInput {
   videoUrl?: string | null;
   pdfUrl?: string | null;
   thumbnailUrl?: string | null;
+  transcript?: string | null;
+  captionsUrl?: string | null;
+  librasUrl?: string | null;
+  audioDescriptionUrl?: string | null;
   order?: number;
 }
 
@@ -129,6 +137,10 @@ export interface CreateVestibularContentInput {
   type?: string | null;
   link?: string | null;
   pdfUrl?: string | null;
+  transcript?: string | null;
+  captionsUrl?: string | null;
+  librasUrl?: string | null;
+  audioDescriptionUrl?: string | null;
 }
 
 export interface ShareVestibularContentInput {

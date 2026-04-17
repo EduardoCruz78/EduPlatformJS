@@ -13,13 +13,13 @@ export const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex h-11 w-full items-center justify-between rounded-2xl border border-white/8 bg-[#1a1a1a] px-4 py-2 text-sm text-slate-100 shadow-sm placeholder:text-slate-500 focus:outline-none focus:ring-4 focus:ring-[rgba(255,198,39,0.2)] disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-      className
-    )}
-    {...props}
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(
+        "flex h-11 w-full items-center justify-between rounded-2xl border border-white/8 bg-[#1a1a1a] px-4 py-2 text-sm text-slate-100 shadow-sm placeholder:text-slate-500 focus-visible:border-[rgba(255,198,39,0.72)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(255,198,39,0.22)] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        className
+      )}
+      {...props}
   >
     {children}
     <SelectPrimitive.Icon asChild>

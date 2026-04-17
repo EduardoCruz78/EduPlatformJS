@@ -11,6 +11,10 @@ type PrismaContent = {
     thumbnailUrl: string;
     videoUrl: string | null;
     pdfUrl: string | null;
+    transcript: string | null;
+    captionsUrl: string | null;
+    librasUrl: string | null;
+    audioDescriptionUrl: string | null;
     order: number;
     topicId: number;
 };
@@ -26,6 +30,10 @@ export class ContentMapper {
             thumbnailUrl: data.thumbnailUrl,
             videoUrl: data.videoUrl,
             pdfUrl: data.pdfUrl,
+            transcript: data.transcript,
+            captionsUrl: data.captionsUrl,
+            librasUrl: data.librasUrl,
+            audioDescriptionUrl: data.audioDescriptionUrl,
             order: data.order,
             topicId: data.topicId,
         };

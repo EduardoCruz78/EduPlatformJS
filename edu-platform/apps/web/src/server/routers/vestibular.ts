@@ -140,6 +140,10 @@ export const vestibularRouter = router({
         type: z.enum(['VIDEO', 'PDF', 'ARTICLE']).optional().nullable(),
         link: optionalUrlString(),
         pdfUrl: optionalUrlString(),
+        transcript: optionalTrimmedString(8000),
+        captionsUrl: optionalUrlString(),
+        librasUrl: optionalUrlString(),
+        audioDescriptionUrl: optionalUrlString(),
       })
     )
     .mutation(async ({ input, ctx }) => {

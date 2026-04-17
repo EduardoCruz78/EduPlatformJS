@@ -41,6 +41,24 @@ export class UpdateContentUseCase {
           ? content.thumbnailUrl
           : input.thumbnailUrl.trim() || content.thumbnailUrl;
 
+    const transcript =
+      input.transcript === undefined
+        ? content.transcript ?? null
+        : input.transcript === null
+          ? null
+          : input.transcript.trim() || null;
+
+    const captionsUrl =
+      input.captionsUrl === undefined ? content.captionsUrl ?? null : input.captionsUrl;
+
+    const librasUrl =
+      input.librasUrl === undefined ? content.librasUrl ?? null : input.librasUrl;
+
+    const audioDescriptionUrl =
+      input.audioDescriptionUrl === undefined
+        ? content.audioDescriptionUrl ?? null
+        : input.audioDescriptionUrl;
+
     const order = input.order === undefined ? content.order ?? 0 : input.order;
 
     return this.contentRepository.update(input.id, {
@@ -52,6 +70,10 @@ export class UpdateContentUseCase {
       videoUrl,
       pdfUrl,
       thumbnailUrl,
+      transcript,
+      captionsUrl,
+      librasUrl,
+      audioDescriptionUrl,
       order,
     });
   }

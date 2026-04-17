@@ -6,24 +6,23 @@ import { useSession } from 'next-auth/react';
 import {
   ArrowRight,
   BookOpen,
-  BookOpenText,
   Calendar,
-  CheckCircle2,
   ChevronRight,
   Search,
-  ShieldCheck,
   X,
 } from 'lucide-react';
 import type { Topic as TopicItem } from '@edu-platform/core';
 
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { buildContentsHref, buildSubjectsHref, buildTopicsHref } from '@/lib/study-navigation';
 import { trpc } from '@/lib/trpc';
 
 const seriesIcons = ['EG', 'VB', 'AC', 'TP', 'CT', 'PR'];
+const searchTitleId = 'home-search-dialog-title';
+const searchDescriptionId = 'home-search-dialog-description';
+const searchInputId = 'home-search-input';
 
 type SeriesGroup = 'fundamental' | 'medio';
 type SearchResult = {
@@ -72,11 +71,28 @@ function getSeriesMeta(name: string) {
   };
 }
 
+function getFocusableElements(container: HTMLElement) {
+  const selectors = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(',');
+
+  return Array.from(container.querySelectorAll<HTMLElement>(selectors)).filter(
+    (element) => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true'
+  );
+}
+
 export default function HomePage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const searchDialogRef = useRef<HTMLDivElement | null>(null);
+  const openSearchButtonRef = useRef<HTMLButtonElement | null>(null);
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const utils = trpc.useUtils();
 
@@ -84,10 +100,6 @@ export default function HomePage() {
   const { data: topics = [] } = trpc.topic.find.useQuery();
   const { data: vestibulares = [], isLoading: isLoadingVestibulares } =
     trpc.vestibular.find.useQuery();
-  const { data: accessibilityCategories = [] } = trpc.accessibility.getCategories.useQuery();
-  const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
-    enabled: status === 'authenticated',
-  });
 
   const orderedSeries = useMemo(() => {
     return [...series].sort((left, right) => {
@@ -157,9 +169,9 @@ export default function HomePage() {
           id: `series-${serie.id}`,
           kind: 'serie',
           title: serie.name,
-          description: `${serie.subjects?.length ?? 0} materias vinculadas`,
+          description: `${serie.subjects?.length ?? 0} matérias vinculadas`,
           href: buildSubjectsHref(serie.id),
-          badge: 'Serie',
+          badge: 'Série',
           score: buildScore(serie.name, seriesSearchable, 30),
         });
       }
@@ -175,9 +187,9 @@ export default function HomePage() {
             id: `subject-${subject.id}`,
             kind: 'materia',
             title: subject.name,
-            description: `${serie.name} • materia`,
+            description: `${serie.name} • matéria`,
             href: buildTopicsHref({ subjectId: subject.id, seriesId: serie.id }),
-            badge: 'Materia',
+            badge: 'Matéria',
             score: buildScore(subject.name, subjectContext, 45),
           });
         }
@@ -200,13 +212,13 @@ export default function HomePage() {
           id: `topic-${topic.id}-${subject.id}`,
           kind: 'topico',
           title: topic.name,
-          description: `${subject.name} • ${seriesItem?.name ?? 'Serie nao identificada'}`,
+          description: `${subject.name} • ${seriesItem?.name ?? 'Série não identificada'}`,
           href: buildContentsHref({
             topicId: topic.id,
             subjectId: subject.id,
             seriesId: seriesItem?.id,
           }),
-          badge: 'Topico',
+          badge: 'Tópico',
           score: buildScore(topic.name, topicContext, 70),
         });
       });
@@ -229,143 +241,152 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!searchOpen) {
+      document.body.style.overflow = '';
+      openSearchButtonRef.current?.focus();
       return;
     }
 
+    document.body.style.overflow = 'hidden';
     searchInputRef.current?.focus();
+
+    const dialog = searchDialogRef.current;
+    if (!dialog) {
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        event.preventDefault();
         setSearchOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements = getFocusableElements(dialog);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [searchOpen]);
 
   return (
     <div className="min-h-screen">
-      <section className="border-b border-white/8 bg-black">
+      <header className="border-b border-white/8 bg-black">
         <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8 lg:pb-24">
           <div className="edu-topbar md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
-              <div className="edu-home-icon h-11 w-11">
+              <div className="edu-home-icon h-11 w-11" aria-hidden="true">
                 <BookOpen className="h-5 w-5" strokeWidth={2.5} />
               </div>
               <div>
                 <p className="font-display text-2xl leading-none text-white">EduPlatform</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  estudo guiado para vestibulares com acessibilidade em mente
-                </p>
               </div>
             </div>
 
-            <nav className="flex flex-wrap items-center gap-2">
-              <Link href="#series" className="edu-nav-link">
-                Series
-              </Link>
-              <Link href="/vestibulares" className="edu-nav-link">
-                Vestibulares
-              </Link>
-              <Link href="/accessibility" className="edu-nav-link">
-                Accessibility
-              </Link>
-              <Link href={session ? '/dashboard' : '/login'} className="edu-nav-link">
-                {session ? 'Painel' : 'Entrar'}
-              </Link>
-            </nav>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <nav aria-label="Navegação principal" className="flex flex-wrap items-center gap-2">
+                <Link href="#series" className="edu-nav-link">
+                  Séries
+                </Link>
+                <Link href="/vestibulares" className="edu-nav-link">
+                  Vestibulares
+                </Link>
+                <Link href="/accessibility" className="edu-nav-link">
+                  Accessibility
+                </Link>
+                <Link href={session ? '/dashboard' : '/login'} className="edu-nav-link">
+                  {session ? 'Painel' : 'Entrar'}
+                </Link>
+              </nav>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-label="Abrir busca"
-                onClick={() => setSearchOpen(true)}
-                className="edu-nav-link h-11 w-11 justify-center p-0"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-              {session ? (
-                <Link href="/dashboard" className="edu-action">
-                  Abrir meu painel
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              ) : (
-                <Link href="/login" className="edu-action">
-                  Entrar com Google
-                </Link>
-              )}
+              <div className="flex items-center gap-2">
+                <button
+                  ref={openSearchButtonRef}
+                  type="button"
+                  aria-label="Abrir busca"
+                  aria-haspopup="dialog"
+                  aria-expanded={searchOpen}
+                  aria-controls={searchTitleId}
+                  onClick={() => setSearchOpen(true)}
+                  className="edu-nav-link h-11 w-11 justify-center p-0"
+                >
+                  <Search className="h-4 w-4" aria-hidden="true" />
+                </button>
+                {session ? (
+                  <Link href="/dashboard" className="edu-action">
+                    Abrir meu painel
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                ) : (
+                  <Link href="/login" className="edu-action">
+                    Entrar com Google
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="mt-10">
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)] lg:items-end">
-              <div className="space-y-7">
-                <div className="edu-kicker">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-black opacity-60"></span>
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-black"></span>
-                  </span>
-                  Open source, acessivel e sem bloqueio de entrada
-                </div>
-
-                <div className="space-y-5">
-                  <h1 className="max-w-4xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
-                    Estudo serio,
-                    <br />
-                    visual forte
-                    <br />e fluxo claro
-                  </h1>
-                  <p className="max-w-3xl text-justify text-lg leading-8 text-slate-300">
-                    A plataforma open source completa para preparar voce para os
-                    vestibulares com acessibilidade em mente e progresso visivel.
-                    Voce pode explorar o conteudo sem login e entrar depois para
-                    salvar seu ritmo.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-5 lg:items-stretch lg:pl-6">
-                <Link
-                  href="/vestibulares"
-                  className="edu-action-outline w-full justify-between px-8 py-4 text-base"
-                >
-                  Ver vestibulares
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-
-                <div className="grid gap-3">
-                  <div className="edu-chip w-full justify-between gap-3 px-4 py-3 text-sm normal-case tracking-normal">
-                    <span className="inline-flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4" />
-                      Login Google opcional
-                    </span>
-                  </div>
-                  <div className="edu-chip w-full justify-between gap-3 px-4 py-3 text-sm normal-case tracking-normal">
-                    <span className="inline-flex items-center gap-2">
-                      <BookOpenText className="h-4 w-4" />
-                      Series ja visiveis na home
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <div className="w-full space-y-5">
+              <h1 className="max-w-6xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
+                Plataforma de estudos completa para todas as áreas fundamentais de aprendizado
+              </h1>
+              <p className="max-w-6xl text-lg leading-8 text-slate-300">
+                A plataforma open source para preparar você para os vestibulares com acessibilidade
+                em mente e progresso visível. Você pode explorar o conteúdo sem login e entrar
+                depois para salvar seu ritmo.
+              </p>
             </div>
           </div>
         </div>
-      </section>
+      </header>
 
       {searchOpen ? (
         <div className="fixed inset-0 z-50 bg-black/72 px-4 py-6 backdrop-blur-sm sm:px-6">
           <div className="mx-auto max-w-4xl">
-            <div className="edu-panel">
+            <div
+              ref={searchDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={searchTitleId}
+              aria-describedby={searchDescriptionId}
+              className="edu-panel"
+            >
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
                     Busca inteligente
                   </p>
-                  <h2 className="mt-2 text-2xl font-black text-white">
-                    Busque por serie, materia ou topico
+                  <h2 id={searchTitleId} className="mt-2 text-2xl font-black text-white">
+                    Busque por série, matéria ou tópico
                   </h2>
+                  <p id={searchDescriptionId} className="mt-2 text-sm text-muted-foreground">
+                    Digite um termo para encontrar rapidamente trilhas, matérias e conteúdos.
+                  </p>
                 </div>
                 <button
                   type="button"
@@ -373,28 +394,35 @@ export default function HomePage() {
                   className="edu-nav-link h-11 w-11 justify-center p-0"
                   aria-label="Fechar busca"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4" aria-live="polite">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+                  <label htmlFor={searchInputId} className="sr-only">
+                    Buscar por série, matéria ou tópico
+                  </label>
+                  <Search
+                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    aria-hidden="true"
+                  />
                   <Input
+                    id={searchInputId}
                     ref={searchInputRef}
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Ex.: Algebra, Matematica, 8 Ano..."
+                    placeholder="Ex.: Álgebra, Matemática, 8º ano..."
                     className="h-14 pl-11 pr-12 text-base"
                   />
                   {searchQuery ? (
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-300 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       aria-label="Limpar busca"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4" aria-hidden="true" />
                     </button>
                   ) : null}
                 </div>
@@ -403,26 +431,26 @@ export default function HomePage() {
                   <div className="grid gap-3 md:grid-cols-3">
                     <div className="edu-subtle-card">
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                        Topicos
+                        Tópicos
                       </p>
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Procure por nomes como Algebra, Geometria ou Redacao.
+                        Procure por nomes como Álgebra, Geometria ou Redação.
                       </p>
                     </div>
                     <div className="edu-subtle-card">
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                        Materias
+                        Matérias
                       </p>
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Tambem funciona para Matematica, Historia, Biologia e outras materias.
+                        Também funciona para Matemática, História, Biologia e outras matérias.
                       </p>
                     </div>
                     <div className="edu-subtle-card">
                       <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                        Series
+                        Séries
                       </p>
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Digite 8 ano, 1 serie ou Ensino Medio para abrir a trilha certa.
+                        Digite 8º ano, 1ª série ou Ensino Médio para abrir a trilha certa.
                       </p>
                     </div>
                   </div>
@@ -449,7 +477,7 @@ export default function HomePage() {
                               {result.description}
                             </p>
                           </div>
-                          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                          <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
                         </div>
                       </Link>
                     ))}
@@ -461,93 +489,42 @@ export default function HomePage() {
         </div>
       ) : null}
 
-      <div className="bg-background py-12">
+      <main id="main-content" className="bg-background py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-12">
-            <section className="grid gap-4 md:grid-cols-3">
-              <Card className="h-full">
-                <CardContent className="space-y-4 p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-black text-white">Accessibility</h3>
-                    <Badge variant="secondary">{accessibilityCategories.length}</Badge>
-                  </div>
-                  <p className="text-sm leading-6 text-slate-400">
-                    {accessibilityCategories.length} categorias organizadas e prontas para consulta.
-                  </p>
-                  <Link href="/accessibility" className="edu-nav-link w-full justify-between">
-                    Abrir modulo
-                    <ChevronRight className="h-4 w-4 text-primary" />
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardContent className="space-y-4 p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-black text-white">Checklist</h3>
-                    <Badge variant="secondary">{session ? checklist.length : 0}</Badge>
-                  </div>
-                  <p className="text-sm leading-6 text-slate-400">
-                    {session
-                      ? `${checklist.length} itens ja marcados na sua conta.`
-                      : 'Recurso opcional para acompanhar progresso pessoal.'}
-                  </p>
-                  <Link
-                    href={session ? '/checklist' : '/login'}
-                    className="edu-nav-link w-full justify-between"
-                  >
-                    {session ? 'Abrir checklist' : 'Entrar depois'}
-                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="h-full">
-                <CardContent className="space-y-4 p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-black text-white">Vestibulares</h3>
-                    <Badge variant="secondary">{vestibulares.length}</Badge>
-                  </div>
-                  <p className="text-sm leading-6 text-slate-400">
-                    {vestibulares.length} vestibulares publicados para explorar.
-                  </p>
-                  <Link href="/vestibulares" className="edu-nav-link w-full justify-between">
-                    Explorar agora
-                    <ChevronRight className="h-4 w-4 text-primary" />
-                  </Link>
-                </CardContent>
-              </Card>
-            </section>
-
-            <section id="series">
+            <section id="series" aria-labelledby="series-section-title">
               <div className="mb-6 space-y-4">
-                <h2 className="font-display text-4xl text-white">Series Educacionais</h2>
+                <h2 id="series-section-title" className="font-display text-4xl text-white">
+                  Séries educacionais
+                </h2>
                 <p className="mt-2 text-slate-400">
-                  Primeiro os 9 anos do Ensino Fundamental, depois as 3 series do Ensino Medio.
+                  Primeiro os 9 anos do Ensino Fundamental, depois as 3 séries do Ensino Médio.
                 </p>
               </div>
 
               {isLoadingSeries ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <Skeleton key={index} className="h-40 rounded-xl bg-neutral-800" />
                   ))}
                 </div>
               ) : (
                 <div className="space-y-10">
-                  <div>
+                  <section aria-labelledby="fundamental-title">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                          bloco 1
+                          Bloco 1
                         </p>
-                        <h3 className="mt-2 text-2xl font-black text-white">Ensino Fundamental</h3>
+                        <h3 id="fundamental-title" className="mt-2 text-2xl font-black text-white">
+                          Ensino Fundamental
+                        </h3>
                       </div>
                       <Badge variant="outline">{groupedSeries.fundamental.length} anos</Badge>
                     </div>
 
                     {groupedSeries.fundamental.length ? (
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {groupedSeries.fundamental.map((item, index) => (
                           <Link
                             key={item.id}
@@ -557,27 +534,27 @@ export default function HomePage() {
                             <div className="relative flex h-full flex-col justify-between gap-5">
                               <div className="flex items-start justify-between gap-4">
                                 <div className="min-w-0 flex-1">
-                                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                                     Ano
                                   </p>
-                                  <h3 className="mt-3 text-2xl font-black leading-tight text-white">
+                                  <h4 className="mt-3 text-2xl font-black leading-tight text-white">
                                     {item.name}
-                                  </h3>
+                                  </h4>
                                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
                                     {item.subjects?.length
-                                      ? `${item.subjects.length} materias prontas para explorar.`
-                                      : 'Trilha com materias, topicos e conteudos.'}
+                                      ? `${item.subjects.length} matérias prontas para explorar.`
+                                      : 'Trilha com matérias, tópicos e conteúdos.'}
                                   </p>
                                 </div>
 
-                                <div className="edu-home-icon">
+                                <div className="edu-home-icon" aria-hidden="true">
                                   {seriesIcons[index % seriesIcons.length]}
                                 </div>
                               </div>
 
                               <div className="flex items-center justify-between border-t border-[rgba(168,124,29,0.22)] pt-4">
                                 <span className="edu-chip">Abrir ano</span>
-                                <ChevronRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                                <ChevronRight className="h-4 w-4 text-primary" aria-hidden="true" />
                               </div>
                             </div>
                           </Link>
@@ -588,21 +565,23 @@ export default function HomePage() {
                         Nenhum ano do Ensino Fundamental encontrado.
                       </div>
                     )}
-                  </div>
+                  </section>
 
-                  <div>
+                  <section aria-labelledby="medio-title">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                          bloco 2
+                          Bloco 2
                         </p>
-                        <h3 className="mt-2 text-2xl font-black text-white">Ensino Medio</h3>
+                        <h3 id="medio-title" className="mt-2 text-2xl font-black text-white">
+                          Ensino Médio
+                        </h3>
                       </div>
-                      <Badge variant="outline">{groupedSeries.medio.length} series</Badge>
+                      <Badge variant="outline">{groupedSeries.medio.length} séries</Badge>
                     </div>
 
                     {groupedSeries.medio.length ? (
-                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {groupedSeries.medio.map((item, index) => (
                           <Link
                             key={item.id}
@@ -612,27 +591,27 @@ export default function HomePage() {
                             <div className="relative flex h-full flex-col justify-between gap-5">
                               <div className="flex items-start justify-between gap-4">
                                 <div className="min-w-0 flex-1">
-                                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                    Serie
+                                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                                    Série
                                   </p>
-                                  <h3 className="mt-3 text-2xl font-black leading-tight text-white">
+                                  <h4 className="mt-3 text-2xl font-black leading-tight text-white">
                                     {item.name}
-                                  </h3>
+                                  </h4>
                                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
                                     {item.subjects?.length
-                                      ? `${item.subjects.length} materias prontas para explorar.`
-                                      : 'Trilha com materias, topicos e conteudos.'}
+                                      ? `${item.subjects.length} matérias prontas para explorar.`
+                                      : 'Trilha com matérias, tópicos e conteúdos.'}
                                   </p>
                                 </div>
 
-                                <div className="edu-home-icon">
+                                <div className="edu-home-icon" aria-hidden="true">
                                   {seriesIcons[(index + groupedSeries.fundamental.length) % seriesIcons.length]}
                                 </div>
                               </div>
 
                               <div className="flex items-center justify-between border-t border-[rgba(168,124,29,0.22)] pt-4">
-                                <span className="edu-chip">Abrir serie</span>
-                                <ChevronRight className="h-4 w-4 text-primary transition-transform group-hover:translate-x-1" />
+                                <span className="edu-chip">Abrir série</span>
+                                <ChevronRight className="h-4 w-4 text-primary" aria-hidden="true" />
                               </div>
                             </div>
                           </Link>
@@ -640,51 +619,55 @@ export default function HomePage() {
                       </div>
                     ) : (
                       <div className="edu-panel p-6 text-sm text-muted-foreground">
-                        Nenhuma serie do Ensino Medio encontrada.
+                        Nenhuma série do Ensino Médio encontrada.
                       </div>
                     )}
-                  </div>
+                  </section>
                 </div>
               )}
             </section>
 
-            <section className="edu-panel overflow-hidden">
+            <section className="edu-panel overflow-hidden" aria-labelledby="a11y-section-title">
               <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
                 <div className="flex items-start gap-4">
-                  <div className="edu-home-icon h-14 w-14 text-2xl">A11Y</div>
+                  <div className="edu-home-icon h-14 w-14 text-2xl" aria-hidden="true">
+                    A11Y
+                  </div>
                   <div>
-                    <h3 className="text-2xl font-black text-gradient-primary">
+                    <h2 id="a11y-section-title" className="text-2xl font-black text-gradient-primary">
                       Recursos de Accessibility
-                    </h3>
+                    </h2>
                     <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
-                      Categorias, temas e topicos estruturados para alunos com
-                      necessidades especificas e estudo com mais contexto.
+                      Categorias, temas e tópicos estruturados para alunos com necessidades
+                      específicas e estudo com mais contexto.
                     </p>
                   </div>
                 </div>
 
                 <Link href="/accessibility" className="edu-action uppercase tracking-[0.12em]">
                   Acessar
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
             </section>
 
-            <section>
-              <div className="mb-6 flex items-end justify-between gap-4">
-                <div>
-                  <h2 className="font-display text-4xl text-white">Vestibulares</h2>
-                  <p className="mt-2 text-sm text-slate-400">
-                    Prepare-se para os principais exames.
-                  </p>
+            <section className="space-y-6" aria-labelledby="vestibulares-section-title">
+              <div className="edu-panel overflow-hidden">
+                <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
+                  <div>
+                    <h2 id="vestibulares-section-title" className="font-display text-4xl text-white">
+                      Vestibulares
+                    </h2>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      Prepare-se para os principais exames.
+                    </p>
+                  </div>
+
+                  <Link href="/vestibulares" className="edu-action uppercase tracking-[0.12em]">
+                    Ver todos
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
                 </div>
-                <Link
-                  href="/vestibulares"
-                  className="edu-inline-link hidden items-center gap-1 text-sm font-semibold sm:inline-flex"
-                >
-                  Ver todos
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -701,17 +684,19 @@ export default function HomePage() {
                       className="edu-home-card"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="edu-home-icon">{index === 0 ? 'V1' : 'V2'}</div>
+                        <div className="edu-home-icon" aria-hidden="true">
+                          {index === 0 ? 'V1' : 'V2'}
+                        </div>
 
                         <div className="min-w-0 flex-1">
                           <h3 className="truncate text-lg font-black text-white">{item.name}</h3>
-                          <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                            <Calendar className="h-3 w-3" />
-                            {item.year ? `Edicao ${item.year}` : 'Vestibular ativo'}
+                          <p className="mt-1 flex items-center gap-1 text-xs text-slate-400">
+                            <Calendar className="h-3 w-3" aria-hidden="true" />
+                            {item.year ? `Edição ${item.year}` : 'Vestibular ativo'}
                           </p>
                         </div>
 
-                        <ChevronRight className="h-5 w-5 text-primary opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
+                        <ChevronRight className="h-5 w-5 text-primary" aria-hidden="true" />
                       </div>
                     </Link>
                   ))}
@@ -719,7 +704,7 @@ export default function HomePage() {
             </section>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -143,6 +143,10 @@ model Content {
   thumbnailUrl       String
   videoUrl           String?
   pdfUrl             String?
+  transcript         String?
+  captionsUrl        String?
+  librasUrl          String?
+  audioDescriptionUrl String?
   order              Int                 @default(0)
   topicId            Int
   topic              Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
@@ -197,6 +201,10 @@ model VestibularContent {
   type              String?
   link              String?
   pdfUrl            String?
+  transcript        String?
+  captionsUrl       String?
+  librasUrl         String?
+  audioDescriptionUrl String?
   isShared          Boolean    @default(false)
   originalContentId Int?
   vestibular        Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)

@@ -32,6 +32,10 @@ type PrismaVestibularContent = {
   type: string | null;
   link: string | null;
   pdfUrl: string | null;
+  transcript: string | null;
+  captionsUrl: string | null;
+  librasUrl: string | null;
+  audioDescriptionUrl: string | null;
   originalContentId: number | null;
   isShared: boolean;
   originalContent?: {
@@ -43,6 +47,10 @@ type PrismaVestibularContent = {
     thumbnailUrl: string;
     videoUrl: string | null;
     pdfUrl: string | null;
+    transcript: string | null;
+    captionsUrl: string | null;
+    librasUrl: string | null;
+    audioDescriptionUrl: string | null;
     order: number;
     topicId: number;
   } | null;
@@ -86,6 +94,10 @@ export class VestibularMapper {
       type: data.type,
       link: data.link,
       pdfUrl: data.pdfUrl,
+      transcript: data.transcript,
+      captionsUrl: data.captionsUrl,
+      librasUrl: data.librasUrl,
+      audioDescriptionUrl: data.audioDescriptionUrl,
       isShared: data.isShared,
       originalContentId: data.originalContentId,
       content: data.originalContent ? ContentMapper.toDomain(data.originalContent) : null,

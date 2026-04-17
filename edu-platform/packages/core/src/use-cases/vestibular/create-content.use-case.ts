@@ -23,6 +23,10 @@ export class CreateVestibularContentUseCase {
       type: input.type?.trim() || null,
       link: input.link?.trim() || null,
       pdfUrl: input.pdfUrl?.trim() || null,
+      transcript: input.transcript?.trim() || null,
+      captionsUrl: input.captionsUrl?.trim() || null,
+      librasUrl: input.librasUrl?.trim() || null,
+      audioDescriptionUrl: input.audioDescriptionUrl?.trim() || null,
     });
   }
 }

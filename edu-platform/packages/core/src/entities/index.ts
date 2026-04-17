@@ -57,6 +57,10 @@ export interface Content {
   thumbnailUrl: string;
   videoUrl?: string | null;
   pdfUrl?: string | null;
+  transcript?: string | null;
+  captionsUrl?: string | null;
+  librasUrl?: string | null;
+  audioDescriptionUrl?: string | null;
   order?: number;
   topic?: Topic | null;
 }
@@ -85,6 +89,10 @@ export interface VestibularContent {
   type?: string | null;
   link?: string | null;
   pdfUrl?: string | null;
+  transcript?: string | null;
+  captionsUrl?: string | null;
+  librasUrl?: string | null;
+  audioDescriptionUrl?: string | null;
   isShared: boolean;
   originalContentId?: number | null;
   content?: Content | null;

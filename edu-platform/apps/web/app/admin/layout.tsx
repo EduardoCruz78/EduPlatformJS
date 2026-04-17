@@ -22,7 +22,9 @@ export default async function AdminLayout({
       <div className="edu-shell">
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
           <SidebarAdmin />
-          <main className="min-w-0">{children}</main>
+          <main id="main-content" className="min-w-0">
+            {children}
+          </main>
         </div>
       </div>
     </div>

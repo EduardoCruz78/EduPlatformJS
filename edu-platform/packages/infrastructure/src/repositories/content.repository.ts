@@ -56,6 +56,10 @@ export class ContentRepository implements IContentRepository {
         thumbnailUrl: data.thumbnailUrl,
         videoUrl: data.videoUrl ?? null,
         pdfUrl: data.pdfUrl ?? null,
+        transcript: data.transcript ?? null,
+        captionsUrl: data.captionsUrl ?? null,
+        librasUrl: data.librasUrl ?? null,
+        audioDescriptionUrl: data.audioDescriptionUrl ?? null,
         order: data.order ?? 0,
       },
     });
@@ -74,6 +78,11 @@ export class ContentRepository implements IContentRepository {
         link: data.link,
         videoUrl: data.videoUrl === undefined ? undefined : data.videoUrl,
         pdfUrl: data.pdfUrl === undefined ? undefined : data.pdfUrl,
+        transcript: data.transcript === undefined ? undefined : data.transcript,
+        captionsUrl: data.captionsUrl === undefined ? undefined : data.captionsUrl,
+        librasUrl: data.librasUrl === undefined ? undefined : data.librasUrl,
+        audioDescriptionUrl:
+          data.audioDescriptionUrl === undefined ? undefined : data.audioDescriptionUrl,
         thumbnailUrl: data.thumbnailUrl ?? undefined,
         order: data.order === undefined ? undefined : data.order,
       },

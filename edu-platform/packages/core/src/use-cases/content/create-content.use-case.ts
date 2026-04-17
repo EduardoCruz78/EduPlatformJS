@@ -36,6 +36,10 @@ export class CreateContentUseCase {
       thumbnailUrl,
       videoUrl: input.videoUrl ?? null,
       pdfUrl: input.pdfUrl ?? null,
+      transcript: input.transcript?.trim() ?? null,
+      captionsUrl: input.captionsUrl ?? null,
+      librasUrl: input.librasUrl ?? null,
+      audioDescriptionUrl: input.audioDescriptionUrl ?? null,
       order: input.order ?? 0,
     });
   }
