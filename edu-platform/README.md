@@ -217,6 +217,7 @@ Pontos importantes:
 - [docs/README.md](./docs/README.md)
 - [docs/dependency-audit.md](./docs/dependency-audit.md)
 - [docs/github-root-readme.md](./docs/github-root-readme.md)
+- [docs/vercel-migration.md](./docs/vercel-migration.md)
 - [prisma/README.md](./prisma/README.md)
 - [apps/web/README.md](./apps/web/README.md)
 - [apps/native/README.md](./apps/native/README.md)

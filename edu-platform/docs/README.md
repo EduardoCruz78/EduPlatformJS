@@ -10,6 +10,9 @@ Esta pasta reune documentos que complementam os READMEs principais do monorepo.
 - [docs/github-root-readme.md](./github-root-readme.md)
   README pronto para adaptar ao diretorio geral ou perfil do GitHub.
 
+- [docs/vercel-migration.md](./vercel-migration.md)
+  Guia objetivo para publicar o `apps/web` na Vercel com monorepo, Prisma e Auth.js.
+
 - [../prisma/README.md](../prisma/README.md)
   Guia operacional de schema, baseline, drift e migrations.
 

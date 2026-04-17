@@ -42,4 +42,7 @@ yarn-error.log*
 # turbo
 .turbo
 
+# vercel
+.vercel
+
 /generated/prisma
