@@ -1,20 +1,20 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight, BookMarked } from 'lucide-react';
 import type { Subject } from '@edu-platform/core';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trpc } from '@/lib/trpc';
+import { buildTopicsHref } from '@/lib/study-navigation';
 
 function SubjectsPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { status } = useSession();
+  const utils = trpc.useUtils();
   const seriesIdParam = searchParams.get('seriesId');
   const seriesId = Number(seriesIdParam || 0);
 
@@ -29,24 +29,21 @@ function SubjectsPageContent() {
   });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
+    subjects.forEach((subject) => {
+      void utils.topic.findBySubject.prefetch({ subjectId: subject.id });
+    });
+  }, [subjects, utils]);
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="animate-pulse space-y-8">
-            <div className="h-10 w-80 rounded-2xl bg-muted" />
-            <Card>
-              <CardContent className="space-y-4 p-8">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="h-24 w-full rounded-3xl" />
-                ))}
-              </CardContent>
-            </Card>
+      <div className="edu-shell">
+        <div className="space-y-8">
+          <div className="h-16 w-full rounded-[2rem] bg-muted" />
+          <Skeleton className="h-64 w-full rounded-[2.5rem]" />
+          <div className="grid gap-4 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-40 w-full rounded-[2rem]" />
+            ))}
           </div>
         </div>
       </div>
@@ -55,15 +52,12 @@ function SubjectsPageContent() {
 
   if (error || seriesId === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-8">
-        <Card className="w-full max-w-md">
+      <div className="edu-shell">
+        <Card className="mx-auto max-w-md">
           <CardContent className="p-8 text-center">
             <p className="text-xl text-destructive">Selecione uma serie primeiro</p>
-            <Link
-              href="/dashboard"
-              className="mt-6 inline-block rounded-2xl bg-primary px-6 py-3 text-primary-foreground transition hover:bg-primary/90"
-            >
-              Voltar ao dashboard
+            <Link href="/" className="mt-6 inline-flex edu-nav-link">
+              Voltar ao inicio
             </Link>
           </CardContent>
         </Card>
@@ -72,37 +66,42 @@ function SubjectsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-10 flex items-start justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Materias</h1>
-            <p className="mt-1 text-muted-foreground">
-              {series
-                ? `Selecione uma materia da serie ${series.name}`
-                : 'Selecione uma materia'}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard"
-              className="font-medium text-primary transition hover:text-primary/80"
-            >
-              Voltar ao dashboard
-            </Link>
-            <button
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              className="font-medium text-destructive transition hover:text-destructive/80"
-            >
-              Sair
-            </button>
-          </div>
+    <div className="edu-shell">
+      <div className="edu-topbar">
+        <div className="flex items-center gap-3">
+          <span className="edu-brand">Materias</span>
+          <span className="text-sm text-muted-foreground">
+            {series ? `serie ${series.name}` : 'escolha sua trilha'}
+          </span>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/" className="edu-nav-link">
+            <ArrowLeft className="h-4 w-4" />
+            Inicio
+          </Link>
+          <Link href="/vestibulares" className="edu-nav-link">
+            Vestibulares
+          </Link>
+        </div>
+      </div>
+
+      <section className="edu-hero space-y-4">
+        <span className="edu-kicker">
+          <BookMarked className="mr-2 h-4 w-4" />
+          Selecao por serie
+        </span>
+        <h1 className="edu-section-title">Escolha a materia e siga para os topicos.</h1>
+        <p className="edu-lead">
+          Cada materia abre a proxima camada do estudo sem ruir o contexto da
+          serie atual.
+        </p>
+      </section>
+
+      <section className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl">
+            <CardTitle className="flex items-center gap-3 text-3xl">
               Materias disponiveis
               <Badge variant="secondary">{subjects.length}</Badge>
             </CardTitle>
@@ -117,22 +116,20 @@ function SubjectsPageContent() {
                 {subjects.map((subject: Subject) => (
                   <Link
                     key={subject.id}
-                    href={`/topics?subjectId=${subject.id}`}
-                    className="group rounded-3xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:bg-accent"
+                    href={buildTopicsHref({ subjectId: subject.id, seriesId })}
+                    className="edu-home-card"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h2 className="text-xl font-semibold text-foreground">
+                        <h2 className="text-3xl font-black text-white">
                           {subject.name}
                         </h2>
-                        <p className="mt-2 text-sm text-muted-foreground">
+                        <p className="mt-3 text-sm leading-6 text-muted-foreground">
                           {subject.description ||
-                            'Clique para ver os topicos desta materia.'}
+                            'Clique para abrir os topicos dessa materia.'}
                         </p>
                       </div>
-                      {subject.series ? (
-                        <Badge variant="outline">{subject.series.name}</Badge>
-                      ) : null}
+                      <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translate-x-1" />
                     </div>
                   </Link>
                 ))}
@@ -140,7 +137,7 @@ function SubjectsPageContent() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </section>
     </div>
   );
 }

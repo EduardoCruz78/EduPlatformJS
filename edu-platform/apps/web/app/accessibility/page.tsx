@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Ear, Sparkles } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,25 +12,43 @@ export default function AccessibilityPage() {
     trpc.accessibility.getCategories.useQuery();
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="flex items-start justify-between gap-6">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">Accessibility</h1>
-            <p className="mt-2 max-w-3xl text-muted-foreground">
-              Categorias, temas e tópicos organizados para apoiar diferentes necessidades de
-              acessibilidade.
-            </p>
-          </div>
-          <Link href="/" className="text-sm font-medium text-primary hover:text-primary/80">
-            Voltar ao início
+    <div className="edu-shell">
+      <div className="edu-topbar">
+        <div className="flex items-center gap-3">
+          <span className="edu-brand">Accessibility</span>
+          <span className="text-sm text-muted-foreground">
+            categorias, topicos e orientacoes conectadas
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/" className="edu-nav-link">
+            Voltar ao inicio
           </Link>
-        </header>
+          <Link href="/login" className="edu-nav-link">
+            Entrar
+          </Link>
+        </div>
+      </div>
 
+      <section className="edu-hero space-y-4">
+        <span className="edu-kicker">
+          <Ear className="mr-2 h-4 w-4" />
+          Modulo publico
+        </span>
+        <h1 className="edu-section-title">
+          Acessibilidade organizada como conhecimento vivo, nao como lista solta.
+        </h1>
+        <p className="edu-lead">
+          O conteudo esta estruturado por categorias, temas e topicos
+          relacionados para facilitar consulta, revisao e administracao.
+        </p>
+      </section>
+
+      <section className="mt-8">
         {isLoading ? (
           <div className="grid gap-6 md:grid-cols-2">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-72 w-full rounded-3xl" />
+              <Skeleton key={index} className="h-72 w-full rounded-[2rem]" />
             ))}
           </div>
         ) : error ? (
@@ -47,20 +66,20 @@ export default function AccessibilityPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {categories.map((category) => (
-              <Card key={category.id} className="rounded-3xl">
+              <Card key={category.id}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between gap-3">
                     <span>{category.name}</span>
                     <Badge variant="secondary">{category.themes?.length ?? 0} temas</Badge>
                   </CardTitle>
                   <CardDescription>
-                    {category.description || 'Categoria sem descrição adicional.'}
+                    {category.description || 'Categoria sem descricao adicional.'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-5">
                   <div>
                     <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                      Tópicos relacionados
+                      Topicos relacionados
                     </h2>
                     <div className="flex flex-wrap gap-2">
                       {category.topics?.length ? (
@@ -71,26 +90,27 @@ export default function AccessibilityPage() {
                         ))
                       ) : (
                         <span className="text-sm text-muted-foreground">
-                          Nenhum tópico vinculado.
+                          Nenhum topico vinculado.
                         </span>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                      Temas e orientações
+                    <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      <Sparkles className="h-4 w-4" />
+                      Temas e orientacoes
                     </h2>
                     <div className="space-y-3">
                       {category.themes?.length ? (
                         category.themes.map((theme) => (
                           <div
                             key={theme.id}
-                            className="rounded-2xl border border-border bg-muted/40 p-4"
+                            className="edu-subtle-card"
                           >
-                            <p className="font-medium text-foreground">{theme.title}</p>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                              {theme.content || 'Sem conteúdo detalhado para este tema.'}
+                            <p className="font-semibold text-foreground">{theme.title}</p>
+                            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                              {theme.content || 'Sem conteudo detalhado para este tema.'}
                             </p>
                           </div>
                         ))
@@ -106,7 +126,7 @@ export default function AccessibilityPage() {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

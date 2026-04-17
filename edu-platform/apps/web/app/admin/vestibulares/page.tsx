@@ -234,8 +234,8 @@ export default function AdminVestibularesPage() {
                 onClick={() => setSelectedId(vestibular.id)}
                 className={`w-full rounded-2xl border p-4 text-left transition ${
                   selectedId === vestibular.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted/40'
+                    ? 'border-primary bg-[#111111]'
+                    : 'border-border hover:bg-[#141414]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">

@@ -41,9 +41,9 @@ export default function ChecklistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-5xl space-y-8">
-        <header className="flex items-start justify-between gap-6">
+    <div className="edu-shell">
+      <div className="space-y-8">
+        <div className="edu-topbar">
           <div>
             <div className="mb-3 flex items-center gap-2">
               <Badge variant="outline" className="gap-2">
@@ -57,10 +57,10 @@ export default function ChecklistPage() {
               Acompanhe os conteúdos que você já concluiu.
             </p>
           </div>
-          <Link href="/dashboard" className="text-sm font-medium text-primary hover:text-primary/80">
+          <Link href="/dashboard" className="edu-nav-link">
             Voltar ao dashboard
           </Link>
-        </header>
+        </div>
 
         {checklist.length === 0 ? (
           <Card>
@@ -71,7 +71,7 @@ export default function ChecklistPage() {
         ) : (
           <div className="grid gap-4">
             {checklist.map((item) => (
-              <Card key={item.id} className="rounded-3xl">
+              <Card key={item.id}>
                 <CardHeader>
                   <CardTitle>{item.content?.title || `Conteúdo #${item.contentId}`}</CardTitle>
                   <CardDescription>

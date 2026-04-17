@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowRight, CheckCircle2, GraduationCap, LayoutGrid, LogOut } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import type { Series } from '@edu-platform/core';
 
@@ -28,16 +29,15 @@ export default function DashboardPage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-6xl animate-pulse space-y-8">
-          <div className="h-10 w-80 rounded-2xl bg-muted" />
-          <Card>
-            <CardContent className="space-y-4 p-8">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton key={index} className="h-20 w-full rounded-3xl" />
-              ))}
-            </CardContent>
-          </Card>
+      <div className="edu-shell">
+        <div className="space-y-8">
+          <div className="h-16 w-full rounded-[2rem] bg-muted" />
+          <Skeleton className="h-80 w-full rounded-[2.5rem]" />
+          <div className="grid gap-6 md:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="h-40 w-full rounded-[2rem]" />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -45,14 +45,14 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-8">
-        <Card className="w-full max-w-md">
+      <div className="edu-shell">
+        <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
             <p className="text-xl text-destructive">Erro ao carregar series</p>
             <p className="mt-2 text-muted-foreground">{error.message}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-6 rounded-2xl bg-destructive px-6 py-3 text-destructive-foreground transition hover:bg-destructive/90"
+              className="mt-6 rounded-full border border-red-800 bg-destructive px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-destructive-foreground"
             >
               Tentar novamente
             </button>
@@ -63,50 +63,79 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-10 flex items-start justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground">
-              Bem-vindo, {session?.user?.name}
-            </h1>
-            <p className="mt-1 text-muted-foreground">
-              Selecione uma serie para comecar
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/subjects"
-              className="font-medium text-primary hover:text-primary/80"
-            >
-              Ver materias
-            </Link>
-            <Link
-              href="/vestibulares"
-              className="font-medium text-primary hover:text-primary/80"
-            >
-              Vestibulares
-            </Link>
-            <Link
-              href="/checklist"
-              className="font-medium text-primary hover:text-primary/80"
-            >
-              Checklist
-            </Link>
-
-            <button
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              className="font-medium text-destructive hover:text-destructive/80"
-            >
-              Sair
-            </button>
-          </div>
+    <div className="edu-shell">
+      <div className="edu-topbar">
+        <div className="flex items-center gap-3">
+          <span className="edu-brand">EduPlatform</span>
+          <span className="text-sm text-muted-foreground">
+            ola, {session?.user?.name || 'estudante'}
+          </span>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/subjects" className="edu-nav-link">
+            Materias
+          </Link>
+          <Link href="/vestibulares" className="edu-nav-link">
+            Vestibulares
+          </Link>
+          <Link href="/checklist" className="edu-nav-link">
+            Checklist
+          </Link>
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="edu-nav-link"
+          >
+            <LogOut className="h-4 w-4" />
+            Sair
+          </button>
+        </div>
+      </div>
+
+      <section className="edu-hero">
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr] lg:items-end">
+          <div className="space-y-5">
+            <span className="edu-kicker">
+              <GraduationCap className="mr-2 h-4 w-4" />
+              Painel do estudante
+            </span>
+            <div className="space-y-3">
+              <h1 className="edu-section-title">Seu estudo esta organizado em blocos claros.</h1>
+              <p className="edu-lead">
+                Escolha uma serie, avance por materias e topicos e acompanhe o
+                que ja foi concluido sem perder o fio da navegacao.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="edu-metric">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                series
+              </p>
+              <p className="mt-2 text-3xl font-display">{series.length}</p>
+            </div>
+            <div className="edu-metric">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                checklist
+              </p>
+              <p className="mt-2 text-3xl font-display">{checklist.length}</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-[rgba(255,198,39,0.38)] bg-primary px-5 py-4 text-primary-foreground">
+              <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/70">
+                foco
+              </p>
+              <p className="mt-2 text-2xl font-display">Continuar agora</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl">
+            <CardTitle className="flex items-center gap-3 text-3xl">
+              <LayoutGrid className="h-6 w-6" />
               Series disponiveis
               <Badge variant="secondary">{series.length}</Badge>
             </CardTitle>
@@ -125,19 +154,19 @@ export default function DashboardPage() {
                   <Link
                     key={item.id}
                     href={`/subjects?seriesId=${item.id}`}
-                    className="group flex items-center justify-between rounded-3xl border border-border bg-card p-6 transition-all hover:border-primary/30 hover:bg-accent"
+                    className="edu-home-card"
                   >
-                    <div>
-                      <span className="text-xl font-semibold text-foreground">
-                        {item.name}
-                      </span>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="text-4xl font-bold text-primary">-&gt;</div>
-                      <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                        entrar
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          trilha
+                        </p>
+                        <span className="mt-3 block text-2xl font-display text-foreground">
+                          {item.name}
+                        </span>
                       </div>
+
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </div>
                   </Link>
                 ))}
@@ -146,30 +175,31 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="mt-6">
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl">
+            <CardTitle className="flex items-center gap-3 text-3xl text-white">
+              <CheckCircle2 className="h-6 w-6 text-primary" />
               Progresso recente
-              <Badge variant="secondary">{checklist.length}</Badge>
+              <Badge className="border-primary bg-primary text-primary-foreground">{checklist.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {checklist.length === 0 ? (
-              <p className="text-muted-foreground">
-                Você ainda não marcou conteúdos como concluídos.
+              <p className="text-white/70">
+                Voce ainda nao marcou conteudos como concluidos.
               </p>
             ) : (
               <div className="space-y-3">
                 {checklist.slice(0, 5).map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-2xl border border-border bg-card p-4"
+                    className="edu-subtle-card"
                   >
-                    <p className="font-medium text-foreground">
+                    <p className="font-semibold text-white">
                       {item.content?.title || `Conteudo #${item.contentId}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {item.content?.type || 'Material'} concluído em{' '}
+                      {item.content?.type || 'Material'} concluido em{' '}
                       {new Date(item.createdAt).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
@@ -178,7 +208,7 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </section>
     </div>
   );
 }

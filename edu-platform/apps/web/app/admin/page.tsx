@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const sections = [
@@ -23,31 +23,44 @@ const sections = [
     title: 'Conteudos',
     description: 'Administre conteudos por topico e tipo.',
   },
+  {
+    href: '/admin/accessibility',
+    title: 'Accessibility',
+    description: 'Organize categorias, temas e vinculos com topicos.',
+  },
+  {
+    href: '/admin/vestibulares',
+    title: 'Vestibulares',
+    description: 'Estruture trilhas especiais com materias, topicos e conteudos.',
+  },
 ];
 
 export default function AdminPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Painel administrativo</h1>
-        <p className="mt-2 text-muted-foreground">
-          Use este painel para navegar pelas areas administrativas ativas.
+      <section className="edu-hero">
+        <span className="edu-kicker">Backoffice</span>
+        <h1 className="edu-section-title">Painel administrativo com leitura forte e navegação clara.</h1>
+        <p className="edu-lead">
+          Use este painel para manter o conteudo do produto consistente sem cair
+          em telas administrativas frias ou sem hierarquia visual.
         </p>
-      </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         {sections.map((section) => (
-          <Card key={section.href} className="rounded-3xl">
-            <CardHeader>
-              <CardTitle>{section.title}</CardTitle>
-              <CardDescription>{section.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href={section.href}>
-                <Button variant="outline">Abrir</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          <Link key={section.href} href={section.href}>
+            <Card className="card-interactive h-full">
+              <CardHeader>
+                <CardTitle>{section.title}</CardTitle>
+                <CardDescription>{section.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.16em] text-foreground">
+                <span>Abrir area</span>
+                <ArrowRight className="h-4 w-4" />
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>

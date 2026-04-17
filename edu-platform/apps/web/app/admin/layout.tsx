@@ -15,9 +15,11 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex max-w-7xl gap-6 p-6">
-        <SidebarAdmin />
-        <main className="min-w-0 flex-1">{children}</main>
+      <div className="edu-shell">
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <SidebarAdmin />
+          <main className="min-w-0">{children}</main>
+        </div>
       </div>
     </div>
   );

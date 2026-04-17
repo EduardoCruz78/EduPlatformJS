@@ -2,10 +2,17 @@
 
 import { useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, ExternalLink, FileText, PlayCircle } from 'lucide-react';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ExternalLink,
+  FileText,
+  PlayCircle,
+  Sparkles,
+} from 'lucide-react';
 
 import { trpc } from '@/lib/trpc';
 import type { Content } from '@edu-platform/core';
@@ -13,6 +20,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { buildTopicsHref } from '@/lib/study-navigation';
 
 function getContentHref(content: Content) {
   if (content.type === 'PDF') {
@@ -25,7 +33,7 @@ function getContentHref(content: Content) {
 function getTypeLabel(type: Content['type']) {
   switch (type) {
     case 'VIDEO':
-      return 'Vídeo';
+      return 'Video';
     case 'PDF':
       return 'PDF';
     case 'ARTICLE':
@@ -47,12 +55,15 @@ function getTypeIcon(type: Content['type']) {
 }
 
 function ContentsPageContent() {
-  const { status } = useSession();
-  const router = useRouter();
+  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const utils = trpc.useUtils();
   const topicIdParam = searchParams.get('topicId');
+  const subjectIdParam = searchParams.get('subjectId');
+  const seriesIdParam = searchParams.get('seriesId');
   const topicId = Number(topicIdParam || 0);
+  const subjectId = Number(subjectIdParam || 0);
+  const seriesId = Number(seriesIdParam || 0);
 
   const {
     data: contents = [],
@@ -82,27 +93,23 @@ function ContentsPageContent() {
     () => new Map(checklist.map((item) => [item.contentId, item])),
     [checklist]
   );
+  const primarySubject = topic?.subjects?.find((item) => item.id === subjectId) || topic?.subjects?.[0];
+  const resolvedSubjectId = primarySubject?.id ?? subjectId;
+  const resolvedSeriesId = primarySubject?.seriesId ?? seriesId;
+  const topicsHref = buildTopicsHref({
+    subjectId: resolvedSubjectId,
+    seriesId: resolvedSeriesId,
+  });
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-    }
-  }, [status, router]);
-
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="animate-pulse space-y-8">
-            <div className="h-10 w-80 rounded-2xl bg-muted" />
-            <Card>
-              <CardContent className="space-y-6 p-8">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <Skeleton key={index} className="h-44 w-full rounded-3xl" />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
+      <div className="edu-shell">
+        <div className="space-y-8">
+          <div className="h-16 w-full rounded-[2rem] bg-muted" />
+          <Skeleton className="h-64 w-full rounded-[2.5rem]" />
+          {Array.from({ length: 4 }).map((_, index) => (
+            <Skeleton key={index} className="h-48 w-full rounded-[2rem]" />
+          ))}
         </div>
       </div>
     );
@@ -110,14 +117,11 @@ function ContentsPageContent() {
 
   if (error || topicId === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-8">
-        <Card className="w-full max-w-md">
+      <div className="edu-shell">
+        <Card className="mx-auto max-w-md">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Selecione um tópico primeiro</p>
-            <Link
-              href="/topics"
-              className="mt-6 inline-block text-primary transition hover:text-primary/80"
-            >
+            <p className="text-xl text-destructive">Selecione um topico primeiro</p>
+            <Link href={topicsHref} className="mt-6 inline-flex edu-nav-link">
               Voltar
             </Link>
           </CardContent>
@@ -127,106 +131,160 @@ function ContentsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="flex items-start justify-between gap-6">
-          <div>
-            <div className="mb-3 flex items-center gap-3">
-              <Badge variant="outline">Tópico</Badge>
-              <Badge variant="secondary">{contents.length} conteúdos</Badge>
-            </div>
-            <h1 className="text-4xl font-bold text-foreground">
-              {topic?.name || 'Conteúdos do tópico'}
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Explore os materiais disponíveis e marque o que já concluiu.
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/checklist" className="text-sm font-medium text-primary hover:text-primary/80">
+    <div className="edu-shell">
+      <div className="edu-topbar">
+        <div className="flex items-center gap-3">
+          <span className="edu-brand">Conteudos</span>
+          <span className="text-sm text-muted-foreground">
+            {topic?.name || 'materiais do topico'}
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {session ? (
+            <Link href="/checklist" className="edu-nav-link">
               Meu checklist
             </Link>
-            <Link href="/topics" className="text-sm font-medium text-primary hover:text-primary/80">
-              Voltar aos tópicos
+          ) : (
+            <Link href="/login" className="edu-nav-link">
+              Entrar para salvar progresso
             </Link>
+          )}
+          <Link href={topicsHref} className="edu-nav-link">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar aos topicos
+          </Link>
+        </div>
+      </div>
+
+      <section className="edu-hero">
+        <div className="grid gap-8 lg:grid-cols-[1.35fr_0.85fr] lg:items-end">
+          <div className="space-y-5">
+            <span className="edu-kicker">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Materiais do topico
+            </span>
+            <div className="space-y-3">
+              <h1 className="edu-section-title">
+                {topic?.name || 'Conteudos do topico'}
+              </h1>
+              <p className="edu-lead">
+                Abra o material certo, veja rapidamente o tipo de conteudo e
+                marque o que ja foi concluido sem sair do fluxo.
+              </p>
+            </div>
           </div>
-        </header>
 
-        <div className="grid gap-6">
-          {contents.map((content: Content) => {
-            const href = getContentHref(content);
-            const checklistItem = checklistByContentId.get(content.id);
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <div className="edu-metric">
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                conteudos
+              </p>
+              <p className="mt-2 text-3xl font-display">{contents.length}</p>
+            </div>
+            <div className="rounded-[1.75rem] border border-slate-700 bg-slate-950 px-5 py-4 text-slate-50">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                concluidos
+              </p>
+              <p className="mt-2 text-3xl font-display">
+                {session
+                  ? contents.filter((content) => checklistByContentId.has(content.id)).length
+                  : '---'}
+              </p>
+              {!session ? (
+                <p className="mt-2 text-xs text-slate-400">
+                  Entre depois, se quiser usar checklist.
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </section>
 
-            return (
-              <Card key={content.id} className="rounded-3xl">
-                <CardHeader>
-                  <CardTitle className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="mb-3 flex items-center gap-2">
-                        <Badge variant="outline" className="gap-2">
-                          {getTypeIcon(content.type)}
-                          {getTypeLabel(content.type)}
+      <div className="mt-8 grid gap-6">
+        {contents.map((content: Content) => {
+          const href = getContentHref(content);
+          const checklistItem = checklistByContentId.get(content.id);
+
+          return (
+            <Card key={content.id}>
+              <CardHeader>
+                <CardTitle className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                      <Badge variant="outline" className="gap-2">
+                        {getTypeIcon(content.type)}
+                        {getTypeLabel(content.type)}
+                      </Badge>
+                      {checklistItem ? (
+                        <Badge className="gap-2 border-emerald-700 bg-emerald-500 text-white">
+                          <CheckCircle2 className="h-4 w-4" />
+                          Concluido
                         </Badge>
-                        {checklistItem ? (
-                          <Badge className="gap-2 bg-emerald-600 hover:bg-emerald-600">
-                            <CheckCircle2 className="h-4 w-4" />
-                            Concluído
-                          </Badge>
-                        ) : null}
-                      </div>
-                      <span>{content.title}</span>
+                      ) : null}
                     </div>
-                  </CardTitle>
-                  <CardDescription>
-                    {content.description || 'Material disponível para estudo neste tópico.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    {content.videoUrl ? <p>Vídeo complementar disponível.</p> : null}
-                    {content.pdfUrl ? <p>PDF de apoio disponível.</p> : null}
+                    <span>{content.title}</span>
                   </div>
+                </CardTitle>
+                <CardDescription>
+                  {content.description || 'Material disponivel para estudo neste topico.'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  {content.videoUrl ? <p>Video complementar disponivel.</p> : null}
+                  {content.pdfUrl ? <p>PDF de apoio disponivel.</p> : null}
+                  {!content.videoUrl && !content.pdfUrl ? (
+                    <p>Material externo ou artigo vinculado.</p>
+                  ) : null}
+                </div>
 
-                  <div className="flex flex-wrap gap-3">
-                    {href ? (
-                      <a href={href} target="_blank" rel="noreferrer">
-                        <Button className="gap-2">
-                          <ExternalLink className="h-4 w-4" />
-                          Abrir conteúdo
-                        </Button>
-                      </a>
-                    ) : null}
-
-                    {checklistItem ? (
-                      <Button
-                        variant="outline"
-                        onClick={() => deleteChecklist.mutate(checklistItem.id)}
-                        disabled={deleteChecklist.isPending}
-                      >
-                        Desmarcar conclusão
+                <div className="flex flex-wrap gap-3">
+                  {href ? (
+                    <a href={href} target="_blank" rel="noreferrer">
+                      <Button className="gap-2">
+                        <ExternalLink className="h-4 w-4" />
+                        Abrir conteudo
                       </Button>
-                    ) : (
-                      <Button
-                        onClick={() => createChecklist.mutate({ contentId: content.id })}
-                        disabled={createChecklist.isPending}
-                      >
-                        Marcar como concluído
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    </a>
+                  ) : null}
 
-          {contents.length === 0 ? (
-            <Card>
-              <CardContent className="p-8 text-center text-muted-foreground">
-                Nenhum conteúdo disponível para este tópico.
+                  {session && checklistItem ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => deleteChecklist.mutate(checklistItem.id)}
+                      disabled={deleteChecklist.isPending}
+                    >
+                      Desmarcar conclusao
+                    </Button>
+                  ) : session ? (
+                    <Button
+                      onClick={() => createChecklist.mutate({ contentId: content.id })}
+                      disabled={createChecklist.isPending}
+                    >
+                      Marcar como concluido
+                    </Button>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900 px-5 py-2.5 text-sm font-medium text-slate-100 transition hover:border-yellow-400/45 hover:bg-slate-800"
+                    >
+                      Entrar para marcar progresso
+                    </Link>
+                  )}
+                </div>
               </CardContent>
             </Card>
-          ) : null}
-        </div>
+          );
+        })}
+
+        {contents.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center text-muted-foreground">
+              Nenhum conteudo disponivel para este topico.
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   );
