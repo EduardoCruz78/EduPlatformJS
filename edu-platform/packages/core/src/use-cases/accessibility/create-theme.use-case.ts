@@ -1,5 +1,6 @@
 import type { CreateAccessibilityThemeInput } from '../../dtos';
 import type { AccessibilityTheme } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class CreateAccessibilityThemeUseCase {
@@ -9,11 +10,11 @@ export class CreateAccessibilityThemeUseCase {
     const title = input.title.trim();
 
     if (!input.accessibilityCategoryId) {
-      throw new Error('Categoria obrigatória');
+      throw AppError.validation('Categoria obrigatoria.');
     }
 
     if (!title) {
-      throw new Error('Título do tema é obrigatório');
+      throw AppError.validation('Titulo do tema e obrigatorio.');
     }
 
     return this.accessibilityRepository.createTheme({
@@ -24,3 +25,4 @@ export class CreateAccessibilityThemeUseCase {
     });
   }
 }
+

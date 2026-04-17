@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/vestibular/create-vestibular.use-case.ts
-
 import type { CreateVestibularInput } from '../../dtos';
 import type { Vestibular } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class CreateVestibularUseCase {
@@ -11,20 +10,20 @@ export class CreateVestibularUseCase {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome do vestibular é obrigatório');
+      throw AppError.validation('Nome do vestibular e obrigatorio.');
     }
 
     if (!input.year || input.year < 1990 || input.year > 2100) {
-      throw new Error('Ano do vestibular deve ser válido');
+      throw AppError.validation('Ano do vestibular deve ser valido.');
     }
 
     const existingVestibular = await this.vestibularRepository.findByNameAndYear(
-        name,
-        input.year
+      name,
+      input.year
     );
 
     if (existingVestibular) {
-      throw new Error('Vestibular com este nome e ano já existe');
+      throw AppError.conflict('Vestibular com este nome e ano ja existe.');
     }
 
     return this.vestibularRepository.create({
@@ -35,3 +34,4 @@ export class CreateVestibularUseCase {
     });
   }
 }
+

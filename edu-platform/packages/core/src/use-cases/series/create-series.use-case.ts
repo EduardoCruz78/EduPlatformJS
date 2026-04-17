@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/series/create-series.use-case.ts
-
 import type { CreateSeriesInput } from '../../dtos';
 import type { Series } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { ISeriesRepository } from '../../repositories/ISeriesRepository';
 
 export class CreateSeriesUseCase {
@@ -11,15 +10,16 @@ export class CreateSeriesUseCase {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome obrigatório');
+      throw AppError.validation('Nome obrigatorio.');
     }
 
     const exists = await this.seriesRepository.findByName(name);
 
     if (exists) {
-      throw new Error('Já existe');
+      throw AppError.conflict('Ja existe uma serie com este nome.');
     }
 
     return this.seriesRepository.create({ name });
   }
 }
+

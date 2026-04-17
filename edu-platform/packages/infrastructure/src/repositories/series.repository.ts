@@ -28,7 +28,7 @@ export class SeriesRepository implements ISeriesRepository {
   }
 
   async findByName(name: string): Promise<Series | null> {
-    const data = await prisma.series.findFirst({
+    const data = await prisma.series.findUnique({
       where: { name },
       include: { subjects: true },
     });

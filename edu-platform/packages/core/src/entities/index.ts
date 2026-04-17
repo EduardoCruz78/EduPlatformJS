@@ -1,5 +1,6 @@
 // packages/core/src/entities/index.ts
 
+export type UserRole = 'USER' | 'ADMIN';
 export type ContentType = 'VIDEO' | 'PDF' | 'ARTICLE';
 
 export interface User {
@@ -7,9 +8,21 @@ export interface User {
   providerId: string;
   name: string;
   email: string;
+  role: UserRole;
   image?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface UserRoleAuditLog {
+  id: number;
+  actorUserId: string;
+  targetUserId: string;
+  previousRole: UserRole;
+  newRole: UserRole;
+  createdAt: Date;
+  actor?: User | null;
+  target?: User | null;
 }
 
 export interface Series {

@@ -1,7 +1,18 @@
 // apps/web/src/server/routers/content.ts
 
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import {
+  router,
+  publicProcedure,
+  adminProcedure,
+} from '@/server/trpc';
 import { z } from 'zod';
+import {
+  optionalTrimmedString,
+  optionalUrlString,
+  positiveIntSchema,
+  requiredTrimmedString,
+  requiredUrlString,
+} from '@/server/validation';
 import {
   CreateContentUseCase,
   DeleteContentUseCase,
@@ -19,30 +30,30 @@ export const contentRouter = router({
     return useCase.execute();
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  findById: publicProcedure.input(positiveIntSchema).query(async ({ input, ctx }) => {
     const useCase = new FindContentByIdUseCase(ctx.contentRepository);
     return useCase.execute(input);
   }),
 
   findByTopic: publicProcedure
-    .input(z.object({ topicId: z.number() }))
+    .input(z.object({ topicId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindContentsByTopicUseCase(ctx.contentRepository);
       return useCase.execute({ topicId: input.topicId });
     }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
-        title: z.string().min(1, 'Titulo e obrigatorio'),
-        description: z.string().optional(),
-        topicId: z.number().min(1, 'Topico e obrigatorio'),
+        title: requiredTrimmedString('Titulo', 160),
+        description: optionalTrimmedString(2000),
+        topicId: positiveIntSchema,
         type: contentTypeSchema,
-        link: z.string().min(1, 'Link e obrigatorio'),
-        thumbnailUrl: z.string().min(1, 'Thumbnail e obrigatoria'),
-        videoUrl: z.string().optional(),
-        pdfUrl: z.string().optional(),
-        order: z.number().optional(),
+        link: requiredUrlString('Link'),
+        thumbnailUrl: requiredUrlString('Thumbnail'),
+        videoUrl: optionalUrlString(),
+        pdfUrl: optionalUrlString(),
+        order: positiveIntSchema.optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -50,19 +61,19 @@ export const contentRouter = router({
       return useCase.execute(input);
     }),
 
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
-        id: z.number(),
-        title: z.string().optional(),
-        description: z.string().optional(),
-        topicId: z.number().optional(),
+        id: positiveIntSchema,
+        title: optionalTrimmedString(160),
+        description: optionalTrimmedString(2000),
+        topicId: positiveIntSchema.optional(),
         type: contentTypeSchema.optional(),
-        link: z.string().optional(),
-        videoUrl: z.string().optional(),
-        pdfUrl: z.string().optional(),
-        thumbnailUrl: z.string().optional(),
-        order: z.number().optional(),
+        link: optionalUrlString(),
+        videoUrl: optionalUrlString(),
+        pdfUrl: optionalUrlString(),
+        thumbnailUrl: optionalUrlString(),
+        order: positiveIntSchema.optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -70,7 +81,7 @@ export const contentRouter = router({
       return useCase.execute(input);
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: adminProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
     const useCase = new DeleteContentUseCase(
       ctx.contentRepository,
       ctx.checklistRepository

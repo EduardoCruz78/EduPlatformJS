@@ -1,5 +1,6 @@
 import type { ShareVestibularContentInput } from '../../dtos';
 import type { VestibularContent } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class ShareVestibularContentUseCase {
@@ -7,9 +8,10 @@ export class ShareVestibularContentUseCase {
 
   async execute(input: ShareVestibularContentInput): Promise<VestibularContent> {
     if (!input.vestibularId || !input.contentId) {
-      throw new Error('Conteúdo inválido');
+      throw AppError.validation('Conteudo invalido.');
     }
 
     return this.vestibularRepository.shareContent(input);
   }
 }
+

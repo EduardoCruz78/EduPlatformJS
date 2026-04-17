@@ -1,28 +1,172 @@
-## Getting Started
+# EduPlatformJS Web
 
-First, run the development server:
+`apps/web` e a aplicacao principal do EduPlatformJS. Ela concentra a experiencia publica e administrativa do produto, alem da integracao entre UI, autenticacao, tRPC e os casos de uso compartilhados.
 
-```bash
-yarn dev
+## Objetivos desta workspace
+
+- entregar a interface principal do produto
+- manter routers finos e previsiveis
+- aplicar RBAC e validacao server-side nas areas administrativas
+- consumir contratos de `@edu-platform/core` sem acoplar regra de negocio ao frontend
+
+## Stack principal
+
+- `Next.js 16` com App Router
+- `React 19`
+- `tRPC 11`
+- `Auth.js`
+- `Zod`
+- `React Query`
+- `Tailwind CSS`
+
+## Mapa de rotas
+
+### Rotas publicas principais
+
+- `/`
+- `/login`
+- `/contents`
+- `/subjects`
+- `/topics`
+- `/vestibulares`
+- `/vestibulares/[id]`
+
+### Rotas autenticadas
+
+- `/dashboard`
+- `/checklist`
+
+### Rotas administrativas
+
+- `/admin`
+- `/admin/series`
+- `/admin/subjects`
+- `/admin/topics`
+- `/admin/contents`
+- `/admin/accessibility`
+- `/admin/vestibulares`
+- `/admin/users`
+- `/admin/users/audit`
+
+## Fluxo tecnico
+
+```mermaid
+flowchart LR
+    A["Page / Component"] --> B["tRPC client"]
+    B --> C["Router em src/server/routers"]
+    C --> D["Use case em @edu-platform/core"]
+    D --> E["Repository contract"]
+    E --> F["@edu-platform/infrastructure"]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estrutura relevante
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+apps/web
+|- app/                       Rotas App Router
+|  |- admin/                  Backoffice
+|  |- checklist/              Fluxo do usuario autenticado
+|  |- dashboard/              Painel principal
+|  |- contents/               Navegacao publica de conteudos
+|  `- vestibulares/           Modulo publico de vestibulares
+|- src/
+|  |- components/             Componentes compartilhados
+|  |- lib/                    Auth, env e utilitarios de app
+|  |- server/
+|  |  |- routers/             Routers tRPC
+|  |  |- context.ts           Composicao de sessao + repositories
+|  |  `- trpc.ts              Procedures public/protected/admin
+|  `- types/                  Augmentations e tipos auxiliares
+`- next.config.ts             Config global do app
+```
 
-To create [API routes](https://nextjs.org/docs/app/building-your-application/routing/router-handlers) add an `api/` directory to the `app/` directory with a `route.ts` file. For individual endpoints, create a subfolder in the `api` directory, like `api/hello/route.ts` would map to [http://localhost:3000/api/hello](http://localhost:3000/api/hello).
+## Modulos do produto expostos no web
 
-## Learn More
+- `series`
+- `subjects`
+- `topics`
+- `contents`
+- `checklist`
+- `accessibility`
+- `vestibular`
+- `users` para gestao administrativa de papeis
+- `user role audit` para historico de governanca
 
-To learn more about Next.js, take a look at the following resources:
+## Seguranca aplicada no app
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn/foundations/about-nextjs) - an interactive Next.js tutorial.
+- `protectedProcedure` para fluxos autenticados
+- `adminProcedure` para mutacoes administrativas
+- validacao server-side de acesso em `/admin`
+- traducao consistente de erros de dominio via `AppError`
+- validacao de payload com `Zod`
+- headers basicos de seguranca em todas as rotas via `next.config.ts`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Headers configurados hoje:
 
-## Deploy on Vercel
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_source=github.com&utm_medium=referral&utm_campaign=turborepo-readme) from the creators of Next.js.
+## Ambiente
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+O app depende de:
+
+| Variavel | Descricao |
+| --- | --- |
+| `AUTH_SECRET` | segredo do Auth.js |
+| `GOOGLE_CLIENT_ID` | OAuth Google |
+| `GOOGLE_CLIENT_SECRET` | OAuth Google |
+| `DATABASE_URL` ou `DIRECT_URL` | conexao de banco usada por Prisma e repositories |
+| `ADMIN_EMAILS` | bootstrap/recuperacao inicial de admins |
+
+Validacao:
+
+- auth: [apps/web/src/lib/env.ts](./src/lib/env.ts)
+- banco: [packages/infrastructure/src/config/env.ts](../../packages/infrastructure/src/config/env.ts)
+
+## Scripts uteis
+
+```bash
+npm run dev --workspace web
+npm run lint --workspace web
+npm run build --workspace web
+npx tsc -p apps/web/tsconfig.json --noEmit
+```
+
+## Regras de manutencao
+
+- nao mover regra de negocio para componentes ou pages sem necessidade
+- routers devem ficar finos: validacao + chamada de use case
+- todo fluxo admin deve continuar atras de `adminProcedure`
+- componentes de formulario devem manter validacao coerente com os routers
+- se um erro vem do dominio, preserve `AppError` em vez de recriar mensagens arbitrarias no frontend
+
+## Quando editar cada pasta
+
+| Pasta | Quando mexer |
+| --- | --- |
+| `app/` | novas paginas, layouts, UX, metadata e fluxos do App Router |
+| `src/server/routers/` | endpoints tRPC e validacao de entrada |
+| `src/lib/` | auth, env, clientes e utilitarios |
+| `src/components/` | UI compartilhada entre paginas |
+| `src/types/` | augmentations de tipos do app |
+
+## Estado atual
+
+- a aplicacao principal esta operacional
+- `dashboard`, `checklist` e `vestibulares` publicos ja receberam rodada de maturidade funcional
+- `accessibility` admin e `vestibular` admin ja receberam rodada inicial de refinamento visual e textual
+- a governanca de usuarios e auditoria administrativa ja estao presentes no painel
+
+## Validacao recomendada para alteracoes no app
+
+```bash
+npm test
+npx prisma generate
+npx tsc -p packages/core/tsconfig.json --noEmit
+npx tsc -p packages/infrastructure/tsconfig.json --noEmit
+npx tsc -p apps/web/tsconfig.json --noEmit
+npm run lint --workspace web
+npm run build --workspace web
+```

@@ -1,4 +1,5 @@
 import type { DeleteResponseDto } from '../../dtos';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class DeleteAccessibilityThemeUseCase {
@@ -6,10 +7,11 @@ export class DeleteAccessibilityThemeUseCase {
 
   async execute(id: number): Promise<DeleteResponseDto> {
     if (!id) {
-      throw new Error('Tema inválido');
+      throw AppError.validation('Tema invalido.');
     }
 
     await this.accessibilityRepository.deleteTheme(id);
     return { success: true };
   }
 }
+

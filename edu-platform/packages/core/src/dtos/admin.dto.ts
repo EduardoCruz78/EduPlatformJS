@@ -1,6 +1,6 @@
 // packages/core/src/dtos/admin.dto.ts
 
-import type { ContentType } from '../entities';
+import type { ContentType, UserRole } from '../entities';
 
 export interface CreateSeriesInput {
   name: string;
@@ -150,4 +150,24 @@ export interface CreateUserInput {
   providerId: string;
   name: string;
   email: string;
+  role?: UserRole;
+}
+
+export interface UpdateUserRoleInput {
+  actorUserId: string;
+  targetUserId: string;
+  role: UserRole;
+}
+
+export interface UpdateUserRoleWithAuditInput {
+  actorUserId: string;
+  targetUserId: string;
+  previousRole: UserRole;
+  newRole: UserRole;
+}
+
+export interface FindUserRoleAuditLogsInput {
+  limit?: number;
+  actorUserId?: string;
+  targetUserId?: string;
 }

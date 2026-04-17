@@ -1,5 +1,6 @@
 import type { CreateAccessibilityCategoryInput } from '../../dtos';
 import type { AccessibilityCategory } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class CreateAccessibilityCategoryUseCase {
@@ -9,7 +10,7 @@ export class CreateAccessibilityCategoryUseCase {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome da categoria é obrigatório');
+      throw AppError.validation('Nome da categoria e obrigatorio.');
     }
 
     return this.accessibilityRepository.createCategory({
@@ -18,3 +19,4 @@ export class CreateAccessibilityCategoryUseCase {
     });
   }
 }
+

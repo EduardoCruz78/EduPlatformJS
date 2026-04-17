@@ -1,26 +1,25 @@
-// packages/core/src/use-cases/series/delete-series.use-case.ts
-
 import type { DeleteResponseDto } from '../../dtos';
+import { AppError } from '../../errors/app-error.ts';
 import type { ISeriesRepository } from '../../repositories/ISeriesRepository';
 import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class DeleteSeriesUseCase {
   constructor(
-      private readonly seriesRepository: ISeriesRepository,
-      private readonly topicRepository: ITopicRepository
+    private readonly seriesRepository: ISeriesRepository,
+    private readonly topicRepository: ITopicRepository
   ) {}
 
   async execute(id: number): Promise<DeleteResponseDto> {
     const series = await this.seriesRepository.findById(id);
 
     if (!series) {
-      throw new Error('Não encontrada');
+      throw AppError.notFound('Serie nao encontrada.');
     }
 
     const count = await this.topicRepository.countBySeriesId(id);
 
     if (count > 0) {
-      throw new Error('Possui tópicos');
+      throw AppError.conflict('Nao e possivel excluir uma serie com topicos vinculados.');
     }
 
     await this.seriesRepository.delete(id);
@@ -28,3 +27,4 @@ export class DeleteSeriesUseCase {
     return { success: true };
   }
 }
+

@@ -1,8 +1,19 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const sections = [
+  {
+    href: '/admin/users',
+    title: 'Usuarios',
+    description: 'Gerencie papeis, governanca e protecoes da equipe administrativa.',
+  },
+  {
+    href: '/admin/users/audit',
+    title: 'Auditoria',
+    description: 'Consulte o historico administrativo de mudancas de papel.',
+  },
   {
     href: '/admin/subjects',
     title: 'Materias',
@@ -40,10 +51,12 @@ export default function AdminPage() {
     <div className="space-y-6">
       <section className="edu-hero">
         <span className="edu-kicker">Backoffice</span>
-        <h1 className="edu-section-title">Painel administrativo com leitura forte e navegação clara.</h1>
+        <h1 className="edu-section-title">
+          Painel administrativo com leitura forte e navegacao clara.
+        </h1>
         <p className="edu-lead">
-          Use este painel para manter o conteudo do produto consistente sem cair
-          em telas administrativas frias ou sem hierarquia visual.
+          Use este painel para manter o produto consistente, com governanca de acesso
+          e operacao editorial no mesmo sistema visual da plataforma.
         </p>
       </section>
 

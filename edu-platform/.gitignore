@@ -17,9 +17,11 @@ build
 
 # expo
 .expo
+apps/native/.expo-shared/
 
 # misc
 .DS_Store
+.idea/
 *.pem
 dist
 

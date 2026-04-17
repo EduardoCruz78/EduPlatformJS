@@ -6,6 +6,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String  @db.Uuid
@@ -49,6 +54,7 @@ model User {
   providerId    String    @unique
   name          String
   email         String    @unique
+  role          UserRole  @default(USER)
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
@@ -56,8 +62,26 @@ model User {
   accounts      Account[]
   sessions      Session[]
   checklists    Checklist[]
+  performedRoleAuditLogs UserRoleAuditLog[] @relation("UserRoleAuditActor")
+  receivedRoleAuditLogs  UserRoleAuditLog[] @relation("UserRoleAuditTarget")
 
   @@map("users")
+}
+
+model UserRoleAuditLog {
+  id           Int      @id @default(autoincrement())
+  actorUserId  String   @db.Uuid
+  targetUserId String   @db.Uuid
+  previousRole UserRole
+  newRole      UserRole
+  createdAt    DateTime @default(now())
+  actor        User     @relation("UserRoleAuditActor", fields: [actorUserId], references: [id], onDelete: NoAction)
+  target       User     @relation("UserRoleAuditTarget", fields: [targetUserId], references: [id], onDelete: NoAction)
+
+  @@index([actorUserId])
+  @@index([targetUserId])
+  @@index([createdAt])
+  @@map("user_role_audit_logs")
 }
 
 model Checklist {
@@ -74,7 +98,7 @@ model Checklist {
 
 model Series {
   id        Int       @id @default(autoincrement())
-  name      String
+  name      String    @unique
   subjects  Subject[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -153,6 +177,7 @@ model Vestibular {
   updatedAt          DateTime            @updatedAt
 
   @@map("vestibulares")
+  @@unique([name, year])
 }
 
 model VestibularSubject {
@@ -199,7 +224,7 @@ model VestibularTopic {
 
 model AccessibilityCategory {
   id             Int                        @id @default(autoincrement())
-  name           String
+  name           String                     @unique
   description    String?
   categoryTopics AccessibilityCategoryTopic[]
   needs          AccessibilityNeed[]
@@ -244,4 +269,5 @@ model AccessibilityTheme {
   updatedAt               DateTime              @updatedAt
 
   @@map("accessibility_themes")
+  @@unique([accessibilityCategoryId, title])
 }

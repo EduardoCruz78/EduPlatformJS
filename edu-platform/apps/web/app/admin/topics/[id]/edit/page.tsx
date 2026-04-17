@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
@@ -52,7 +52,10 @@ export default function EditTopicPage() {
     },
   });
 
-  const selectedSubjectIds = form.watch('subjectIds');
+  const selectedSubjectIds = useWatch({
+    control: form.control,
+    name: 'subjectIds',
+  }) ?? [];
 
   useEffect(() => {
     if (topic) {

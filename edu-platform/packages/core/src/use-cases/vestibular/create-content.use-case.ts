@@ -1,5 +1,6 @@
 import type { CreateVestibularContentInput } from '../../dtos';
 import type { VestibularContent } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class CreateVestibularContentUseCase {
@@ -7,13 +8,13 @@ export class CreateVestibularContentUseCase {
 
   async execute(input: CreateVestibularContentInput): Promise<VestibularContent> {
     if (!input.vestibularId) {
-      throw new Error('Vestibular inválido');
+      throw AppError.validation('Vestibular invalido.');
     }
 
     const title = input.title.trim();
 
     if (!title) {
-      throw new Error('Título do conteúdo é obrigatório');
+      throw AppError.validation('Titulo do conteudo e obrigatorio.');
     }
 
     return this.vestibularRepository.createContent({
@@ -25,3 +26,4 @@ export class CreateVestibularContentUseCase {
     });
   }
 }
+

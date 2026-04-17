@@ -1,7 +1,16 @@
 // apps/web/src/server/routers/topic.ts
 
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import {
+  router,
+  publicProcedure,
+  adminProcedure,
+} from '@/server/trpc';
 import { z } from 'zod';
+import {
+  optionalTrimmedString,
+  positiveIntSchema,
+  requiredTrimmedString,
+} from '@/server/validation';
 import {
   CreateTopicUseCase,
   DeleteTopicUseCase,
@@ -17,23 +26,25 @@ export const topicRouter = router({
     return useCase.execute();
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  findById: publicProcedure.input(positiveIntSchema).query(async ({ input, ctx }) => {
     const useCase = new FindTopicByIdUseCase(ctx.topicRepository);
     return useCase.execute(input);
   }),
 
   findBySubject: publicProcedure
-    .input(z.object({ subjectId: z.number() }))
+    .input(z.object({ subjectId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindTopicsBySubjectUseCase(ctx.topicRepository);
       return useCase.execute(input.subjectId);
     }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
-        name: z.string().min(1, 'Nome e obrigatorio'),
-        subjectIds: z.array(z.number()).min(1, 'Selecione ao menos uma materia'),
+        name: requiredTrimmedString('Nome', 160),
+        subjectIds: z
+          .array(positiveIntSchema)
+          .min(1, 'Selecione ao menos uma materia'),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -41,12 +52,12 @@ export const topicRouter = router({
       return useCase.execute(input);
     }),
 
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        subjectIds: z.array(z.number()).optional(),
+        id: positiveIntSchema,
+        name: optionalTrimmedString(160),
+        subjectIds: z.array(positiveIntSchema).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -54,7 +65,7 @@ export const topicRouter = router({
       return useCase.execute(input);
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: adminProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
     const useCase = new DeleteTopicUseCase(
       ctx.topicRepository,
       ctx.contentRepository

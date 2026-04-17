@@ -10,10 +10,17 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "lint": "npm run lint --workspace web",
+    "typecheck": "npm run typecheck:core && npm run typecheck:infrastructure && npm run typecheck:web",
+    "typecheck:core": "npx tsc -p packages/core/tsconfig.json --noEmit",
+    "typecheck:infrastructure": "npx tsc -p packages/infrastructure/tsconfig.json --noEmit",
+    "typecheck:web": "npx tsc -p apps/web/tsconfig.json --noEmit",
     "test": "npm run test:core && npm run test:infrastructure",
     "test:core": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/core/src/**/*.test.ts\"",
     "test:infrastructure": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/infrastructure/src/**/*.test.ts\"",
-    "clean": "turbo run clean && rm -rf node_modules",
+    "audit:full": "npm audit",
+    "audit:prod": "npm audit --omit=dev",
+    "clean": "turbo run clean && rimraf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.next",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "devDependencies": {
@@ -25,6 +32,7 @@
     "postcss": "^8.5.9",
     "prettier": "^3.1.1",
     "prisma": "^7.7.0",
+    "rimraf": "^6.1.0",
     "tailwindcss": "^4.2.2",
     "turbo": "^2.9.3"
   },

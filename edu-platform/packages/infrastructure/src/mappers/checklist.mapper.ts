@@ -1,4 +1,4 @@
-import type { Checklist } from '@edu-platform/core';
+import type { Checklist, User } from '@edu-platform/core';
 import { ContentMapper } from './content.mapper.ts';
 import { UserMapper } from './user.mapper.ts';
 
@@ -20,6 +20,7 @@ type PrismaUser = {
   providerId: string;
   name: string;
   email: string;
+  role: User['role'];
   image: string | null;
   createdAt: Date;
   updatedAt: Date;

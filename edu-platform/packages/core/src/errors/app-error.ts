@@ -53,6 +53,22 @@ export class AppError extends Error {
         });
     }
 
+    static unauthorized(message = 'Authentication required') {
+        return new AppError({
+            message,
+            code: 'UNAUTHORIZED',
+            statusCode: 401,
+        });
+    }
+
+    static forbidden(message = 'Access denied') {
+        return new AppError({
+            message,
+            code: 'FORBIDDEN',
+            statusCode: 403,
+        });
+    }
+
     static internal(message = 'Internal server error') {
         return new AppError({
             message,

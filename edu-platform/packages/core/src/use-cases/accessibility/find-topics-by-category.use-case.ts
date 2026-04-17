@@ -1,4 +1,5 @@
 import type { Topic } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class FindAccessibilityTopicsByCategoryUseCase {
@@ -6,9 +7,10 @@ export class FindAccessibilityTopicsByCategoryUseCase {
 
   async execute(categoryId: number): Promise<Topic[]> {
     if (!categoryId) {
-      throw new Error('Categoria inválida');
+      throw AppError.validation('Categoria invalida.');
     }
 
     return this.accessibilityRepository.findTopicsByCategory(categoryId);
   }
 }
+

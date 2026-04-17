@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@edu-platform/core": ["./packages/core"],
-      "@edu-platform/infrastructure": ["./packages/infrastructure"],
-      "@edu-platform/ui": ["./packages/ui"]
+      "@edu-platform/infrastructure": ["./packages/infrastructure"]
     }
   },
   "exclude": [

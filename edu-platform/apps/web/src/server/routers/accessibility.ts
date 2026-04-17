@@ -1,5 +1,3 @@
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
-import { z } from 'zod';
 import {
   AddAccessibilityTopicToCategoryUseCase,
   CreateAccessibilityCategoryUseCase,
@@ -11,6 +9,13 @@ import {
   GetAccessibilityCategoriesUseCase,
   RemoveAccessibilityTopicFromCategoryUseCase,
 } from '@edu-platform/core';
+import { z } from 'zod';
+import { adminProcedure, publicProcedure, router } from '@/server/trpc';
+import {
+  optionalTrimmedString,
+  positiveIntSchema,
+  requiredTrimmedString,
+} from '@/server/validation';
 
 export const accessibilityRouter = router({
   getCategories: publicProcedure.query(async ({ ctx }) => {
@@ -21,7 +26,7 @@ export const accessibilityRouter = router({
   }),
 
   findThemesByCategory: publicProcedure
-    .input(z.object({ categoryId: z.number() }))
+    .input(z.object({ categoryId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindAccessibilityThemesByCategoryUseCase(
         ctx.accessibilityRepository
@@ -30,7 +35,7 @@ export const accessibilityRouter = router({
     }),
 
   findTopicsByCategory: publicProcedure
-    .input(z.object({ categoryId: z.number() }))
+    .input(z.object({ categoryId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindAccessibilityTopicsByCategoryUseCase(
         ctx.accessibilityRepository
@@ -38,11 +43,11 @@ export const accessibilityRouter = router({
       return useCase.execute(input.categoryId);
     }),
 
-  createCategory: protectedProcedure
+  createCategory: adminProcedure
     .input(
       z.object({
-        name: z.string().min(1, 'Nome é obrigatório'),
-        description: z.string().optional(),
+        name: requiredTrimmedString('Nome', 160),
+        description: optionalTrimmedString(1000),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -52,8 +57,8 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
-  deleteCategory: protectedProcedure
-    .input(z.number())
+  deleteCategory: adminProcedure
+    .input(positiveIntSchema)
     .mutation(async ({ input, ctx }) => {
       const useCase = new DeleteAccessibilityCategoryUseCase(
         ctx.accessibilityRepository
@@ -61,13 +66,13 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
-  createTheme: protectedProcedure
+  createTheme: adminProcedure
     .input(
       z.object({
-        accessibilityCategoryId: z.number(),
-        accessibilityNeedId: z.number().nullable().optional(),
-        title: z.string().min(1, 'Título é obrigatório'),
-        content: z.string().optional(),
+        accessibilityCategoryId: positiveIntSchema,
+        accessibilityNeedId: positiveIntSchema.nullable().optional(),
+        title: requiredTrimmedString('Titulo', 160),
+        content: optionalTrimmedString(4000),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -77,8 +82,8 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
-  deleteTheme: protectedProcedure
-    .input(z.number())
+  deleteTheme: adminProcedure
+    .input(positiveIntSchema)
     .mutation(async ({ input, ctx }) => {
       const useCase = new DeleteAccessibilityThemeUseCase(
         ctx.accessibilityRepository
@@ -86,11 +91,11 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
-  addTopicToCategory: protectedProcedure
+  addTopicToCategory: adminProcedure
     .input(
       z.object({
-        accessibilityCategoryId: z.number(),
-        topicId: z.number(),
+        accessibilityCategoryId: positiveIntSchema,
+        topicId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -100,11 +105,11 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
-  removeTopicFromCategory: protectedProcedure
+  removeTopicFromCategory: adminProcedure
     .input(
       z.object({
-        accessibilityCategoryId: z.number(),
-        topicId: z.number(),
+        accessibilityCategoryId: positiveIntSchema,
+        topicId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {

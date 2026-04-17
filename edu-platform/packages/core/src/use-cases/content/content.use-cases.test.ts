@@ -86,8 +86,14 @@ function createChecklistRepositoryMock(existingById: Checklist | null = null) {
     async findById() {
       return existingById;
     },
+    async findByIdAndUserId() {
+      return existingById;
+    },
     async findByContentId() {
       return [];
+    },
+    async findByUserIdAndContentId() {
+      return null;
     },
     async create(data: CreateChecklistInput) {
       calls.create.push(data);

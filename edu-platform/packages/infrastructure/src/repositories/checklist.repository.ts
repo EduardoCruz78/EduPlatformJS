@@ -42,6 +42,24 @@ export class ChecklistRepository implements IChecklistRepository {
     return ChecklistMapper.toDomain(data);
   }
 
+  async findByIdAndUserId(id: number, userId: string): Promise<Checklist | null> {
+    const data = await prisma.checklist.findFirst({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        content: true,
+      },
+    });
+
+    if (!data) {
+      return null;
+    }
+
+    return ChecklistMapper.toDomain(data);
+  }
+
   async findByContentId(contentId: number): Promise<Checklist[]> {
     const data = await prisma.checklist.findMany({
       where: { contentId },
@@ -52,6 +70,29 @@ export class ChecklistRepository implements IChecklistRepository {
     });
 
     return ChecklistMapper.toDomainList(data);
+  }
+
+  async findByUserIdAndContentId(
+    userId: string,
+    contentId: number
+  ): Promise<Checklist | null> {
+    const data = await prisma.checklist.findUnique({
+      where: {
+        userId_contentId: {
+          userId,
+          contentId,
+        },
+      },
+      include: {
+        content: true,
+      },
+    });
+
+    if (!data) {
+      return null;
+    }
+
+    return ChecklistMapper.toDomain(data);
   }
 
   async delete(id: number): Promise<void> {

@@ -2,9 +2,16 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, GraduationCap, LayoutGrid, LogOut } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  GraduationCap,
+  LayoutGrid,
+  LogOut,
+  Target,
+} from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import type { Series } from '@edu-platform/core';
 
@@ -26,6 +33,19 @@ export default function DashboardPage() {
       router.push('/login');
     }
   }, [status, router]);
+
+  const latestCompletedTitle = useMemo(() => {
+    if (checklist.length === 0) {
+      return 'Nenhum conteudo concluido ainda';
+    }
+
+    const latest = [...checklist].sort(
+      (left, right) =>
+        new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
+    )[0];
+
+    return latest.content?.title || `Conteudo #${latest.contentId}`;
+  }, [checklist]);
 
   if (status === 'loading' || isLoading) {
     return (
@@ -110,9 +130,7 @@ export default function DashboardPage() {
 
           <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
             <div className="edu-metric">
-              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                series
-              </p>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">series</p>
               <p className="mt-2 text-3xl font-display">{series.length}</p>
             </div>
             <div className="edu-metric">
@@ -125,10 +143,52 @@ export default function DashboardPage() {
               <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/70">
                 foco
               </p>
-              <p className="mt-2 text-2xl font-display">Continuar agora</p>
+              <p className="mt-2 text-2xl font-display">
+                {checklist.length > 0 ? 'Revisar progresso' : 'Comecar agora'}
+              </p>
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-3">
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Target className="h-5 w-5" />
+              Proximo passo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {checklist.length > 0
+              ? 'Volte para o checklist e retome o ultimo material concluido.'
+              : 'Escolha uma serie para iniciar sua trilha principal de estudo.'}
+          </CardContent>
+        </Card>
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardTitle className="text-xl">Ultimo destaque</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            {latestCompletedTitle}
+          </CardContent>
+        </Card>
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardTitle className="text-xl">Atalhos</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Link href="/checklist" className="edu-nav-link">
+              Checklist
+            </Link>
+            <Link href="/contents" className="edu-nav-link">
+              Conteudos
+            </Link>
+            <Link href="/vestibulares" className="edu-nav-link">
+              Vestibulares
+            </Link>
+          </CardContent>
+        </Card>
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -180,7 +240,9 @@ export default function DashboardPage() {
             <CardTitle className="flex items-center gap-3 text-3xl text-white">
               <CheckCircle2 className="h-6 w-6 text-primary" />
               Progresso recente
-              <Badge className="border-primary bg-primary text-primary-foreground">{checklist.length}</Badge>
+              <Badge className="border-primary bg-primary text-primary-foreground">
+                {checklist.length}
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -191,10 +253,7 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-3">
                 {checklist.slice(0, 5).map((item) => (
-                  <div
-                    key={item.id}
-                    className="edu-subtle-card"
-                  >
+                  <div key={item.id} className="edu-subtle-card">
                     <p className="font-semibold text-white">
                       {item.content?.title || `Conteudo #${item.contentId}`}
                     </p>

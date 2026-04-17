@@ -1,16 +1,12 @@
-// apps/web/src/server/routers/vestibular.ts
-
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
-import { z } from 'zod';
 import {
   CreateVestibularContentUseCase,
-  CreateVestibularUseCase,
   CreateVestibularSubjectUseCase,
   CreateVestibularTopicUseCase,
+  CreateVestibularUseCase,
   DeleteVestibularContentUseCase,
-  DeleteVestibularUseCase,
   DeleteVestibularSubjectUseCase,
   DeleteVestibularTopicUseCase,
+  DeleteVestibularUseCase,
   FindVestibularByIdUseCase,
   FindVestibularContentsUseCase,
   FindVestibularSubjectsUseCase,
@@ -19,6 +15,14 @@ import {
   ShareVestibularContentUseCase,
   UpdateVestibularUseCase,
 } from '@edu-platform/core';
+import { z } from 'zod';
+import { adminProcedure, publicProcedure, router } from '@/server/trpc';
+import {
+  optionalTrimmedString,
+  optionalUrlString,
+  positiveIntSchema,
+  requiredTrimmedString,
+} from '@/server/validation';
 
 export const vestibularRouter = router({
   find: publicProcedure.query(async ({ ctx }) => {
@@ -26,42 +30,43 @@ export const vestibularRouter = router({
     return useCase.execute();
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  findById: publicProcedure.input(positiveIntSchema).query(async ({ input, ctx }) => {
     const useCase = new FindVestibularByIdUseCase(ctx.vestibularRepository);
     return useCase.execute(input);
   }),
 
   findSubjects: publicProcedure
-    .input(z.object({ vestibularId: z.number() }))
+    .input(z.object({ vestibularId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindVestibularSubjectsUseCase(ctx.vestibularRepository);
       return useCase.execute(input.vestibularId);
     }),
 
   findTopics: publicProcedure
-    .input(z.object({ vestibularId: z.number() }))
+    .input(z.object({ vestibularId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindVestibularTopicsUseCase(ctx.vestibularRepository);
       return useCase.execute(input.vestibularId);
     }),
 
   findContents: publicProcedure
-    .input(z.object({ vestibularId: z.number() }))
+    .input(z.object({ vestibularId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindVestibularContentsUseCase(ctx.vestibularRepository);
       return useCase.execute(input.vestibularId);
     }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
-        name: z.string().min(1, 'Nome e obrigatorio'),
-        description: z.string().optional(),
+        name: requiredTrimmedString('Nome', 160),
+        description: optionalTrimmedString(2000),
         year: z
           .number()
+          .int()
           .min(1990, 'Ano deve ser 1990 ou posterior')
           .max(2100, 'Ano deve ser 2100 ou anterior'),
-        imageUrl: z.string().optional(),
+        imageUrl: optionalUrlString(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -74,11 +79,11 @@ export const vestibularRouter = router({
       });
     }),
 
-  createSubject: protectedProcedure
+  createSubject: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        name: z.string().min(1, 'Nome é obrigatório'),
+        vestibularId: positiveIntSchema,
+        name: requiredTrimmedString('Nome', 120),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -89,11 +94,11 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  deleteSubject: protectedProcedure
+  deleteSubject: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        subjectId: z.number(),
+        vestibularId: positiveIntSchema,
+        subjectId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -101,13 +106,13 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  createTopic: protectedProcedure
+  createTopic: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        name: z.string().min(1, 'Nome é obrigatório'),
-        notes: z.string().optional(),
-        tags: z.string().optional(),
+        vestibularId: positiveIntSchema,
+        name: requiredTrimmedString('Nome', 160),
+        notes: optionalTrimmedString(2000),
+        tags: optionalTrimmedString(500),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -115,11 +120,11 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  deleteTopic: protectedProcedure
+  deleteTopic: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        topicId: z.number(),
+        vestibularId: positiveIntSchema,
+        topicId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -127,14 +132,14 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  createContent: protectedProcedure
+  createContent: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        title: z.string().min(1, 'Título é obrigatório'),
+        vestibularId: positiveIntSchema,
+        title: requiredTrimmedString('Titulo', 160),
         type: z.enum(['VIDEO', 'PDF', 'ARTICLE']).optional().nullable(),
-        link: z.string().optional(),
-        pdfUrl: z.string().optional(),
+        link: optionalUrlString(),
+        pdfUrl: optionalUrlString(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -142,11 +147,11 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  shareContent: protectedProcedure
+  shareContent: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        contentId: z.number(),
+        vestibularId: positiveIntSchema,
+        contentId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -154,11 +159,11 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  deleteContent: protectedProcedure
+  deleteContent: adminProcedure
     .input(
       z.object({
-        vestibularId: z.number(),
-        contentId: z.number(),
+        vestibularId: positiveIntSchema,
+        contentId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -166,14 +171,14 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        description: z.string().optional(),
-        year: z.number().optional(),
-        imageUrl: z.string().optional(),
+        id: positiveIntSchema,
+        name: optionalTrimmedString(160),
+        description: optionalTrimmedString(2000),
+        year: z.number().int().min(1990).max(2100).optional(),
+        imageUrl: optionalUrlString(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -181,7 +186,7 @@ export const vestibularRouter = router({
       return useCase.execute(input);
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: adminProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
     const useCase = new DeleteVestibularUseCase(ctx.vestibularRepository);
     return useCase.execute(input);
   }),

@@ -1,4 +1,5 @@
 import type { VestibularTopic } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class FindVestibularTopicsUseCase {
@@ -6,9 +7,10 @@ export class FindVestibularTopicsUseCase {
 
   async execute(vestibularId: number): Promise<VestibularTopic[]> {
     if (!vestibularId) {
-      throw new Error('Vestibular inválido');
+      throw AppError.validation('Vestibular invalido.');
     }
 
     return this.vestibularRepository.findTopics(vestibularId);
   }
 }
+

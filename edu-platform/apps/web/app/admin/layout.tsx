@@ -13,6 +13,10 @@ export default async function AdminLayout({
     redirect('/login');
   }
 
+  if (session.user.role !== 'ADMIN') {
+    redirect('/dashboard');
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="edu-shell">

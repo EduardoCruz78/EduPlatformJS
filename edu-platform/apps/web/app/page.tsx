@@ -81,11 +81,10 @@ export default function HomePage() {
   const utils = trpc.useUtils();
 
   const { data: series = [], isLoading: isLoadingSeries } = trpc.series.find.useQuery();
-  const { data: topics = [], isLoading: isLoadingTopics } = trpc.topic.find.useQuery();
+  const { data: topics = [] } = trpc.topic.find.useQuery();
   const { data: vestibulares = [], isLoading: isLoadingVestibulares } =
     trpc.vestibular.find.useQuery();
-  const { data: accessibilityCategories = [], isLoading: isLoadingAccessibility } =
-    trpc.accessibility.getCategories.useQuery();
+  const { data: accessibilityCategories = [] } = trpc.accessibility.getCategories.useQuery();
   const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
     enabled: status === 'authenticated',
   });
@@ -217,8 +216,6 @@ export default function HomePage() {
       .sort((left, right) => right.score - left.score)
       .slice(0, 12);
   }, [deferredSearchQuery, orderedSeries, topics]);
-
-  const isLoading = isLoadingSeries || isLoadingTopics || isLoadingVestibulares || isLoadingAccessibility;
 
   useEffect(() => {
     orderedSeries.slice(0, 12).forEach((item) => {

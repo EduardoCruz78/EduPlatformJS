@@ -1,4 +1,4 @@
-﻿import { AppError } from '../errors/app-error';
+import { AppError } from '../errors/app-error.ts';
 
 export abstract class UseCase<Input, Output> {
     async execute(input: Input): Promise<Output> {

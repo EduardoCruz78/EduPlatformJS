@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/topic/create-topic.use-case.ts
-
 import type { CreateTopicInput } from '../../dtos';
 import type { Topic } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { ITopicRepository } from '../../repositories/ITopicRepository';
 
 export class CreateTopicUseCase {
@@ -11,17 +10,17 @@ export class CreateTopicUseCase {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome do tópico é obrigatório');
+      throw AppError.validation('Nome do topico e obrigatorio.');
     }
 
     if (!input.subjectIds?.length) {
-      throw new Error('Selecione ao menos uma matéria');
+      throw AppError.validation('Selecione ao menos uma materia.');
     }
 
     const existingTopic = await this.topicRepository.findByName(name);
 
     if (existingTopic) {
-      throw new Error('Tópico com este nome já existe');
+      throw AppError.conflict('Topico com este nome ja existe.');
     }
 
     return this.topicRepository.create({
@@ -30,3 +29,4 @@ export class CreateTopicUseCase {
     });
   }
 }
+

@@ -1,4 +1,5 @@
 import type { AccessibilityTheme } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class FindAccessibilityThemesByCategoryUseCase {
@@ -6,9 +7,10 @@ export class FindAccessibilityThemesByCategoryUseCase {
 
   async execute(categoryId: number): Promise<AccessibilityTheme[]> {
     if (!categoryId) {
-      throw new Error('Categoria inválida');
+      throw AppError.validation('Categoria invalida.');
     }
 
     return this.accessibilityRepository.findThemesByCategory(categoryId);
   }
 }
+

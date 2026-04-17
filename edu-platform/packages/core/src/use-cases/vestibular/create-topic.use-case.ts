@@ -1,5 +1,6 @@
 import type { CreateVestibularTopicInput } from '../../dtos';
 import type { VestibularTopic } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class CreateVestibularTopicUseCase {
@@ -7,13 +8,13 @@ export class CreateVestibularTopicUseCase {
 
   async execute(input: CreateVestibularTopicInput): Promise<VestibularTopic> {
     if (!input.vestibularId) {
-      throw new Error('Vestibular inválido');
+      throw AppError.validation('Vestibular invalido.');
     }
 
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome do tópico é obrigatório');
+      throw AppError.validation('Nome do topico e obrigatorio.');
     }
 
     return this.vestibularRepository.createTopic({
@@ -24,3 +25,4 @@ export class CreateVestibularTopicUseCase {
     });
   }
 }
+

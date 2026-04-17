@@ -3,7 +3,7 @@
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
@@ -48,6 +48,11 @@ export default function EditSubjectPage() {
       seriesId: 'none',
     },
   });
+  const selectedSeriesId =
+    useWatch({
+      control: form.control,
+      name: 'seriesId',
+    }) ?? 'none';
 
   useEffect(() => {
     if (subject) {
@@ -126,7 +131,7 @@ export default function EditSubjectPage() {
 
               <Select
                 onValueChange={(value) => form.setValue('seriesId', value)}
-                value={form.watch('seriesId') ?? 'none'}
+                value={selectedSeriesId}
                 disabled={mutation.isPending}
               >
                 <SelectTrigger>

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { CreateSeriesUseCase } from './create-series.use-case.ts';
 import { UpdateSeriesUseCase } from './update-series.use-case.ts';
 import { DeleteSeriesUseCase } from './delete-series.use-case.ts';
+import { AppError } from '../../errors/app-error.ts';
 import type {
   CreateSeriesInput,
   UpdateSeriesInput,
@@ -145,7 +146,13 @@ test('DeleteSeriesUseCase rejects deleting a series that still has topics', asyn
   const topicRepository = createTopicRepositoryMock(2);
   const useCase = new DeleteSeriesUseCase(repository, topicRepository);
 
-  await assert.rejects(() => useCase.execute(4), /Possui t.+picos/);
+  await assert.rejects(
+    () => useCase.execute(4),
+    (error: unknown) =>
+      error instanceof AppError &&
+      error.code === 'CONFLICT' &&
+      /topicos/i.test(error.message)
+  );
   assert.deepEqual(calls.delete, []);
 });
 

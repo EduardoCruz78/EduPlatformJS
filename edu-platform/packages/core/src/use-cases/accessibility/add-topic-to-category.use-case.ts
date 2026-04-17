@@ -1,5 +1,5 @@
-import type { AddAccessibilityCategoryTopicInput } from '../../dtos';
-import type { DeleteResponseDto } from '../../dtos';
+import type { AddAccessibilityCategoryTopicInput, DeleteResponseDto } from '../../dtos';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class AddAccessibilityTopicToCategoryUseCase {
@@ -7,10 +7,11 @@ export class AddAccessibilityTopicToCategoryUseCase {
 
   async execute(input: AddAccessibilityCategoryTopicInput): Promise<DeleteResponseDto> {
     if (!input.accessibilityCategoryId || !input.topicId) {
-      throw new Error('Categoria e tópico são obrigatórios');
+      throw AppError.validation('Categoria e topico sao obrigatorios.');
     }
 
     await this.accessibilityRepository.addTopicToCategory(input);
     return { success: true };
   }
 }
+

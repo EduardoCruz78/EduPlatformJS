@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 
 const links = [
   { href: '/admin', label: 'Painel' },
+  { href: '/admin/users', label: 'Usuarios' },
+  { href: '/admin/users/audit', label: 'Auditoria' },
   { href: '/admin/accessibility', label: 'Accessibility' },
   { href: '/admin/subjects', label: 'Materias' },
   { href: '/admin/series', label: 'Series' },
@@ -25,7 +27,7 @@ export default function SidebarAdmin() {
         </p>
         <h2 className="mt-3 text-3xl text-white">EduPlatform</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Navegacao central do backoffice com o mesmo sistema visual do produto.
+          Navegacao central do backoffice com governanca, catalogo e fluxos do produto.
         </p>
       </div>
 

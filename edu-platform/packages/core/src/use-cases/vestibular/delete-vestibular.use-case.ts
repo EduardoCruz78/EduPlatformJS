@@ -1,6 +1,5 @@
-// packages/core/src/use-cases/vestibular/delete-vestibular.use-case.ts
-
 import type { DeleteResponseDto } from '../../dtos';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class DeleteVestibularUseCase {
@@ -10,7 +9,7 @@ export class DeleteVestibularUseCase {
     const vestibular = await this.vestibularRepository.findById(id);
 
     if (!vestibular) {
-      throw new Error('Vestibular não encontrado');
+      throw AppError.notFound('Vestibular nao encontrado.');
     }
 
     await this.vestibularRepository.delete(id);
@@ -18,3 +17,4 @@ export class DeleteVestibularUseCase {
     return { success: true };
   }
 }
+

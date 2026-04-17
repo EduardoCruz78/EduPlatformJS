@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/content/create-content.use-case.ts
-
 import type { CreateContentInput } from '../../dtos';
 import type { Content } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IContentRepository } from '../../repositories/IContentRepository';
 
 export class CreateContentUseCase {
@@ -13,19 +12,19 @@ export class CreateContentUseCase {
     const thumbnailUrl = input.thumbnailUrl.trim();
 
     if (!title) {
-      throw new Error('Título do conteúdo é obrigatório');
+      throw AppError.validation('Titulo do conteudo e obrigatorio.');
     }
 
     if (!input.topicId) {
-      throw new Error('Tópico é obrigatório');
+      throw AppError.validation('Topico e obrigatorio.');
     }
 
     if (!link) {
-      throw new Error('Link do conteúdo é obrigatório');
+      throw AppError.validation('Link do conteudo e obrigatorio.');
     }
 
     if (!thumbnailUrl) {
-      throw new Error('Thumbnail é obrigatória');
+      throw AppError.validation('Thumbnail e obrigatoria.');
     }
 
     return this.contentRepository.create({
@@ -41,3 +40,4 @@ export class CreateContentUseCase {
     });
   }
 }
+

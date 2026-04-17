@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/subject/update-subject.use-case.ts
-
 import type { UpdateSubjectInput } from '../../dtos';
 import type { Subject } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
 
 export class UpdateSubjectUseCase {
@@ -11,33 +10,26 @@ export class UpdateSubjectUseCase {
     const subject = await this.subjectRepository.findById(input.id);
 
     if (!subject) {
-      throw new Error('Matéria não encontrada');
+      throw AppError.notFound('Materia nao encontrada.');
     }
 
     const name =
-        input.name === undefined
-            ? subject.name
-            : input.name.trim() || subject.name;
+      input.name === undefined ? subject.name : input.name.trim() || subject.name;
 
     const description =
-        input.description === undefined
-            ? subject.description ?? null
-            : input.description === null
-                ? null
-                : input.description.trim() || null;
+      input.description === undefined
+        ? subject.description ?? null
+        : input.description === null
+          ? null
+          : input.description.trim() || null;
 
     const imageUrl =
-        input.imageUrl === undefined
-            ? subject.imageUrl ?? null
-            : input.imageUrl;
+      input.imageUrl === undefined ? subject.imageUrl ?? null : input.imageUrl;
 
-    const order =
-        input.order === undefined ? subject.order ?? 0 : input.order;
+    const order = input.order === undefined ? subject.order ?? 0 : input.order;
 
     const seriesId =
-        input.seriesId === undefined
-            ? subject.seriesId ?? null
-            : input.seriesId;
+      input.seriesId === undefined ? subject.seriesId ?? null : input.seriesId;
 
     return this.subjectRepository.update(input.id, {
       name,
@@ -48,3 +40,4 @@ export class UpdateSubjectUseCase {
     });
   }
 }
+

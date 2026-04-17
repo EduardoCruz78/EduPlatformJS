@@ -10,7 +10,8 @@ export async function createContext() {
     user: session?.user
         ? {
           ...session.user,
-          id: session.user.id as string,
+          id: session.user.id,
+          role: session.user.role,
         }
         : null,
     ...repositories,

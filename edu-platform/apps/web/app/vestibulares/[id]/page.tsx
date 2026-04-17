@@ -3,14 +3,13 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, BookOpen, FileText, LibraryBig } from 'lucide-react';
+
 import { trpc } from '@/lib/trpc';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-function getVestibularContentHref(
-  content: { pdfUrl?: string | null; link?: string | null }
-) {
+function getVestibularContentHref(content: { pdfUrl?: string | null; link?: string | null }) {
   return content.pdfUrl || content.link || null;
 }
 
@@ -62,6 +61,9 @@ export default function VestibularDetailPage() {
     );
   }
 
+  const sharedContents = contents.filter((content) => content.isShared).length;
+  const exclusiveContents = contents.length - sharedContents;
+
   return (
     <div className="edu-shell">
       <div className="edu-topbar">
@@ -79,11 +81,34 @@ export default function VestibularDetailPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Badge variant="outline">Vestibular</Badge>
           {vestibular.year ? <Badge variant="secondary">{vestibular.year}</Badge> : null}
+          <Badge variant="secondary">{subjects.length} materias</Badge>
+          <Badge variant="secondary">{contents.length} conteudos</Badge>
         </div>
         <h1 className="edu-section-title">{vestibular.name}</h1>
         <p className="edu-lead">
           {vestibular.description || 'Sem descricao adicional para este vestibular.'}
         </p>
+      </section>
+
+      <section className="mt-8 grid gap-4 md:grid-cols-3">
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardDescription>Materias vinculadas</CardDescription>
+            <CardTitle>{subjects.length}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardDescription>Conteudos compartilhados</CardDescription>
+            <CardTitle>{sharedContents}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="card-interactive">
+          <CardHeader>
+            <CardDescription>Conteudos exclusivos</CardDescription>
+            <CardTitle>{exclusiveContents}</CardTitle>
+          </CardHeader>
+        </Card>
       </section>
 
       <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -127,6 +152,19 @@ export default function VestibularDetailPage() {
                   <p className="mt-2 text-sm text-muted-foreground">
                     {topic.notes || 'Sem observacoes adicionais.'}
                   </p>
+                  {topic.tags ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {topic.tags
+                        .split(',')
+                        .map((tag) => tag.trim())
+                        .filter(Boolean)
+                        .map((tag) => (
+                          <Badge key={`${topic.id}-${tag}`} variant="outline">
+                            {tag}
+                          </Badge>
+                        ))}
+                    </div>
+                  ) : null}
                 </div>
               ))
             ) : (

@@ -1,7 +1,17 @@
 // apps/web/src/server/routers/subject.ts
 
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import {
+  router,
+  publicProcedure,
+  adminProcedure,
+} from '@/server/trpc';
 import { z } from 'zod';
+import {
+  optionalTrimmedString,
+  optionalUrlString,
+  positiveIntSchema,
+  requiredTrimmedString,
+} from '@/server/validation';
 import {
   CreateSubjectUseCase,
   DeleteSubjectUseCase,
@@ -17,26 +27,26 @@ export const subjectRouter = router({
     return useCase.execute();
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  findById: publicProcedure.input(positiveIntSchema).query(async ({ input, ctx }) => {
     const useCase = new FindSubjectByIdUseCase(ctx.subjectRepository);
     return useCase.execute(input);
   }),
 
   findBySeries: publicProcedure
-    .input(z.object({ seriesId: z.number() }))
+    .input(z.object({ seriesId: positiveIntSchema }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindSubjectsBySeriesUseCase(ctx.subjectRepository);
       return useCase.execute(input.seriesId);
     }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
-        name: z.string().min(1, 'Nome e obrigatorio'),
-        description: z.string().optional(),
-        imageUrl: z.string().optional(),
-        order: z.number().optional(),
-        seriesId: z.number().nullable().optional(),
+        name: requiredTrimmedString('Nome', 120),
+        description: optionalTrimmedString(1000),
+        imageUrl: optionalUrlString(),
+        order: positiveIntSchema.optional(),
+        seriesId: positiveIntSchema.nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -44,15 +54,15 @@ export const subjectRouter = router({
       return useCase.execute(input);
     }),
 
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
-        id: z.number(),
-        name: z.string().optional(),
-        description: z.string().optional(),
-        imageUrl: z.string().optional(),
-        order: z.number().optional(),
-        seriesId: z.number().nullable().optional(),
+        id: positiveIntSchema,
+        name: optionalTrimmedString(120),
+        description: optionalTrimmedString(1000),
+        imageUrl: optionalUrlString(),
+        order: positiveIntSchema.optional(),
+        seriesId: positiveIntSchema.nullable().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -60,7 +70,7 @@ export const subjectRouter = router({
       return useCase.execute(input);
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: adminProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
     const useCase = new DeleteSubjectUseCase(
       ctx.subjectRepository,
       ctx.topicRepository

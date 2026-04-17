@@ -1,6 +1,4 @@
-import { prisma } from '../prisma/client';
-import { VestibularMapper } from '../mappers/vestibular.mapper';
-import { SubjectMapper } from '../mappers/subject.mapper';
+import { AppError } from '@edu-platform/core';
 import type {
   AttachVestibularSubjectInput,
   CreateVestibularContentInput,
@@ -17,6 +15,9 @@ import type {
   VestibularContent,
   VestibularTopic,
 } from '@edu-platform/core';
+import { SubjectMapper } from '../mappers/subject.mapper';
+import { VestibularMapper } from '../mappers/vestibular.mapper';
+import { prisma } from '../prisma/client';
 
 const vestibularInclude = {
   vestibularSubjects: { include: { subject: { include: { series: true } } } },
@@ -44,8 +45,13 @@ export class VestibularRepository implements IVestibularRepository {
   }
 
   async findByNameAndYear(name: string, year: number): Promise<Vestibular | null> {
-    const data = await prisma.vestibular.findFirst({
-      where: { name, year },
+    const data = await prisma.vestibular.findUnique({
+      where: {
+        name_year: {
+          name,
+          year,
+        },
+      },
       include: vestibularInclude,
     });
 
@@ -159,7 +165,7 @@ export class VestibularRepository implements IVestibularRepository {
     });
 
     if (!content) {
-      throw new Error('Conteúdo não encontrado');
+      throw AppError.notFound('Conteudo nao encontrado.');
     }
 
     const created = await prisma.vestibularContent.create({
@@ -203,7 +209,10 @@ export class VestibularRepository implements IVestibularRepository {
     return VestibularMapper.toDomain(created);
   }
 
-  async update(id: number, data: Omit<UpdateVestibularInput, 'id'>): Promise<Vestibular> {
+  async update(
+    id: number,
+    data: Omit<UpdateVestibularInput, 'id'>
+  ): Promise<Vestibular> {
     const updated = await prisma.vestibular.update({
       where: { id },
       data: {

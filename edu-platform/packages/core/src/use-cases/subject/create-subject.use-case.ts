@@ -1,7 +1,6 @@
-// packages/core/src/use-cases/subject/create-subject.use-case.ts
-
 import type { CreateSubjectInput } from '../../dtos';
 import type { Subject } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
 
 export class CreateSubjectUseCase {
@@ -11,13 +10,13 @@ export class CreateSubjectUseCase {
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome da matéria é obrigatório');
+      throw AppError.validation('Nome da materia e obrigatorio.');
     }
 
     const existingSubject = await this.subjectRepository.findByName(name);
 
     if (existingSubject) {
-      throw new Error('Matéria com este nome já existe');
+      throw AppError.conflict('Materia com este nome ja existe.');
     }
 
     return this.subjectRepository.create({
@@ -29,3 +28,4 @@ export class CreateSubjectUseCase {
     });
   }
 }
+

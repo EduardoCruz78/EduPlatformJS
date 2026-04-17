@@ -44,6 +44,9 @@ export * from './topic/find-by-subject.use-case';
 export * from './topic/update-topic.use-case';
 
 export * from './user/find-or-create-user.use-case';
+export * from './user/find-user-role-audit-logs.use-case';
+export * from './user/find-users.use-case';
+export * from './user/update-user-role.use-case';
 
 export * from './vestibular/create-vestibular.use-case';
 export * from './vestibular/delete-vestibular.use-case';

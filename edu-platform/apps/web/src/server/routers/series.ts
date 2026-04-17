@@ -1,6 +1,15 @@
 // apps/web/src/server/routers/series.ts
 
-import { router, publicProcedure, protectedProcedure } from '@/server/trpc';
+import {
+  router,
+  publicProcedure,
+  adminProcedure,
+} from '@/server/trpc';
+import {
+  positiveIntSchema,
+  requiredTrimmedString,
+  optionalTrimmedString,
+} from '@/server/validation';
 import { z } from 'zod';
 import {
   CreateSeriesUseCase,
@@ -16,15 +25,15 @@ export const seriesRouter = router({
     return useCase.execute();
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
+  findById: publicProcedure.input(positiveIntSchema).query(async ({ input, ctx }) => {
     const useCase = new FindSeriesByIdUseCase(ctx.seriesRepository);
     return useCase.execute(input);
   }),
 
-  create: protectedProcedure
+  create: adminProcedure
     .input(
       z.object({
-        name: z.string().min(1, 'Nome e obrigatorio'),
+        name: requiredTrimmedString('Nome', 120),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -32,11 +41,11 @@ export const seriesRouter = router({
       return useCase.execute(input);
     }),
 
-  update: protectedProcedure
+  update: adminProcedure
     .input(
       z.object({
-        id: z.number(),
-        name: z.string().optional(),
+        id: positiveIntSchema,
+        name: optionalTrimmedString(120),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -44,7 +53,7 @@ export const seriesRouter = router({
       return useCase.execute(input);
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: adminProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
     const useCase = new DeleteSeriesUseCase(
       ctx.seriesRepository,
       ctx.topicRepository

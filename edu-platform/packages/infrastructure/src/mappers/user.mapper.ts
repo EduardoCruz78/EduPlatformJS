@@ -5,6 +5,7 @@ type PrismaUser = {
   providerId: string;
   name: string;
   email: string;
+  role: User['role'];
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -17,6 +18,7 @@ export class UserMapper {
       providerId: data.providerId,
       name: data.name,
       email: data.email,
+      role: data.role,
       image: data.image,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,

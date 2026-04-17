@@ -1,4 +1,5 @@
 import type { DeleteResponseDto } from '../../dtos';
+import { AppError } from '../../errors/app-error.ts';
 import type { IAccessibilityRepository } from '../../repositories/IAccessibilityRepository';
 
 export class DeleteAccessibilityCategoryUseCase {
@@ -6,10 +7,11 @@ export class DeleteAccessibilityCategoryUseCase {
 
   async execute(id: number): Promise<DeleteResponseDto> {
     if (!id) {
-      throw new Error('Categoria inválida');
+      throw AppError.validation('Categoria invalida.');
     }
 
     await this.accessibilityRepository.deleteCategory(id);
     return { success: true };
   }
 }
+

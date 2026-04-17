@@ -1,4 +1,5 @@
 import type { Subject } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
 export class FindVestibularSubjectsUseCase {
@@ -6,9 +7,10 @@ export class FindVestibularSubjectsUseCase {
 
   async execute(vestibularId: number): Promise<Subject[]> {
     if (!vestibularId) {
-      throw new Error('Vestibular inválido');
+      throw AppError.validation('Vestibular invalido.');
     }
 
     return this.vestibularRepository.findSubjects(vestibularId);
   }
 }
+

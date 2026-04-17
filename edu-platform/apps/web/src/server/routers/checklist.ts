@@ -1,50 +1,36 @@
-import { router, protectedProcedure, publicProcedure } from '@/server/trpc';
+import { AppError } from '@edu-platform/core';
+import { router, protectedProcedure } from '@/server/trpc';
 import { z } from 'zod';
 import {
   CreateChecklistUseCase,
   DeleteChecklistUseCase,
-  FindChecklistByIdUseCase,
-  FindChecklistsByContentIdUseCase,
   FindChecklistsByUserIdUseCase,
 } from '@edu-platform/core';
+import { positiveIntSchema } from '@/server/validation';
 
 export const checklistRouter = router({
   findByUserId: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
 
     if (!userId) {
-      throw new Error('Nao autenticado');
+      throw AppError.unauthorized('Autenticacao obrigatoria.');
     }
 
     const useCase = new FindChecklistsByUserIdUseCase(ctx.checklistRepository);
     return useCase.execute(userId);
   }),
 
-  findById: publicProcedure.input(z.number()).query(async ({ input, ctx }) => {
-    const useCase = new FindChecklistByIdUseCase(ctx.checklistRepository);
-    return useCase.execute(input);
-  }),
-
-  findByContentId: publicProcedure
-    .input(z.number())
-    .query(async ({ input, ctx }) => {
-      const useCase = new FindChecklistsByContentIdUseCase(
-        ctx.checklistRepository
-      );
-      return useCase.execute(input);
-    }),
-
   create: protectedProcedure
     .input(
       z.object({
-        contentId: z.number(),
+        contentId: positiveIntSchema,
       })
     )
     .mutation(async ({ input, ctx }) => {
       const userId = ctx.user?.id;
 
       if (!userId) {
-        throw new Error('Nao autenticado');
+        throw AppError.unauthorized('Autenticacao obrigatoria.');
       }
 
       const useCase = new CreateChecklistUseCase(ctx.checklistRepository);
@@ -55,8 +41,14 @@ export const checklistRouter = router({
       });
     }),
 
-  delete: protectedProcedure.input(z.number()).mutation(async ({ input, ctx }) => {
+  delete: protectedProcedure.input(positiveIntSchema).mutation(async ({ input, ctx }) => {
+    const userId = ctx.user?.id;
+
+    if (!userId) {
+      throw AppError.unauthorized('Autenticacao obrigatoria.');
+    }
+
     const useCase = new DeleteChecklistUseCase(ctx.checklistRepository);
-    return useCase.execute(input);
+    return useCase.execute(input, userId);
   }),
 });

@@ -1,5 +1,6 @@
 import type { CreateVestibularSubjectInput } from '../../dtos';
 import type { Subject } from '../../entities';
+import { AppError } from '../../errors/app-error.ts';
 import type { ISubjectRepository } from '../../repositories/ISubjectRepository';
 import type { IVestibularRepository } from '../../repositories/IVestibularRepository';
 
@@ -11,22 +12,24 @@ export class CreateVestibularSubjectUseCase {
 
   async execute(input: CreateVestibularSubjectInput): Promise<Subject> {
     if (!input.vestibularId) {
-      throw new Error('Vestibular inválido');
+      throw AppError.validation('Vestibular invalido.');
     }
 
     const name = input.name.trim();
 
     if (!name) {
-      throw new Error('Nome da matéria é obrigatório');
+      throw AppError.validation('Nome da materia e obrigatorio.');
     }
 
-    const linkedSubjects = await this.vestibularRepository.findSubjects(input.vestibularId);
+    const linkedSubjects = await this.vestibularRepository.findSubjects(
+      input.vestibularId
+    );
     const alreadyLinked = linkedSubjects.find(
       (subject) => subject.name.toLowerCase() === name.toLowerCase()
     );
 
     if (alreadyLinked) {
-      throw new Error('Matéria já vinculada a este vestibular');
+      throw AppError.conflict('Materia ja vinculada a este vestibular.');
     }
 
     const existingSubject = await this.subjectRepository.findByName(name);
@@ -48,3 +51,4 @@ export class CreateVestibularSubjectUseCase {
     return subject;
   }
 }
+
