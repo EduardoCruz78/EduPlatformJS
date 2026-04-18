@@ -295,9 +295,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-white/8 bg-black">
-        <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8 lg:pb-24">
-          <div className="edu-topbar md:flex-row md:items-center md:justify-between">
+      <header className="bg-black">
+        <div className="edu-topbar-shell">
+          <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+            <div className="edu-topbar mb-0 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <div className="edu-home-icon h-11 w-11" aria-hidden="true">
                 <BookOpen className="h-5 w-5" strokeWidth={2.5} />
@@ -349,7 +350,11 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          </div>
+        </div>
 
+        <div className="border-b border-white/8">
+          <div className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24">
           <div className="mt-10">
             <div className="w-full space-y-5">
               <h1 className="max-w-6xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
@@ -362,6 +367,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+        </div>
         </div>
       </header>
 

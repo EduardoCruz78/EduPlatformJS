@@ -210,6 +210,20 @@
     background: #090909;
   }
 
+  .edu-topbar-shell {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding-bottom: 0.5rem;
+    background: linear-gradient(
+      180deg,
+      rgba(5, 5, 5, 0.96) 0%,
+      rgba(5, 5, 5, 0.88) 72%,
+      rgba(5, 5, 5, 0) 100%
+    );
+    backdrop-filter: blur(16px);
+  }
+
   .edu-brand {
     @apply inline-flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-black uppercase tracking-[0.06em] text-primary-foreground;
     background: #ffc627;
