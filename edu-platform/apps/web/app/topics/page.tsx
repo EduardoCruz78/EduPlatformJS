@@ -54,12 +54,30 @@ function TopicsPageContent() {
     );
   }
 
-  if (error || subjectId === 0) {
+  if (subjectId === 0) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
           <CardContent className="p-8 text-center">
             <p className="text-xl text-destructive">Selecione uma materia primeiro</p>
+            <Link href={subjectsHref} className="mt-6 inline-flex edu-nav-link">
+              Voltar as materias
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="edu-shell">
+        <Card className="mx-auto max-w-xl">
+          <CardContent className="p-8 text-center">
+            <p className="text-xl text-destructive">Nao foi possivel carregar os topicos desta materia</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              {error.message}
+            </p>
             <Link href={subjectsHref} className="mt-6 inline-flex edu-nav-link">
               Voltar as materias
             </Link>

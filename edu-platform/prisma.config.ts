@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-const prismaUrl = process.env.DATABASE_URL ?? process.env.DIRECT_URL;
+const prismaUrl = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
 if (!prismaUrl) {
   throw new Error(

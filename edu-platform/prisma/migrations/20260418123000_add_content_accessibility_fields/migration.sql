@@ -1,0 +1,11 @@
+ALTER TABLE "contents"
+ADD COLUMN IF NOT EXISTS "transcript" TEXT,
+ADD COLUMN IF NOT EXISTS "captionsUrl" TEXT,
+ADD COLUMN IF NOT EXISTS "librasUrl" TEXT,
+ADD COLUMN IF NOT EXISTS "audioDescriptionUrl" TEXT;
+
+ALTER TABLE "vestibular_contents"
+ADD COLUMN IF NOT EXISTS "transcript" TEXT,
+ADD COLUMN IF NOT EXISTS "captionsUrl" TEXT,
+ADD COLUMN IF NOT EXISTS "librasUrl" TEXT,
+ADD COLUMN IF NOT EXISTS "audioDescriptionUrl" TEXT;
