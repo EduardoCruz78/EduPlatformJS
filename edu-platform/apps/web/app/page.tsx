@@ -319,9 +319,6 @@ export default function HomePage() {
                 <Link href="/accessibility" className="edu-nav-link">
                   Accessibility
                 </Link>
-                <Link href={session ? '/dashboard' : '/login'} className="edu-nav-link">
-                  {session ? 'Painel' : 'Entrar'}
-                </Link>
               </nav>
 
               <div className="flex items-center gap-2">
@@ -354,7 +351,7 @@ export default function HomePage() {
         </div>
 
         <div className="border-b border-white/8">
-          <div className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24">
+          <div className="mx-auto max-w-7xl px-4 pb-16 pt-36 sm:px-6 sm:pt-40 lg:px-8 lg:pb-24 lg:pt-44">
           <div className="mt-10">
             <div className="w-full space-y-5">
               <h1 className="max-w-6xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
