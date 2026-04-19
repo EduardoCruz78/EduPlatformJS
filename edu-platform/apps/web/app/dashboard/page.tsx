@@ -4,20 +4,51 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import {
-  ArrowRight,
-  CheckCircle2,
-  GraduationCap,
-  LayoutGrid,
-  LogOut,
-  Target,
-} from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, Layers3, LogOut } from 'lucide-react';
 import { trpc } from '@/lib/trpc';
 import type { Series } from '@edu-platform/core';
+import { buildSubjectsHref } from '@/lib/study-navigation';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+
+type SeriesGroup = 'fundamental' | 'medio';
+
+function normalizeSeriesLabel(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u00ba\u00b0\u00aa]/g, '')
+    .replace(/[\u2013\u2014-]/g, ' ')
+    .toLowerCase()
+    .trim();
+}
+
+function getSeriesMeta(name: string) {
+  const normalized = normalizeSeriesLabel(name).replace(/\s+/g, ' ');
+  const fundamentalMatch = normalized.match(/(\d+)\s*ano/);
+  const medioMatch = normalized.match(/(\d+)\s*serie/);
+
+  if (fundamentalMatch || normalized.includes('fundamental')) {
+    return {
+      group: 'fundamental' as SeriesGroup,
+      order: fundamentalMatch ? Number(fundamentalMatch[1]) : Number.MAX_SAFE_INTEGER - 1,
+    };
+  }
+
+  if (medioMatch || normalized.includes('medio')) {
+    return {
+      group: 'medio' as SeriesGroup,
+      order: medioMatch ? Number(medioMatch[1]) : Number.MAX_SAFE_INTEGER - 1,
+    };
+  }
+
+  return {
+    group: 'fundamental' as SeriesGroup,
+    order: Number.MAX_SAFE_INTEGER,
+  };
+}
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -34,17 +65,37 @@ export default function DashboardPage() {
     }
   }, [status, router]);
 
-  const latestCompletedTitle = useMemo(() => {
-    if (checklist.length === 0) {
-      return 'Nenhum conteudo concluido ainda';
+  const orderedSeries = useMemo(() => {
+    return [...series].sort((left, right) => {
+      const leftMeta = getSeriesMeta(left.name);
+      const rightMeta = getSeriesMeta(right.name);
+      const groupWeight = { fundamental: 0, medio: 1 };
+
+      if (groupWeight[leftMeta.group] !== groupWeight[rightMeta.group]) {
+        return groupWeight[leftMeta.group] - groupWeight[rightMeta.group];
+      }
+
+      if (leftMeta.order !== rightMeta.order) {
+        return leftMeta.order - rightMeta.order;
+      }
+
+      return left.name.localeCompare(right.name, 'pt-BR');
+    });
+  }, [series]);
+
+  const groupedSeries = useMemo(() => {
+    return {
+      fundamental: orderedSeries.filter((item) => getSeriesMeta(item.name).group === 'fundamental'),
+      medio: orderedSeries.filter((item) => getSeriesMeta(item.name).group === 'medio'),
+    };
+  }, [orderedSeries]);
+
+  const completedCountLabel = useMemo(() => {
+    if (checklist.length === 1) {
+      return '1 conte\u00fado conclu\u00eddo';
     }
 
-    const latest = [...checklist].sort(
-      (left, right) =>
-        new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
-    )[0];
-
-    return latest.content?.title || `Conteudo #${latest.contentId}`;
+    return `${checklist.length} conte\u00fados conclu\u00eddos`;
   }, [checklist]);
 
   if (status === 'loading' || isLoading) {
@@ -53,9 +104,9 @@ export default function DashboardPage() {
         <div className="space-y-8">
           <div className="h-16 w-full rounded-[2rem] bg-muted" />
           <Skeleton className="h-80 w-full rounded-[2.5rem]" />
-          <div className="grid gap-6 md:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-40 w-full rounded-[2rem]" />
+          <div className="grid gap-6">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <Skeleton key={index} className="h-72 w-full rounded-[2rem]" />
             ))}
           </div>
         </div>
@@ -68,7 +119,7 @@ export default function DashboardPage() {
       <div className="edu-shell">
         <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Erro ao carregar series</p>
+            <p className="text-xl text-destructive">{'Erro ao carregar s\u00e9ries'}</p>
             <p className="mt-2 text-muted-foreground">{error.message}</p>
             <button
               onClick={() => window.location.reload()}
@@ -83,191 +134,178 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="edu-shell">
-      <div className="edu-topbar">
-        <div className="flex items-center gap-3">
-          <span className="edu-brand">EduPlatform</span>
-          <span className="text-sm text-muted-foreground">
-            ola, {session?.user?.name || 'estudante'}
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/subjects" className="edu-nav-link">
-            Materias
-          </Link>
-          <Link href="/vestibulares" className="edu-nav-link">
-            Vestibulares
-          </Link>
-          <Link href="/checklist" className="edu-nav-link">
-            Checklist
-          </Link>
-          <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="edu-nav-link"
-          >
-            <LogOut className="h-4 w-4" />
-            Sair
-          </button>
-        </div>
-      </div>
-
-      <section className="edu-hero">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr] lg:items-end">
-          <div className="space-y-5">
-            <span className="edu-kicker">
-              <GraduationCap className="mr-2 h-4 w-4" />
-              Painel do estudante
-            </span>
-            <div className="space-y-3">
-              <h1 className="edu-section-title">Seu estudo esta organizado em blocos claros.</h1>
-              <p className="edu-lead">
-                Escolha uma serie, avance por materias e topicos e acompanhe o
-                que ja foi concluido sem perder o fio da navegacao.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="edu-metric">
-              <p className="text-xs uppercase tracking-[0.2em] text-white/70">series</p>
-              <p className="mt-2 text-3xl font-display">{series.length}</p>
-            </div>
-            <div className="edu-metric">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                checklist
-              </p>
-              <p className="mt-2 text-3xl font-display">{checklist.length}</p>
-            </div>
-            <div className="rounded-[1.75rem] border border-[rgba(255,198,39,0.38)] bg-primary px-5 py-4 text-primary-foreground">
-              <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/70">
-                foco
-              </p>
-              <p className="mt-2 text-2xl font-display">
-                {checklist.length > 0 ? 'Revisar progresso' : 'Comecar agora'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-8 grid gap-4 md:grid-cols-3">
-        <Card className="card-interactive">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Target className="h-5 w-5" />
-              Proximo passo
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {checklist.length > 0
-              ? 'Volte para o checklist e retome o ultimo material concluido.'
-              : 'Escolha uma serie para iniciar sua trilha principal de estudo.'}
-          </CardContent>
-        </Card>
-        <Card className="card-interactive">
-          <CardHeader>
-            <CardTitle className="text-xl">Ultimo destaque</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            {latestCompletedTitle}
-          </CardContent>
-        </Card>
-        <Card className="card-interactive">
-          <CardHeader>
-            <CardTitle className="text-xl">Atalhos</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            <Link href="/checklist" className="edu-nav-link">
-              Checklist
-            </Link>
-            <Link href="/contents" className="edu-nav-link">
-              Conteudos
-            </Link>
-            <Link href="/vestibulares" className="edu-nav-link">
-              Vestibulares
-            </Link>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-3xl">
-              <LayoutGrid className="h-6 w-6" />
-              Series disponiveis
-              <Badge variant="secondary">{series.length}</Badge>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            {series.length === 0 ? (
-              <p className="py-12 text-center text-muted-foreground">
-                Nenhuma serie encontrada.
-                <br />
-                Rode o seed do Prisma.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {series.map((item: Series) => (
-                  <Link
-                    key={item.id}
-                    href={`/subjects?seriesId=${item.id}`}
-                    className="edu-home-card"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                          trilha
-                        </p>
-                        <span className="mt-3 block text-2xl font-display text-foreground">
-                          {item.name}
-                        </span>
-                      </div>
-
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </Link>
-                ))}
+    <div className="min-h-screen bg-background">
+      <header className="bg-black">
+        <div className="edu-topbar-shell">
+          <div className="mx-auto max-w-[82rem] px-4 pt-6 sm:px-6 lg:px-8">
+            <div className="edu-topbar mb-0 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="edu-home-icon h-11 w-11" aria-hidden="true">
+                  <BookOpen className="h-5 w-5" strokeWidth={2.5} />
+                </div>
+                <span className="edu-brand">EduPlatform</span>
+                <span className="text-sm text-muted-foreground">
+                  {'Ol\u00e1'}, {session?.user?.name || 'estudante'}
+                </span>
               </div>
-            )}
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-3xl text-white">
-              <CheckCircle2 className="h-6 w-6 text-primary" />
-              Progresso recente
-              <Badge className="border-primary bg-primary text-primary-foreground">
-                {checklist.length}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {checklist.length === 0 ? (
-              <p className="text-white/70">
-                Voce ainda nao marcou conteudos como concluidos.
-              </p>
-            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/" className="edu-nav-link">
+                  {'In\u00edcio'}
+                </Link>
+                <Link href="/vestibulares" className="edu-nav-link">
+                  Vestibulares
+                </Link>
+                <Link href="/accessibility" className="edu-nav-link">
+                  Accessibility
+                </Link>
+                <Link href="/checklist" className="edu-nav-link">
+                  Checklist
+                </Link>
+                <button onClick={() => signOut({ callbackUrl: '/login' })} className="edu-nav-link">
+                  <LogOut className="h-4 w-4" />
+                  Sair
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-[82rem] px-4 pb-12 pt-28 sm:px-6 sm:pt-32 lg:px-8 lg:pt-36">
+        <section className="edu-hero">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.9fr] lg:items-end">
+            <div className="space-y-5">
+              <span className="edu-kicker">
+                <GraduationCap className="mr-2 h-4 w-4" />
+                Painel do estudante
+              </span>
               <div className="space-y-3">
-                {checklist.slice(0, 5).map((item) => (
-                  <div key={item.id} className="edu-subtle-card">
-                    <p className="font-semibold text-white">
-                      {item.content?.title || `Conteudo #${item.contentId}`}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {item.content?.type || 'Material'} concluido em{' '}
-                      {new Date(item.createdAt).toLocaleDateString('pt-BR')}
-                    </p>
-                  </div>
-                ))}
+                <h1 className="edu-section-title">
+                  {'Seu estudo agora est\u00e1 organizado por anos e s\u00e9ries.'}
+                </h1>
+                <p className="edu-lead">
+                  {
+                    'Primeiro v\u00eam os 9 anos do Ensino Fundamental. Depois, as 3 s\u00e9ries do Ensino M\u00e9dio. Assim fica mais f\u00e1cil encontrar a trilha certa e seguir estudando sem confus\u00e3o.'
+                  }
+                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </section>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              <div className="edu-metric">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+                  Ensino Fundamental
+                </p>
+                <p className="mt-2 text-3xl font-display">{groupedSeries.fundamental.length}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{'anos dispon\u00edveis'}</p>
+              </div>
+              <div className="edu-metric">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  {'Ensino M\u00e9dio'}
+                </p>
+                <p className="mt-2 text-3xl font-display">{groupedSeries.medio.length}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{'s\u00e9ries dispon\u00edveis'}</p>
+              </div>
+              <div className="edu-metric">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Checklist
+                </p>
+                <p className="mt-2 text-3xl font-display">{checklist.length}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{completedCountLabel}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-8 space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-3xl">
+                <Layers3 className="h-6 w-6" />
+                Anos do Ensino Fundamental
+                <Badge variant="secondary">{groupedSeries.fundamental.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {groupedSeries.fundamental.length === 0 ? (
+                <p className="py-12 text-center text-muted-foreground">
+                  Nenhum ano do Ensino Fundamental encontrado.
+                  <br />
+                  Rode o seed do Prisma.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {groupedSeries.fundamental.map((item: Series) => (
+                    <Link key={item.id} href={buildSubjectsHref(item.id)} className="edu-home-card">
+                      <div className="flex h-full items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                            Ano
+                          </p>
+                          <span className="mt-3 block text-2xl font-display text-foreground">
+                            {item.name}
+                          </span>
+                          <p className="mt-3 text-sm text-muted-foreground">
+                            {item.subjects?.length
+                              ? `${item.subjects.length} mat\u00e9rias prontas para explorar.`
+                              : 'Trilha pronta para explorar.'}
+                          </p>
+                        </div>
+
+                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-3xl">
+                <Layers3 className="h-6 w-6" />
+                {'S\u00e9ries do Ensino M\u00e9dio'}
+                <Badge variant="secondary">{groupedSeries.medio.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              {groupedSeries.medio.length === 0 ? (
+                <p className="py-12 text-center text-muted-foreground">
+                  {'Nenhuma s\u00e9rie do Ensino M\u00e9dio encontrada.'}
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {groupedSeries.medio.map((item: Series) => (
+                    <Link key={item.id} href={buildSubjectsHref(item.id)} className="edu-home-card">
+                      <div className="flex h-full items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                            {'S\u00e9rie'}
+                          </p>
+                          <span className="mt-3 block text-2xl font-display text-foreground">
+                            {item.name}
+                          </span>
+                          <p className="mt-3 text-sm text-muted-foreground">
+                            {item.subjects?.length
+                              ? `${item.subjects.length} mat\u00e9rias prontas para explorar.`
+                              : 'Trilha pronta para explorar.'}
+                          </p>
+                        </div>
+
+                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </section>
+      </main>
     </div>
   );
 }
