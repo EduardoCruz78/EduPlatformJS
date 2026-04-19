@@ -148,3 +148,33 @@ export interface AccessibilityCategory {
   themes?: AccessibilityTheme[];
   topics?: Topic[];
 }
+
+export interface PracticalGuideLink {
+  id: number;
+  practicalGuideId: number;
+  label: string;
+  url: string;
+  order?: number;
+}
+
+export interface PracticalGuide {
+  id: number;
+  practicalCategoryId: number;
+  title: string;
+  summary: string;
+  content: string;
+  slug: string;
+  order?: number;
+  isPublished: boolean;
+  links?: PracticalGuideLink[];
+}
+
+export interface PracticalCategory {
+  id: number;
+  name: string;
+  description?: string | null;
+  slug: string;
+  icon?: string | null;
+  order?: number;
+  guides?: PracticalGuide[];
+}

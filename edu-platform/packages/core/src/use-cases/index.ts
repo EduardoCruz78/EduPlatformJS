@@ -23,6 +23,20 @@ export * from './content/find-by-id.use-case';
 export * from './content/find-by-topic.use-case';
 export * from './content/update-content.use-case';
 
+export * from './practical/create-category.use-case';
+export * from './practical/update-category.use-case';
+export * from './practical/delete-category.use-case';
+export * from './practical/get-categories.use-case';
+export * from './practical/get-public-categories.use-case';
+export * from './practical/find-category-by-slug.use-case';
+export * from './practical/create-guide.use-case';
+export * from './practical/update-guide.use-case';
+export * from './practical/delete-guide.use-case';
+export * from './practical/find-guide-by-slug.use-case';
+export * from './practical/create-guide-link.use-case';
+export * from './practical/update-guide-link.use-case';
+export * from './practical/delete-guide-link.use-case';
+
 export * from './series/create-series.use-case';
 export * from './series/delete-series.use-case';
 export * from './series/find.use-case';

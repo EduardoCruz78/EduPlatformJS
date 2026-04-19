@@ -316,6 +316,9 @@ export default function HomePage() {
                 <Link href="/vestibulares" className="edu-nav-link">
                   Vestibulares
                 </Link>
+                <Link href="/vida-pratica" className="edu-nav-link">
+                  Vida pratica
+                </Link>
                 <Link href="/accessibility" className="edu-nav-link">
                   Accessibility
                 </Link>
@@ -649,6 +652,32 @@ export default function HomePage() {
 
                 <Link href="/accessibility" className="edu-action uppercase tracking-[0.12em]">
                   Acessar
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </div>
+            </section>
+
+            <section className="edu-panel overflow-hidden" aria-labelledby="practical-section-title">
+              <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
+                <div className="flex items-start gap-4">
+                  <div className="edu-home-icon h-14 w-14 text-2xl" aria-hidden="true">
+                    VP
+                  </div>
+                  <div>
+                    <h2
+                      id="practical-section-title"
+                      className="text-2xl font-black text-gradient-primary"
+                    >
+                      Vida pratica
+                    </h2>
+                    <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                      Guias uteis sobre CNH, trabalho, consumo e direitos basicos para o dia a dia.
+                    </p>
+                  </div>
+                </div>
+
+                <Link href="/vida-pratica" className="edu-action uppercase tracking-[0.12em]">
+                  Explorar guias
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>

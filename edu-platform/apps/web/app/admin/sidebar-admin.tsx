@@ -14,6 +14,7 @@ const links = [
   { href: '/admin/topics', label: 'Topicos' },
   { href: '/admin/contents', label: 'Conteudos' },
   { href: '/admin/vestibulares', label: 'Vestibulares' },
+  { href: '/admin/vida-pratica', label: 'Vida pratica' },
 ];
 
 export default function SidebarAdmin() {

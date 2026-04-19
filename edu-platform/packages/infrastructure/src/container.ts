@@ -9,6 +9,7 @@ import {
     VestibularRepository,
     UserRepository,
     AccessibilityRepository,
+    PracticalRepository,
 } from './repositories';
 
 export function makeRepositories() {
@@ -21,6 +22,7 @@ export function makeRepositories() {
         vestibularRepository: new VestibularRepository(),
         userRepository: new UserRepository(),
         accessibilityRepository: new AccessibilityRepository(),
+        practicalRepository: new PracticalRepository(),
     };
 }
 

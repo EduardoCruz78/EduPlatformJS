@@ -230,6 +230,52 @@ model VestibularTopic {
   @@map("vestibular_topics")
 }
 
+model PracticalCategory {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  slug        String           @unique
+  icon        String?
+  order       Int              @default(0)
+  guides      PracticalGuide[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([order, name])
+  @@map("practical_categories")
+}
+
+model PracticalGuide {
+  id                  Int                  @id @default(autoincrement())
+  practicalCategoryId Int
+  title               String
+  summary             String
+  content             String
+  slug                String               @unique
+  order               Int                  @default(0)
+  isPublished         Boolean              @default(false)
+  category            PracticalCategory    @relation(fields: [practicalCategoryId], references: [id], onDelete: Cascade)
+  links               PracticalGuideLink[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  @@index([practicalCategoryId, order, title])
+  @@index([isPublished, order])
+  @@map("practical_guides")
+}
+
+model PracticalGuideLink {
+  id               Int            @id @default(autoincrement())
+  practicalGuideId Int
+  label            String
+  url              String
+  order            Int            @default(0)
+  guide            PracticalGuide @relation(fields: [practicalGuideId], references: [id], onDelete: Cascade)
+
+  @@index([practicalGuideId, order, label])
+  @@map("practical_guide_links")
+}
+
 model AccessibilityCategory {
   id             Int                        @id @default(autoincrement())
   name           String                     @unique

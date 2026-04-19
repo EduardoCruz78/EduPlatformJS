@@ -235,6 +235,10 @@ test('CreateVestibularContentUseCase requires title and normalizes optional fiel
     type: 'PDF',
     link: null,
     pdfUrl: 'https://example.com/lista.pdf',
+    transcript: null,
+    captionsUrl: null,
+    librasUrl: null,
+    audioDescriptionUrl: null,
   });
   assert.equal(result.title, 'Lista 1');
 

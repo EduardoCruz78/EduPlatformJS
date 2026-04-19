@@ -8,3 +8,4 @@ export { ChecklistRepository } from './checklist.repository';
 export { VestibularRepository } from './vestibular.repository';
 export { UserRepository } from './user.repository';
 export { AccessibilityRepository } from './accessibility.repository';
+export { PracticalRepository } from './practical.repository';

@@ -7,3 +7,4 @@ export type { IContentRepository } from './IContentRepository';
 export type { IChecklistRepository } from './IChecklistRepository';
 export type { IVestibularRepository } from './IVestibularRepository';
 export type { IAccessibilityRepository } from './IAccessibilityRepository';
+export type { IPracticalRepository } from './IPracticalRepository';

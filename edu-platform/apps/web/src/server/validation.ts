@@ -10,6 +10,14 @@ const stringToUndefined = (value: string | undefined) => {
 };
 
 export const positiveIntSchema = z.number().int().positive();
+export const nonNegativeIntSchema = z.number().int().min(0);
+
+export const slugSchema = z
+  .string()
+  .trim()
+  .min(1, 'Slug e obrigatorio')
+  .max(160, 'Slug deve ter no maximo 160 caracteres')
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug invalido');
 
 export const requiredTrimmedString = (fieldName: string, maxLength = 255) =>
   z
@@ -50,3 +58,10 @@ export const optionalUrlString = () =>
         .max(2048, 'URL deve ter no maximo 2048 caracteres')
         .optional()
     );
+
+export const optionalSlugString = () =>
+  z
+    .string()
+    .optional()
+    .transform(stringToUndefined)
+    .pipe(slugSchema.optional());

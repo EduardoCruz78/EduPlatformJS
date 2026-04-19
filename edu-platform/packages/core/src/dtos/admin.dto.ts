@@ -92,6 +92,59 @@ export interface CreateAccessibilityCategoryInput {
   description?: string | null;
 }
 
+export interface CreatePracticalCategoryInput {
+  name: string;
+  description?: string | null;
+  slug?: string | null;
+  icon?: string | null;
+  order?: number;
+}
+
+export interface UpdatePracticalCategoryInput {
+  id: number;
+  name?: string;
+  description?: string | null;
+  slug?: string | null;
+  icon?: string | null;
+  order?: number;
+}
+
+export interface CreatePracticalGuideInput {
+  practicalCategoryId: number;
+  title: string;
+  summary: string;
+  content: string;
+  slug?: string | null;
+  order?: number;
+  isPublished?: boolean;
+}
+
+export interface UpdatePracticalGuideInput {
+  id: number;
+  practicalCategoryId?: number;
+  title?: string;
+  summary?: string;
+  content?: string;
+  slug?: string | null;
+  order?: number;
+  isPublished?: boolean;
+}
+
+export interface CreatePracticalGuideLinkInput {
+  practicalGuideId: number;
+  label: string;
+  url: string;
+  order?: number;
+}
+
+export interface UpdatePracticalGuideLinkInput {
+  id: number;
+  practicalGuideId?: number;
+  label?: string;
+  url?: string;
+  order?: number;
+}
+
 export interface CreateAccessibilityThemeInput {
   accessibilityCategoryId: number;
   accessibilityNeedId?: number | null;

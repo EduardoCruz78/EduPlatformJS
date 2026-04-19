@@ -137,6 +137,10 @@ test('CreateContentUseCase trims fields and fills default values before creating
     thumbnailUrl: 'thumb.png',
     videoUrl: null,
     pdfUrl: null,
+    transcript: null,
+    captionsUrl: null,
+    librasUrl: null,
+    audioDescriptionUrl: null,
     order: 0,
   });
   assert.equal(result.title, 'Algebra Linear');
@@ -195,6 +199,10 @@ test('UpdateContentUseCase preserves current values when blank strings are provi
       videoUrl: null,
       pdfUrl: 'content.pdf',
       thumbnailUrl: 'cover.png',
+      transcript: null,
+      captionsUrl: null,
+      librasUrl: null,
+      audioDescriptionUrl: null,
       order: 9,
     },
   });

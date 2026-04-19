@@ -9,6 +9,7 @@ import { checklistRouter } from './checklist';
 import { vestibularRouter } from './vestibular';
 import { accessibilityRouter } from './accessibility';
 import { userRouter } from './user';
+import { practicalRouter } from './practical';
 
 export const appRouter = router({
   series: seriesRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   vestibular: vestibularRouter,
   accessibility: accessibilityRouter,
   user: userRouter,
+  practical: practicalRouter,
 });
 
 export type AppRouter = typeof appRouter;

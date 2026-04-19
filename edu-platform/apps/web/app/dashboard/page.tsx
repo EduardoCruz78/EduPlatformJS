@@ -159,6 +159,9 @@ export default function DashboardPage() {
                 <Link href="/accessibility" className="edu-nav-link">
                   Accessibility
                 </Link>
+                <Link href="/vida-pratica" className="edu-nav-link">
+                  Vida pratica
+                </Link>
                 <Link href="/checklist" className="edu-nav-link">
                   Checklist
                 </Link>
@@ -219,6 +222,33 @@ export default function DashboardPage() {
         </section>
 
         <section className="mt-8 space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-3xl">
+                <Layers3 className="h-6 w-6" />
+                Vida pratica
+                <Badge variant="secondary">Novo modulo</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+              <div>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  Encontre guias sobre CNH, direitos trabalhistas, consumo e outros
+                  assuntos do cotidiano que ajudam a resolver problemas reais fora da sala
+                  de aula.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/vida-pratica" className="edu-action">
+                  Explorar guias
+                </Link>
+                <Link href="/vestibulares" className="edu-action-outline">
+                  Ver vestibulares
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
