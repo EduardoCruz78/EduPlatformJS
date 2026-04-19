@@ -159,7 +159,7 @@ export interface CreateChecklistInput {
 }
 
 export interface CreateUserInput {
-  providerId: string;
+  providerId?: string | null;
   name: string;
   email: string;
   role?: UserRole;

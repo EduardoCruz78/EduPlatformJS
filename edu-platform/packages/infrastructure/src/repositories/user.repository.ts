@@ -87,7 +87,11 @@ export class UserRepository implements IUserRepository {
     return UserMapper.toDomain(data);
   }
 
-  async findByProviderId(providerId: string): Promise<User | null> {
+  async findByProviderId(providerId?: string | null): Promise<User | null> {
+    if (!providerId) {
+      return null;
+    }
+
     const data = await prisma.user.findUnique({
       where: { providerId },
     });
@@ -102,7 +106,7 @@ export class UserRepository implements IUserRepository {
   async create(data: CreateUserInput): Promise<User> {
     const created = await prisma.user.create({
       data: {
-        providerId: data.providerId,
+        providerId: data.providerId ?? null,
         name: data.name,
         email: data.email,
         role: data.role ?? 'USER',
@@ -113,7 +117,8 @@ export class UserRepository implements IUserRepository {
   }
 
   async findOrCreate(data: CreateUserInput): Promise<User> {
-    const user = await this.findByProviderId(data.providerId);
+    const user =
+      (await this.findByProviderId(data.providerId)) ?? (await this.findByEmail(data.email));
 
     if (user) {
       return user;

@@ -3,7 +3,7 @@
 import { z } from 'zod';
 
 export const CreateUserInputSchema = z.object({
-  providerId: z.string(),
+  providerId: z.string().optional().nullable(),
   name: z.string().min(1),
   email: z.string().email(),
   role: z.enum(['USER', 'ADMIN']).optional(),

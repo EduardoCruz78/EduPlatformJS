@@ -12,7 +12,7 @@ export interface IUserRepository {
   findRoleAuditLogs(input?: FindUserRoleAuditLogsInput): Promise<UserRoleAuditLog[]>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
-  findByProviderId(providerId: string): Promise<User | null>;
+  findByProviderId(providerId?: string | null): Promise<User | null>;
   create(data: CreateUserInput): Promise<User>;
   findOrCreate(data: CreateUserInput): Promise<User>;
   countByRole(role: User['role']): Promise<number>;

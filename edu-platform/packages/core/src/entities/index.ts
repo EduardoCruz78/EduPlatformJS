@@ -5,7 +5,7 @@ export type ContentType = 'VIDEO' | 'PDF' | 'ARTICLE';
 
 export interface User {
   id: string;
-  providerId: string;
+  providerId?: string | null;
   name: string;
   email: string;
   role: UserRole;

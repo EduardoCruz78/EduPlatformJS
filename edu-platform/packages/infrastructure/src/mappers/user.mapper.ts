@@ -2,7 +2,7 @@ import type { User } from '@edu-platform/core';
 
 type PrismaUser = {
   id: string;
-  providerId: string;
+  providerId: string | null;
   name: string;
   email: string;
   role: User['role'];
