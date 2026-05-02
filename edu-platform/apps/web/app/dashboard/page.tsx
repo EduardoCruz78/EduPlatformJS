@@ -4,55 +4,85 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, GraduationCap, Layers3, LogOut } from 'lucide-react';
-import { trpc } from '@/lib/trpc';
-import type { Series } from '@edu-platform/core';
-import { buildSubjectsHref } from '@/lib/study-navigation';
+import { ArrowRight, BookOpen, GraduationCap, Layers3, LockKeyhole, LogOut } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { COMING_SOON_LABEL, getSeriesMeta, isLockedModulePath, isLockedSeriesName } from '@/lib/content-locks';
+import { buildSubjectsHref } from '@/lib/study-navigation';
+import { trpc } from '@/lib/trpc';
 
-type SeriesGroup = 'fundamental' | 'medio';
-
-function normalizeSeriesLabel(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\u00ba\u00b0\u00aa]/g, '')
-    .replace(/[\u2013\u2014-]/g, ' ')
-    .toLowerCase()
-    .trim();
+function LockedNavItem({ label }: { label: string }) {
+  return (
+    <span className="edu-nav-link cursor-not-allowed opacity-70">
+      <LockKeyhole className="h-4 w-4" />
+      {label}
+      <span className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+        {COMING_SOON_LABEL}
+      </span>
+    </span>
+  );
 }
 
-function getSeriesMeta(name: string) {
-  const normalized = normalizeSeriesLabel(name).replace(/\s+/g, ' ');
-  const fundamentalMatch = normalized.match(/(\d+)\s*ano/);
-  const medioMatch = normalized.match(/(\d+)\s*serie/);
+function DashboardSeriesCard({
+  name,
+  href,
+  label,
+  description,
+  locked,
+}: {
+  name: string;
+  href: string;
+  label: string;
+  description: string;
+  locked: boolean;
+}) {
+  const content = (
+    <div className="flex h-full items-start justify-between gap-4">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {label}
+        </p>
+        <span className="mt-3 block text-2xl font-display text-foreground">{name}</span>
+        {locked ? (
+          <Badge variant="secondary" className="mt-3 gap-2">
+            <LockKeyhole className="h-3.5 w-3.5" />
+            {COMING_SOON_LABEL}
+          </Badge>
+        ) : null}
+        <p className="mt-3 text-sm text-muted-foreground">{description}</p>
+      </div>
 
-  if (fundamentalMatch || normalized.includes('fundamental')) {
-    return {
-      group: 'fundamental' as SeriesGroup,
-      order: fundamentalMatch ? Number(fundamentalMatch[1]) : Number.MAX_SAFE_INTEGER - 1,
-    };
+      {locked ? (
+        <LockKeyhole className="h-5 w-5 text-primary" />
+      ) : (
+        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+      )}
+    </div>
+  );
+
+  if (locked) {
+    return (
+      <div className="edu-home-card cursor-not-allowed opacity-80" aria-disabled="true">
+        {content}
+      </div>
+    );
   }
 
-  if (medioMatch || normalized.includes('medio')) {
-    return {
-      group: 'medio' as SeriesGroup,
-      order: medioMatch ? Number(medioMatch[1]) : Number.MAX_SAFE_INTEGER - 1,
-    };
-  }
-
-  return {
-    group: 'fundamental' as SeriesGroup,
-    order: Number.MAX_SAFE_INTEGER,
-  };
+  return (
+    <Link href={href} className="edu-home-card">
+      {content}
+    </Link>
+  );
 }
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const vestibularesLocked = isLockedModulePath('/vestibulares');
+  const practicalLocked = isLockedModulePath('/vida-pratica');
+  const accessibilityLocked = isLockedModulePath('/accessibility');
 
   const { data: series = [], isLoading, error } = trpc.series.find.useQuery();
   const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
@@ -92,10 +122,10 @@ export default function DashboardPage() {
 
   const completedCountLabel = useMemo(() => {
     if (checklist.length === 1) {
-      return '1 conte\u00fado conclu\u00eddo';
+      return '1 conteudo concluido';
     }
 
-    return `${checklist.length} conte\u00fados conclu\u00eddos`;
+    return `${checklist.length} conteudos concluidos`;
   }, [checklist]);
 
   if (status === 'loading' || isLoading) {
@@ -119,7 +149,7 @@ export default function DashboardPage() {
       <div className="edu-shell">
         <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">{'Erro ao carregar s\u00e9ries'}</p>
+            <p className="text-xl text-destructive">Erro ao carregar series</p>
             <p className="mt-2 text-muted-foreground">{error.message}</p>
             <button
               onClick={() => window.location.reload()}
@@ -145,23 +175,17 @@ export default function DashboardPage() {
                 </div>
                 <span className="edu-brand">EduPlatform</span>
                 <span className="text-sm text-muted-foreground">
-                  {'Ol\u00e1'}, {session?.user?.name || 'estudante'}
+                  Ola, {session?.user?.name || 'estudante'}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
                 <Link href="/" className="edu-nav-link">
-                  {'In\u00edcio'}
+                  Inicio
                 </Link>
-                <Link href="/vestibulares" className="edu-nav-link">
-                  Vestibulares
-                </Link>
-                <Link href="/accessibility" className="edu-nav-link">
-                  Accessibility
-                </Link>
-                <Link href="/vida-pratica" className="edu-nav-link">
-                  Vida pratica
-                </Link>
+                {vestibularesLocked ? <LockedNavItem label="Vestibulares" /> : null}
+                {accessibilityLocked ? <LockedNavItem label="Accessibility" /> : null}
+                {practicalLocked ? <LockedNavItem label="Vida pratica" /> : null}
                 <Link href="/checklist" className="edu-nav-link">
                   Checklist
                 </Link>
@@ -185,12 +209,11 @@ export default function DashboardPage() {
               </span>
               <div className="space-y-3">
                 <h1 className="edu-section-title">
-                  {'Seu estudo agora est\u00e1 organizado por anos e s\u00e9ries.'}
+                  Seu estudo agora esta organizado por anos e series.
                 </h1>
                 <p className="edu-lead">
-                  {
-                    'Primeiro v\u00eam os 9 anos do Ensino Fundamental. Depois, as 3 s\u00e9ries do Ensino M\u00e9dio. Assim fica mais f\u00e1cil encontrar a trilha certa e seguir estudando sem confus\u00e3o.'
-                  }
+                  Enquanto o banco de dados ainda esta sendo preenchido, o 1 ano do Fundamental ate
+                  a 2 serie do Medio ficam trancados. A 3 serie do Medio continua disponivel.
                 </p>
               </div>
             </div>
@@ -201,14 +224,14 @@ export default function DashboardPage() {
                   Ensino Fundamental
                 </p>
                 <p className="mt-2 text-3xl font-display">{groupedSeries.fundamental.length}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{'anos dispon\u00edveis'}</p>
+                <p className="mt-2 text-sm text-muted-foreground">anos cadastrados</p>
               </div>
               <div className="edu-metric">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  {'Ensino M\u00e9dio'}
+                  Ensino Medio
                 </p>
                 <p className="mt-2 text-3xl font-display">{groupedSeries.medio.length}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{'s\u00e9ries dispon\u00edveis'}</p>
+                <p className="mt-2 text-sm text-muted-foreground">series cadastradas</p>
               </div>
               <div className="edu-metric">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -226,25 +249,37 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
                 <Layers3 className="h-6 w-6" />
-                Vida pratica
-                <Badge variant="secondary">Novo modulo</Badge>
+                Modulos especiais
+                <Badge variant="secondary">{COMING_SOON_LABEL}</Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-              <div>
-                <p className="text-sm leading-7 text-muted-foreground">
-                  Encontre guias sobre CNH, direitos trabalhistas, consumo e outros
-                  assuntos do cotidiano que ajudam a resolver problemas reais fora da sala
-                  de aula.
+            <CardContent className="grid gap-4 md:grid-cols-3">
+              <div className="edu-subtle-card">
+                <div className="flex items-center gap-2 font-semibold text-foreground">
+                  <LockKeyhole className="h-4 w-4 text-primary" />
+                  Vestibulares
+                </div>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  Trilha travada enquanto a base especifica ainda esta sendo preenchida.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/vida-pratica" className="edu-action">
-                  Explorar guias
-                </Link>
-                <Link href="/vestibulares" className="edu-action-outline">
-                  Ver vestibulares
-                </Link>
+              <div className="edu-subtle-card">
+                <div className="flex items-center gap-2 font-semibold text-foreground">
+                  <LockKeyhole className="h-4 w-4 text-primary" />
+                  Vida pratica
+                </div>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  Guias uteis entram depois que o conteudo definitivo estiver pronto.
+                </p>
+              </div>
+              <div className="edu-subtle-card">
+                <div className="flex items-center gap-2 font-semibold text-foreground">
+                  <LockKeyhole className="h-4 w-4 text-primary" />
+                  Accessibility
+                </div>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  O modulo volta quando categorias, temas e topicos forem revisados.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -262,31 +297,24 @@ export default function DashboardPage() {
               {groupedSeries.fundamental.length === 0 ? (
                 <p className="py-12 text-center text-muted-foreground">
                   Nenhum ano do Ensino Fundamental encontrado.
-                  <br />
-                  Rode o seed do Prisma.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  {groupedSeries.fundamental.map((item: Series) => (
-                    <Link key={item.id} href={buildSubjectsHref(item.id)} className="edu-home-card">
-                      <div className="flex h-full items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                            Ano
-                          </p>
-                          <span className="mt-3 block text-2xl font-display text-foreground">
-                            {item.name}
-                          </span>
-                          <p className="mt-3 text-sm text-muted-foreground">
-                            {item.subjects?.length
-                              ? `${item.subjects.length} mat\u00e9rias prontas para explorar.`
-                              : 'Trilha pronta para explorar.'}
-                          </p>
-                        </div>
-
-                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                      </div>
-                    </Link>
+                  {groupedSeries.fundamental.map((item) => (
+                    <DashboardSeriesCard
+                      key={item.id}
+                      name={item.name}
+                      href={buildSubjectsHref(item.id)}
+                      label="Ano"
+                      description={
+                        isLockedSeriesName(item.name)
+                          ? 'Esse ano fica em breve ate os conteudos do banco estarem completos.'
+                          : item.subjects?.length
+                            ? `${item.subjects.length} materias prontas para explorar.`
+                            : 'Trilha pronta para explorar.'
+                      }
+                      locked={isLockedSeriesName(item.name)}
+                    />
                   ))}
                 </div>
               )}
@@ -297,7 +325,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
                 <Layers3 className="h-6 w-6" />
-                {'S\u00e9ries do Ensino M\u00e9dio'}
+                Series do Ensino Medio
                 <Badge variant="secondary">{groupedSeries.medio.length}</Badge>
               </CardTitle>
             </CardHeader>
@@ -305,30 +333,25 @@ export default function DashboardPage() {
             <CardContent>
               {groupedSeries.medio.length === 0 ? (
                 <p className="py-12 text-center text-muted-foreground">
-                  {'Nenhuma s\u00e9rie do Ensino M\u00e9dio encontrada.'}
+                  Nenhuma serie do Ensino Medio encontrada.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {groupedSeries.medio.map((item: Series) => (
-                    <Link key={item.id} href={buildSubjectsHref(item.id)} className="edu-home-card">
-                      <div className="flex h-full items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                            {'S\u00e9rie'}
-                          </p>
-                          <span className="mt-3 block text-2xl font-display text-foreground">
-                            {item.name}
-                          </span>
-                          <p className="mt-3 text-sm text-muted-foreground">
-                            {item.subjects?.length
-                              ? `${item.subjects.length} mat\u00e9rias prontas para explorar.`
-                              : 'Trilha pronta para explorar.'}
-                          </p>
-                        </div>
-
-                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                      </div>
-                    </Link>
+                  {groupedSeries.medio.map((item) => (
+                    <DashboardSeriesCard
+                      key={item.id}
+                      name={item.name}
+                      href={buildSubjectsHref(item.id)}
+                      label="Serie"
+                      description={
+                        isLockedSeriesName(item.name)
+                          ? 'Essa serie fica em breve ate os conteudos do banco estarem completos.'
+                          : item.subjects?.length
+                            ? `${item.subjects.length} materias prontas para explorar.`
+                            : 'Trilha pronta para explorar.'
+                      }
+                      locked={isLockedSeriesName(item.name)}
+                    />
                   ))}
                 </div>
               )}

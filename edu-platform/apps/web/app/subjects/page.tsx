@@ -9,32 +9,44 @@ import type { Subject } from '@edu-platform/core';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { trpc } from '@/lib/trpc';
+import { ComingSoonPanel } from '@/components/coming-soon-panel';
+import { isLockedModulePath, isLockedSeriesName } from '@/lib/content-locks';
 import { buildTopicsHref } from '@/lib/study-navigation';
+import { trpc } from '@/lib/trpc';
 
 function SubjectsPageContent() {
   const searchParams = useSearchParams();
   const utils = trpc.useUtils();
   const seriesIdParam = searchParams.get('seriesId');
   const seriesId = Number(seriesIdParam || 0);
+  const vestibularesLocked = isLockedModulePath('/vestibulares');
 
-  const {
-    data: subjects = [],
-    isLoading,
-    error,
-  } = trpc.subject.findBySeries.useQuery({ seriesId }, { enabled: seriesId > 0 });
-
-  const { data: series } = trpc.series.findById.useQuery(seriesId, {
+  const { data: series, isLoading: isLoadingSeries } = trpc.series.findById.useQuery(seriesId, {
     enabled: seriesId > 0,
   });
 
+  const seriesLocked = series ? isLockedSeriesName(series.name) : false;
+
+  const {
+    data: subjects = [],
+    isLoading: isLoadingSubjects,
+    error,
+  } = trpc.subject.findBySeries.useQuery(
+    { seriesId },
+    { enabled: seriesId > 0 && Boolean(series) && !seriesLocked }
+  );
+
   useEffect(() => {
+    if (seriesLocked) {
+      return;
+    }
+
     subjects.forEach((subject) => {
       void utils.topic.findBySubject.prefetch({ subjectId: subject.id });
     });
-  }, [subjects, utils]);
+  }, [seriesLocked, subjects, utils]);
 
-  if (isLoading) {
+  if (isLoadingSeries || isLoadingSubjects) {
     return (
       <div className="edu-shell">
         <div className="space-y-8">
@@ -50,7 +62,7 @@ function SubjectsPageContent() {
     );
   }
 
-  if (error || seriesId === 0) {
+  if (error || seriesId === 0 || !series) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
@@ -65,13 +77,26 @@ function SubjectsPageContent() {
     );
   }
 
+  if (seriesLocked) {
+    return (
+      <div className="edu-shell">
+        <ComingSoonPanel
+          title={`${series.name} esta trancado`}
+          description="Essa serie ainda nao foi liberada porque os conteudos completos ainda nao foram preenchidos no banco de dados."
+          backHref="/"
+          backLabel="Voltar ao inicio"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="edu-shell">
       <div className="edu-topbar">
         <div className="flex items-center gap-3">
           <span className="edu-brand">Materias</span>
           <span className="text-sm text-muted-foreground">
-            {series ? `serie ${series.name}` : 'escolha sua trilha'}
+            {`serie ${series.name}`}
           </span>
         </div>
 
@@ -80,9 +105,7 @@ function SubjectsPageContent() {
             <ArrowLeft className="h-4 w-4" />
             Inicio
           </Link>
-          <Link href="/vestibulares" className="edu-nav-link">
-            Vestibulares
-          </Link>
+          {vestibularesLocked ? <span className="edu-nav-link cursor-not-allowed opacity-70">Vestibulares</span> : null}
         </div>
       </div>
 
@@ -93,8 +116,7 @@ function SubjectsPageContent() {
         </span>
         <h1 className="edu-section-title">Escolha a materia e siga para os topicos.</h1>
         <p className="edu-lead">
-          Cada materia abre a proxima camada do estudo sem ruir o contexto da
-          serie atual.
+          Cada materia abre a proxima camada do estudo sem ruir o contexto da serie atual.
         </p>
       </section>
 
@@ -121,12 +143,9 @@ function SubjectsPageContent() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h2 className="text-3xl font-black text-white">
-                          {subject.name}
-                        </h2>
+                        <h2 className="text-3xl font-black text-white">{subject.name}</h2>
                         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                          {subject.description ||
-                            'Clique para abrir os topicos dessa materia.'}
+                          {subject.description || 'Clique para abrir os topicos dessa materia.'}
                         </p>
                       </div>
                       <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translate-x-1" />

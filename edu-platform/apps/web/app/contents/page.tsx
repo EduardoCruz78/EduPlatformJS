@@ -5,22 +5,17 @@ import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  CheckCircle2,
-  ExternalLink,
-  FileText,
-  PlayCircle,
-  Sparkles,
-} from 'lucide-react';
-
-import { trpc } from '@/lib/trpc';
+import { ArrowLeft, CheckCircle2, ExternalLink, FileText, PlayCircle, Sparkles } from 'lucide-react';
 import type { Content } from '@edu-platform/core';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ComingSoonPanel } from '@/components/coming-soon-panel';
+import { isLockedSeriesName } from '@/lib/content-locks';
 import { buildTopicsHref } from '@/lib/study-navigation';
+import { trpc } from '@/lib/trpc';
 
 function getContentHref(content: Content) {
   if (content.type === 'PDF') {
@@ -62,19 +57,34 @@ function ContentsPageContent() {
   const subjectIdParam = searchParams.get('subjectId');
   const seriesIdParam = searchParams.get('seriesId');
   const topicId = Number(topicIdParam || 0);
-  const subjectId = Number(subjectIdParam || 0);
-  const seriesId = Number(seriesIdParam || 0);
+  const fallbackSubjectId = Number(subjectIdParam || 0);
+  const fallbackSeriesId = Number(seriesIdParam || 0);
+
+  const { data: topic, isLoading: isLoadingTopic } = trpc.topic.findById.useQuery(topicId, {
+    enabled: topicId > 0,
+  });
+
+  const primarySubject = topic?.subjects?.find((item) => item.id === fallbackSubjectId) || topic?.subjects?.[0];
+  const resolvedSubjectId = primarySubject?.id ?? fallbackSubjectId;
+  const resolvedSeriesId = primarySubject?.seriesId ?? fallbackSeriesId;
+
+  const { data: series, isLoading: isLoadingSeries } = trpc.series.findById.useQuery(resolvedSeriesId, {
+    enabled: resolvedSeriesId > 0,
+  });
+
+  const seriesLocked = series ? isLockedSeriesName(series.name) : false;
 
   const {
     data: contents = [],
-    isLoading,
+    isLoading: isLoadingContents,
     error,
-  } = trpc.content.findByTopic.useQuery({ topicId }, { enabled: topicId > 0 });
-  const { data: topic } = trpc.topic.findById.useQuery(topicId, {
-    enabled: topicId > 0,
-  });
+  } = trpc.content.findByTopic.useQuery(
+    { topicId },
+    { enabled: topicId > 0 && Boolean(topic) && Boolean(series) && !seriesLocked }
+  );
+
   const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
-    enabled: status === 'authenticated',
+    enabled: status === 'authenticated' && !seriesLocked,
   });
 
   const createChecklist = trpc.checklist.create.useMutation({
@@ -93,15 +103,13 @@ function ContentsPageContent() {
     () => new Map(checklist.map((item) => [item.contentId, item])),
     [checklist]
   );
-  const primarySubject = topic?.subjects?.find((item) => item.id === subjectId) || topic?.subjects?.[0];
-  const resolvedSubjectId = primarySubject?.id ?? subjectId;
-  const resolvedSeriesId = primarySubject?.seriesId ?? seriesId;
+
   const topicsHref = buildTopicsHref({
     subjectId: resolvedSubjectId,
     seriesId: resolvedSeriesId,
   });
 
-  if (isLoading) {
+  if (isLoadingTopic || isLoadingSeries || isLoadingContents) {
     return (
       <div className="edu-shell">
         <div className="space-y-8">
@@ -115,7 +123,35 @@ function ContentsPageContent() {
     );
   }
 
-  if (error || topicId === 0) {
+  if (topicId === 0 || !topic || !series) {
+    return (
+      <div className="edu-shell">
+        <Card className="mx-auto max-w-md">
+          <CardContent className="p-8 text-center">
+            <p className="text-xl text-destructive">Selecione um topico primeiro</p>
+            <Link href={topicsHref} className="mt-6 inline-flex edu-nav-link">
+              Voltar
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (seriesLocked) {
+    return (
+      <div className="edu-shell">
+        <ComingSoonPanel
+          title={`${series.name} esta trancado`}
+          description="Os conteudos dessa serie continuam bloqueados ate o banco de dados receber a carga completa e revisada."
+          backHref="/"
+          backLabel="Voltar ao inicio"
+        />
+      </div>
+    );
+  }
+
+  if (error) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
@@ -135,9 +171,7 @@ function ContentsPageContent() {
       <div className="edu-topbar">
         <div className="flex items-center gap-3">
           <span className="edu-brand">Conteudos</span>
-          <span className="text-sm text-muted-foreground">
-            {topic?.name || 'materiais do topico'}
-          </span>
+          <span className="text-sm text-muted-foreground">{topic.name || 'materiais do topico'}</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -165,36 +199,25 @@ function ContentsPageContent() {
               Materiais do topico
             </span>
             <div className="space-y-3">
-              <h1 className="edu-section-title">
-                {topic?.name || 'Conteudos do topico'}
-              </h1>
+              <h1 className="edu-section-title">{topic.name || 'Conteudos do topico'}</h1>
               <p className="edu-lead">
-                Abra o material certo, veja rapidamente o tipo de conteudo e
-                marque o que ja foi concluido sem sair do fluxo.
+                Abra o material certo, veja rapidamente o tipo de conteudo e marque o que ja foi concluido sem sair do fluxo.
               </p>
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
             <div className="edu-metric">
-              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                conteudos
-              </p>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/70">conteudos</p>
               <p className="mt-2 text-3xl font-display">{contents.length}</p>
             </div>
             <div className="rounded-[1.75rem] border border-slate-700 bg-slate-950 px-5 py-4 text-slate-50">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                concluidos
-              </p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">concluidos</p>
               <p className="mt-2 text-3xl font-display">
-                {session
-                  ? contents.filter((content) => checklistByContentId.has(content.id)).length
-                  : '---'}
+                {session ? contents.filter((content) => checklistByContentId.has(content.id)).length : '---'}
               </p>
               {!session ? (
-                <p className="mt-2 text-xs text-slate-400">
-                  Entre depois, se quiser usar checklist.
-                </p>
+                <p className="mt-2 text-xs text-slate-400">Entre depois, se quiser usar checklist.</p>
               ) : null}
             </div>
           </div>
@@ -234,9 +257,7 @@ function ContentsPageContent() {
                 <div className="space-y-2 text-sm text-muted-foreground">
                   {content.videoUrl ? <p>Video complementar disponivel.</p> : null}
                   {content.pdfUrl ? <p>PDF de apoio disponivel.</p> : null}
-                  {!content.videoUrl && !content.pdfUrl ? (
-                    <p>Material externo ou artigo vinculado.</p>
-                  ) : null}
+                  {!content.videoUrl && !content.pdfUrl ? <p>Material externo ou artigo vinculado.</p> : null}
                 </div>
 
                 <div className="flex flex-wrap gap-3">

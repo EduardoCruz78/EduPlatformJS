@@ -4,12 +4,15 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, ListTree } from 'lucide-react';
-import { trpc } from '@/lib/trpc';
 import type { Topic } from '@edu-platform/core';
+
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { ComingSoonPanel } from '@/components/coming-soon-panel';
+import { isLockedSeriesName } from '@/lib/content-locks';
 import { buildContentsHref, buildSubjectsHref } from '@/lib/study-navigation';
+import { trpc } from '@/lib/trpc';
 
 function TopicsPageContent() {
   const searchParams = useSearchParams();
@@ -17,28 +20,43 @@ function TopicsPageContent() {
   const subjectIdParam = searchParams.get('subjectId');
   const seriesIdParam = searchParams.get('seriesId');
   const subjectId = Number(subjectIdParam || 0);
-  const seriesId = Number(seriesIdParam || 0);
+  const fallbackSeriesId = Number(seriesIdParam || 0);
 
-  const {
-    data: topics = [],
-    isLoading,
-    error,
-  } = trpc.topic.findBySubject.useQuery({ subjectId }, { enabled: subjectId > 0 });
-  const { data: subject } = trpc.subject.findById.useQuery(subjectId, {
+  const { data: subject, isLoading: isLoadingSubject } = trpc.subject.findById.useQuery(subjectId, {
     enabled: subjectId > 0,
   });
 
-  const resolvedSeriesId = subject?.seriesId ?? seriesId;
+  const resolvedSeriesId = subject?.seriesId ?? fallbackSeriesId;
+
+  const { data: series, isLoading: isLoadingSeries } = trpc.series.findById.useQuery(resolvedSeriesId, {
+    enabled: resolvedSeriesId > 0,
+  });
+
+  const seriesLocked = series ? isLockedSeriesName(series.name) : false;
+
+  const {
+    data: topics = [],
+    isLoading: isLoadingTopics,
+    error,
+  } = trpc.topic.findBySubject.useQuery(
+    { subjectId },
+    { enabled: subjectId > 0 && Boolean(subject) && Boolean(series) && !seriesLocked }
+  );
+
   const subjectsHref = buildSubjectsHref(resolvedSeriesId);
 
   useEffect(() => {
+    if (seriesLocked) {
+      return;
+    }
+
     topics.forEach((topic) => {
       void utils.content.findByTopic.prefetch({ topicId: topic.id });
       void utils.topic.findById.prefetch(topic.id);
     });
-  }, [topics, utils]);
+  }, [seriesLocked, topics, utils]);
 
-  if (isLoading) {
+  if (isLoadingSubject || isLoadingSeries || isLoadingTopics) {
     return (
       <div className="edu-shell">
         <div className="space-y-8">
@@ -54,7 +72,7 @@ function TopicsPageContent() {
     );
   }
 
-  if (subjectId === 0) {
+  if (subjectId === 0 || !subject || !series) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
@@ -69,15 +87,26 @@ function TopicsPageContent() {
     );
   }
 
+  if (seriesLocked) {
+    return (
+      <div className="edu-shell">
+        <ComingSoonPanel
+          title={`${series.name} esta trancado`}
+          description="Os topicos dessa serie continuam bloqueados ate a base estar preenchida com os conteudos definitivos."
+          backHref="/"
+          backLabel="Voltar ao inicio"
+        />
+      </div>
+    );
+  }
+
   if (error) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
             <p className="text-xl text-destructive">Nao foi possivel carregar os topicos desta materia</p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {error.message}
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{error.message}</p>
             <Link href={subjectsHref} className="mt-6 inline-flex edu-nav-link">
               Voltar as materias
             </Link>
@@ -93,9 +122,7 @@ function TopicsPageContent() {
         <div className="flex items-center gap-3">
           <span className="edu-brand">Topicos</span>
           <span className="text-sm text-muted-foreground">
-            {subject?.name
-              ? `materia ${subject.name}`
-              : 'selecione a camada certa antes de abrir os materiais'}
+            {subject.name ? `materia ${subject.name}` : 'selecione a camada certa'}
           </span>
         </div>
 
@@ -117,8 +144,7 @@ function TopicsPageContent() {
         </span>
         <h1 className="edu-section-title">Escolha o topico para abrir os conteudos.</h1>
         <p className="edu-lead">
-          Aqui o fluxo fica mais especifico: cada topico concentra materiais
-          relacionados e prepara o checklist.
+          Aqui o fluxo fica mais especifico: cada topico concentra materiais relacionados e prepara o checklist.
         </p>
       </section>
 
@@ -133,7 +159,7 @@ function TopicsPageContent() {
           <CardContent>
             {topics.length === 0 ? (
               <p className="py-12 text-center text-muted-foreground">
-                Nenhum topico encontrado. Rode o seed do Prisma.
+                Nenhum topico encontrado.
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -149,9 +175,7 @@ function TopicsPageContent() {
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <span className="block text-3xl font-black text-white">
-                          {topic.name}
-                        </span>
+                        <span className="block text-3xl font-black text-white">{topic.name}</span>
                         <p className="mt-3 text-sm text-muted-foreground">
                           Clique para ver os conteudos e marcar progresso.
                         </p>
