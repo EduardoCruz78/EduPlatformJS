@@ -14,7 +14,7 @@
 
 ```text
 packages/infrastructure/src
-|- config/            Validacao de ambiente de banco
+|- config/            Validação de ambiente de banco
 |- generated/         Artefatos gerados de suporte
 |- logger/            Utilitarios de logging, quando aplicavel
 |- mappers/           Conversao entre Prisma e dominio
@@ -48,15 +48,15 @@ Ponto de composicao: [packages/infrastructure/src/container.ts](./src/container.
 
 ## Regras de manutencao
 
-- repository nao deve devolver objeto Prisma cru
+- repository não deve devolver objeto Prisma cru
 - transformacoes compartilhadas devem viver em mappers
 - contratos do `core` devem ser implementados fielmente
 - env de banco deve falhar cedo quando invalido
-- detalhes de persistencia nao devem vazar para a UI
+- detalhes de persistencia não devem vazar para a UI
 
 ## Ambiente
 
-Validacao atual:
+Validação atual:
 
 - `DATABASE_URL` ou `DIRECT_URL`
 - `NODE_ENV` com fallback coerente
@@ -74,7 +74,7 @@ Antes de mexer em repositories:
 3. atualize mapper e repository juntos
 4. valide typecheck e testes
 
-## Validacao recomendada
+## Validação recomendada
 
 ```bash
 npx prisma generate
@@ -87,7 +87,7 @@ npm run test:infrastructure
 Edite `infrastructure` quando a mudanca envolver:
 
 - query de banco
-- implementacao concreta de repository
+- implementação concreta de repository
 - mapper entre banco e dominio
 - composicao do container
 - ajustes do client Prisma

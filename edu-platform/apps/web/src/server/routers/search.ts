@@ -72,9 +72,9 @@ export const searchRouter = router({
             id: `series-${serie.id}`,
             kind: 'serie',
             title: serie.name,
-            description: `${serie.subjects?.length ?? 0} materias vinculadas`,
+            description: `${serie.subjects?.length ?? 0} matérias vinculadas`,
             href: buildSubjectsHref(serie.id),
-            badge: 'Serie',
+            badge: 'Série',
             score: buildScore(serie.name, seriesSearchable, 30),
           });
         }
@@ -92,7 +92,7 @@ export const searchRouter = router({
               title: subject.name,
               description: `${serie.name} - materia`,
               href: buildTopicsHref({ subjectId: subject.id, seriesId: serie.id }),
-              badge: 'Materia',
+            badge: 'Matéria',
               score: buildScore(subject.name, subjectContext, 45),
             });
           }
@@ -119,13 +119,13 @@ export const searchRouter = router({
             id: `topic-${topic.id}-${subject.id}`,
             kind: 'topico',
             title: topic.name,
-            description: `${subject.name} - ${seriesItem?.name ?? 'Serie nao identificada'}`,
+            description: `${subject.name} - ${seriesItem?.name ?? 'Serie não identificada'}`,
             href: buildContentsHref({
               topicId: topic.id,
               subjectId: subject.id,
               seriesId: seriesItem?.id,
             }),
-            badge: 'Topico',
+            badge: 'Tópico',
             score: buildScore(topic.name, topicContext, 70),
           });
         });

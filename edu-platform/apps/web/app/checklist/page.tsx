@@ -45,12 +45,12 @@ export default function ChecklistPage() {
       return null;
     }
 
-    const latest = [...checklist].sort(
+    const latést = [...checklist].sort(
       (left, right) =>
         new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
     )[0];
 
-    return new Date(latest.createdAt).toLocaleDateString('pt-BR');
+    return new Date(latést.createdAt).toLocaleDateString('pt-BR');
   }, [checklist]);
 
   if (status === 'loading' || isLoading) {
@@ -75,7 +75,7 @@ export default function ChecklistPage() {
             </div>
             <h1 className="text-4xl font-bold text-foreground">Meu checklist</h1>
             <p className="mt-2 text-muted-foreground">
-              Acompanhe o que ja foi concluido e retome materiais com um clique.
+              Acompanhe o que já foi concluído e retome matériais com um clique.
             </p>
           </div>
           <Link href="/dashboard" className="edu-nav-link">
@@ -92,7 +92,7 @@ export default function ChecklistPage() {
           </Card>
           <Card className="card-interactive">
             <CardHeader>
-              <CardDescription>Ultima marcacao</CardDescription>
+              <CardDescription>Ultima marcação</CardDescription>
               <CardTitle>{latestCompletion ?? 'Sem historico'}</CardTitle>
             </CardHeader>
           </Card>
@@ -107,10 +107,10 @@ export default function ChecklistPage() {
         {checklist.length === 0 ? (
           <Card>
             <CardContent className="space-y-4 p-8 text-center text-muted-foreground">
-              <p>Voce ainda nao marcou nenhum conteudo como concluido.</p>
+              <p>Você ainda não marcou nenhum conteúdo como concluído.</p>
               <div>
                 <Link href="/contents">
-                  <Button variant="outline">Explorar conteudos</Button>
+                  <Button variant="outline">Explorar conteúdos</Button>
                 </Link>
               </div>
             </CardContent>
@@ -123,14 +123,14 @@ export default function ChecklistPage() {
               return (
                 <Card key={item.id}>
                   <CardHeader>
-                    <CardTitle>{item.content?.title || `Conteudo #${item.contentId}`}</CardTitle>
+                    <CardTitle>{item.content?.title || `Conteúdo #${item.contentId}`}</CardTitle>
                     <CardDescription>
-                      {item.content?.description || 'Conteudo concluido pelo usuario.'}
+                      {item.content?.description || 'Conteúdo concluído pelo usuario.'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Badge variant="outline">{item.content?.type || 'Material'}</Badge>
+                      <Badge variant="outline">{item.content?.type || 'Matérial'}</Badge>
                       <span>
                         Concluido em {new Date(item.createdAt).toLocaleDateString('pt-BR')}
                       </span>
@@ -144,7 +144,7 @@ export default function ChecklistPage() {
                           className="edu-nav-link"
                         >
                           <ExternalLink className="h-4 w-4" />
-                          Abrir material
+                          Abrir matérial
                         </a>
                       ) : null}
                       <Button

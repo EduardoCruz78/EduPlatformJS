@@ -13,7 +13,7 @@ export const checklistRouter = router({
     const userId = ctx.user?.id;
 
     if (!userId) {
-      throw AppError.unauthorized('Autenticacao obrigatoria.');
+      throw AppError.unauthorized('Autenticação obrigatoria.');
     }
 
     const useCase = new FindChecklistsByUserIdUseCase(ctx.checklistRepository);
@@ -30,7 +30,7 @@ export const checklistRouter = router({
       const userId = ctx.user?.id;
 
       if (!userId) {
-        throw AppError.unauthorized('Autenticacao obrigatoria.');
+        throw AppError.unauthorized('Autenticação obrigatoria.');
       }
 
       const useCase = new CreateChecklistUseCase(ctx.checklistRepository);
@@ -45,7 +45,7 @@ export const checklistRouter = router({
     const userId = ctx.user?.id;
 
     if (!userId) {
-      throw AppError.unauthorized('Autenticacao obrigatoria.');
+      throw AppError.unauthorized('Autenticação obrigatoria.');
     }
 
     const useCase = new DeleteChecklistUseCase(ctx.checklistRepository);

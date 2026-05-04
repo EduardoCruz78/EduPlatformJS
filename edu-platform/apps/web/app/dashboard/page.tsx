@@ -4,75 +4,38 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, GraduationCap, Layers3, LockKeyhole, LogOut } from 'lucide-react';
+import { ArrowRight, BookOpen, GraduationCap, Layers3, LogOut } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { COMING_SOON_LABEL, getSeriesMeta, isLockedModulePath, isLockedSeriesName } from '@/lib/content-locks';
+import { getSeriesMeta } from '@/lib/content-locks';
 import { buildSubjectsHref } from '@/lib/study-navigation';
 import { trpc } from '@/lib/trpc';
-
-function LockedNavItem({ label }: { label: string }) {
-  return (
-    <span className="edu-nav-link cursor-not-allowed opacity-70">
-      <LockKeyhole className="h-4 w-4" />
-      {label}
-      <span className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
-        {COMING_SOON_LABEL}
-      </span>
-    </span>
-  );
-}
 
 function DashboardSeriesCard({
   name,
   href,
   label,
   description,
-  locked,
 }: {
   name: string;
   href: string;
   label: string;
   description: string;
-  locked: boolean;
 }) {
-  const content = (
+  return (
+    <Link href={href} className="edu-home-card">
     <div className="flex h-full items-start justify-between gap-4">
       <div className="min-w-0 flex-1">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           {label}
         </p>
         <span className="mt-3 block text-2xl font-display text-foreground">{name}</span>
-        {locked ? (
-          <Badge variant="secondary" className="mt-3 gap-2">
-            <LockKeyhole className="h-3.5 w-3.5" />
-            {COMING_SOON_LABEL}
-          </Badge>
-        ) : null}
         <p className="mt-3 text-sm text-muted-foreground">{description}</p>
       </div>
-
-      {locked ? (
-        <LockKeyhole className="h-5 w-5 text-primary" />
-      ) : (
-        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-      )}
+      <ArrowRight className="h-5 w-5 transition-transform group-hover:translaté-x-1" />
     </div>
-  );
-
-  if (locked) {
-    return (
-      <div className="edu-home-card cursor-not-allowed opacity-80" aria-disabled="true">
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <Link href={href} className="edu-home-card">
-      {content}
     </Link>
   );
 }
@@ -80,11 +43,8 @@ function DashboardSeriesCard({
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const vestibularesLocked = isLockedModulePath('/vestibulares');
-  const practicalLocked = isLockedModulePath('/vida-pratica');
-  const accessibilityLocked = isLockedModulePath('/accessibility');
 
-  const { data: series = [], isLoading, error } = trpc.series.find.useQuery();
+  const { data: séries = [], isLoading, error } = trpc.series.find.useQuery();
   const { data: checklist = [] } = trpc.checklist.findByUserId.useQuery(undefined, {
     enabled: status === 'authenticated',
   });
@@ -96,7 +56,7 @@ export default function DashboardPage() {
   }, [status, router]);
 
   const orderedSeries = useMemo(() => {
-    return [...series].sort((left, right) => {
+    return [...séries].sort((left, right) => {
       const leftMeta = getSeriesMeta(left.name);
       const rightMeta = getSeriesMeta(right.name);
       const groupWeight = { fundamental: 0, medio: 1 };
@@ -111,7 +71,7 @@ export default function DashboardPage() {
 
       return left.name.localeCompare(right.name, 'pt-BR');
     });
-  }, [series]);
+  }, [séries]);
 
   const groupedSeries = useMemo(() => {
     return {
@@ -122,10 +82,10 @@ export default function DashboardPage() {
 
   const completedCountLabel = useMemo(() => {
     if (checklist.length === 1) {
-      return '1 conteudo concluido';
+      return '1 conteúdo concluído';
     }
 
-    return `${checklist.length} conteudos concluidos`;
+    return `${checklist.length} conteúdos concluídos`;
   }, [checklist]);
 
   if (status === 'loading' || isLoading) {
@@ -149,7 +109,7 @@ export default function DashboardPage() {
       <div className="edu-shell">
         <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Erro ao carregar series</p>
+            <p className="text-xl text-destructive">Erro ao carregar séries</p>
             <p className="mt-2 text-muted-foreground">{error.message}</p>
             <button
               onClick={() => window.location.reload()}
@@ -175,17 +135,23 @@ export default function DashboardPage() {
                 </div>
                 <span className="edu-brand">EduPlatform</span>
                 <span className="text-sm text-muted-foreground">
-                  Ola, {session?.user?.name || 'estudante'}
+                  Olá, {session?.user?.name || 'estudante'}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
                 <Link href="/" className="edu-nav-link">
-                  Inicio
+                  Início
                 </Link>
-                {vestibularesLocked ? <LockedNavItem label="Vestibulares" /> : null}
-                {accessibilityLocked ? <LockedNavItem label="Accessibility" /> : null}
-                {practicalLocked ? <LockedNavItem label="Vida pratica" /> : null}
+                <Link href="/vestibulares" className="edu-nav-link">
+                  Vestibulares
+                </Link>
+                <Link href="/accessibility" className="edu-nav-link">
+                  Acessibilidade
+                </Link>
+                <Link href="/vida-pratica" className="edu-nav-link">
+                  Vida prática
+                </Link>
                 <Link href="/checklist" className="edu-nav-link">
                   Checklist
                 </Link>
@@ -209,11 +175,11 @@ export default function DashboardPage() {
               </span>
               <div className="space-y-3">
                 <h1 className="edu-section-title">
-                  Seu estudo agora esta organizado por anos e series.
+                  Seu estudo agora está organizado por anos e séries.
                 </h1>
                 <p className="edu-lead">
-                  Enquanto o banco de dados ainda esta sendo preenchido, o 1 ano do Fundamental ate
-                  a 2 serie do Medio ficam trancados. A 3 serie do Medio continua disponivel.
+                  A base provisória já libera todas as séries, matérias, tópicos, conteúdos,
+                  vestibulares, vida prática e acessibilidade para navegação completa.
                 </p>
               </div>
             </div>
@@ -228,10 +194,10 @@ export default function DashboardPage() {
               </div>
               <div className="edu-metric">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  Ensino Medio
+                  Ensino Médio
                 </p>
                 <p className="mt-2 text-3xl font-display">{groupedSeries.medio.length}</p>
-                <p className="mt-2 text-sm text-muted-foreground">series cadastradas</p>
+                <p className="mt-2 text-sm text-muted-foreground">séries cadastradas</p>
               </div>
               <div className="edu-metric">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -249,38 +215,38 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
                 <Layers3 className="h-6 w-6" />
-                Modulos especiais
-                <Badge variant="secondary">{COMING_SOON_LABEL}</Badge>
+                Módulos especiais
+                <Badge variant="secondary">Liberados</Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
-              <div className="edu-subtle-card">
+              <Link href="/vestibulares" className="edu-subtle-card">
                 <div className="flex items-center gap-2 font-semibold text-foreground">
-                  <LockKeyhole className="h-4 w-4 text-primary" />
+                  <ArrowRight className="h-4 w-4 text-primary" />
                   Vestibulares
                 </div>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Trilha travada enquanto a base especifica ainda esta sendo preenchida.
+                  Trilhas de preparação com matérias, tópicos e conteúdos de apoio.
                 </p>
-              </div>
-              <div className="edu-subtle-card">
+              </Link>
+              <Link href="/vida-pratica" className="edu-subtle-card">
                 <div className="flex items-center gap-2 font-semibold text-foreground">
-                  <LockKeyhole className="h-4 w-4 text-primary" />
-                  Vida pratica
+                  <ArrowRight className="h-4 w-4 text-primary" />
+                  Vida prática
                 </div>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Guias uteis entram depois que o conteudo definitivo estiver pronto.
+                  Guias úteis para documentos, carreira, finanças, consumo e saúde.
                 </p>
-              </div>
-              <div className="edu-subtle-card">
+              </Link>
+              <Link href="/accessibility" className="edu-subtle-card">
                 <div className="flex items-center gap-2 font-semibold text-foreground">
-                  <LockKeyhole className="h-4 w-4 text-primary" />
-                  Accessibility
+                  <ArrowRight className="h-4 w-4 text-primary" />
+                  Acessibilidade
                 </div>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  O modulo volta quando categorias, temas e topicos forem revisados.
+                  Catégorias, temas e vínculos para recursos adaptados.
                 </p>
-              </div>
+              </Link>
             </CardContent>
           </Card>
 
@@ -307,13 +273,10 @@ export default function DashboardPage() {
                       href={buildSubjectsHref(item.id)}
                       label="Ano"
                       description={
-                        isLockedSeriesName(item.name)
-                          ? 'Esse ano fica em breve ate os conteudos do banco estarem completos.'
-                          : item.subjects?.length
-                            ? `${item.subjects.length} materias prontas para explorar.`
-                            : 'Trilha pronta para explorar.'
+                        item.subjects?.length
+                          ? `${item.subjects.length} matérias prontas para explorar.`
+                          : 'Trilha pronta para explorar.'
                       }
-                      locked={isLockedSeriesName(item.name)}
                     />
                   ))}
                 </div>
@@ -325,7 +288,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-3xl">
                 <Layers3 className="h-6 w-6" />
-                Series do Ensino Medio
+                Séries do Ensino Médio
                 <Badge variant="secondary">{groupedSeries.medio.length}</Badge>
               </CardTitle>
             </CardHeader>
@@ -333,7 +296,7 @@ export default function DashboardPage() {
             <CardContent>
               {groupedSeries.medio.length === 0 ? (
                 <p className="py-12 text-center text-muted-foreground">
-                  Nenhuma serie do Ensino Medio encontrada.
+                  Nenhuma série do Ensino Médio encontrada.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -342,15 +305,12 @@ export default function DashboardPage() {
                       key={item.id}
                       name={item.name}
                       href={buildSubjectsHref(item.id)}
-                      label="Serie"
+                      label="Série"
                       description={
-                        isLockedSeriesName(item.name)
-                          ? 'Essa serie fica em breve ate os conteudos do banco estarem completos.'
-                          : item.subjects?.length
-                            ? `${item.subjects.length} materias prontas para explorar.`
-                            : 'Trilha pronta para explorar.'
+                        item.subjects?.length
+                          ? `${item.subjects.length} matérias prontas para explorar.`
+                          : 'Trilha pronta para explorar.'
                       }
-                      locked={isLockedSeriesName(item.name)}
                     />
                   ))}
                 </div>

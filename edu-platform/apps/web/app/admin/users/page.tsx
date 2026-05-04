@@ -60,10 +60,10 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <section className="edu-hero">
         <span className="edu-kicker">Governanca</span>
-        <h1 className="edu-section-title">Administradores com controle real e trilha auditavel.</h1>
+        <h1 className="edu-section-title">Administradores com controle real e trilha auditável.</h1>
         <p className="edu-lead">
-          O bootstrap por <code>ADMIN_EMAILS</code> continua existindo como recuperacao inicial,
-          mas a gestao do dia a dia agora acontece por papel persistido e historico auditavel.
+          O bootstrap por <code>ADMIN_EMAILS</code> continua existindo como recuperação inicial,
+          mas a gestão do dia a dia agora acontece por papel persistido e histórico auditável.
         </p>
       </section>
 
@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="card-interactive">
           <CardHeader>
-            <CardDescription>Usuarios totais</CardDescription>
+            <CardDescription>Usuários totais</CardDescription>
             <CardTitle>{users.length}</CardTitle>
           </CardHeader>
         </Card>
@@ -95,8 +95,8 @@ export default function AdminUsersPage() {
         </Card>
         <Card className="card-interactive">
           <CardHeader>
-            <CardDescription>Regra de seguranca</CardDescription>
-            <CardTitle>Nao existe auto-rebaixamento</CardTitle>
+            <CardDescription>Regra de segurança</CardDescription>
+            <CardTitle>Não existe auto-rebaixamento</CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -104,9 +104,9 @@ export default function AdminUsersPage() {
       <div className="grid gap-6 xl:grid-cols-[1.35fr_0.9fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Usuarios</CardTitle>
+            <CardTitle>Usuários</CardTitle>
             <CardDescription>
-              Promova ou rebaixe papeis com seguranca. O ultimo admin nao pode ser removido.
+              Promova ou rebaixe papéis com segurança. O ultimo admin não pode ser removido.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
                       <TableHead>Usuario</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Papel</TableHead>
-                      <TableHead className="text-right">Acoes</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -145,7 +145,7 @@ export default function AdminUsersPage() {
                               <div>
                                 <p className="font-medium text-foreground">{user.name}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {isCurrentUser ? 'Sessao atual' : 'Conta administravel'}
+                                  {isCurrentUser ? 'Sessão atual' : 'Conta administrável'}
                                 </p>
                               </div>
                             </div>
@@ -188,7 +188,7 @@ export default function AdminUsersPage() {
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">
-                Nenhum usuario encontrado.
+                Nenhum usuário encontrado.
               </div>
             )}
           </CardContent>
@@ -198,7 +198,7 @@ export default function AdminUsersPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <History className="h-5 w-5" />
-              Historico de papeis
+              Histórico de papéis
             </CardTitle>
             <CardDescription>
               Mudancas recentes de privilegio para auditoria administrativa.

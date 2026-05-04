@@ -17,7 +17,7 @@ function createSearchContext() {
           },
           {
             id: 3,
-            name: '3 serie do Ensino Medio',
+            name: '3 serie do Ensino Médio',
             subjects: [
               {
                 id: 30,

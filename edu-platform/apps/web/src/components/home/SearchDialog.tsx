@@ -35,7 +35,7 @@ export function SearchDialog({
         <Dialog.Content
           aria-labelledby={searchTitleId}
           aria-describedby={searchDescriptionId}
-          className="fixed left-1/2 top-6 z-50 w-full max-w-4xl -translate-x-1/2 px-4 sm:px-6 outline-none"
+          className="fixed left-1/2 top-6 z-50 w-full max-w-4xl -translate-x-1/2 px-4 outline-none sm:px-6"
         >
           <div className="edu-panel p-5 md:p-7">
             <div className="mb-5 flex items-center justify-between gap-4">
@@ -46,8 +46,11 @@ export function SearchDialog({
                 <Dialog.Title id={searchTitleId} className="mt-2 text-2xl font-black text-white">
                   Busque por série, matéria ou tópico
                 </Dialog.Title>
-                <Dialog.Description id={searchDescriptionId} className="mt-2 text-sm text-muted-foreground">
-                  A busca mostra apenas o que já está liberado para estudo.
+                <Dialog.Description
+                  id={searchDescriptionId}
+                  className="mt-2 text-sm text-muted-foreground"
+                >
+                  A busca mostra séries, matérias e tópicos disponíveis para estudo.
                 </Dialog.Description>
               </div>
               <Dialog.Close asChild>
@@ -70,7 +73,7 @@ export function SearchDialog({
                 <Input
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Ex.: algebra, matematica, 3 serie..."
+                  placeholder="Ex.: álgebra, matemática, 3ª série..."
                   className="h-14 pl-11 pr-12 text-base"
                 />
                 {searchQuery ? (
@@ -108,7 +111,7 @@ export function SearchDialog({
                       Séries
                     </p>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      As trilhas em breve não aparecem aqui até serem liberadas.
+                      Todas as séries carregadas no banco provisório aparecem aqui.
                     </p>
                   </div>
                 </div>
@@ -117,7 +120,7 @@ export function SearchDialog({
                   Nenhum resultado encontrado para essa busca.
                 </div>
               ) : (
-                <div className="grid gap-3 max-h-[60vh] overflow-y-auto pr-2">
+                <div className="grid max-h-[60vh] gap-3 overflow-y-auto pr-2">
                   {searchResults.map((result) => (
                     <Link
                       key={result.id}
@@ -135,7 +138,10 @@ export function SearchDialog({
                             {result.description}
                           </p>
                         </div>
-                        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                        <ArrowRight
+                          className="mt-1 h-4 w-4 shrink-0 text-primary"
+                          aria-hidden="true"
+                        />
                       </div>
                     </Link>
                   ))}

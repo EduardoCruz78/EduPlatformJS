@@ -59,7 +59,7 @@ export default function AdminContentsPage() {
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao deletar conteudo';
+        error instanceof Error ? error.message : 'Erro ao deletar conteúdo';
 
       alert(`Erro ao deletar: ${message}`);
       setIsDeleting(false);
@@ -82,7 +82,7 @@ export default function AdminContentsPage() {
   };
 
   const getTopicName = (topicId: number) =>
-    topics?.find((topic: Topic) => topic.id === topicId)?.name ?? `Topico #${topicId}`;
+    topics?.find((topic: Topic) => topic.id === topicId)?.name ?? `Tópico #${topicId}`;
 
   if (status === 'loading') {
     return <div className="p-8 text-center">Carregando...</div>;
@@ -96,23 +96,23 @@ export default function AdminContentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Conteudos</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Conteúdos</h1>
           <p className="mt-2 text-muted-foreground">
-            Gerencie todos os conteudos cadastrados no sistema
+            Gerencie todos os conteúdos cadastrados no sistema
           </p>
         </div>
         <Link href="/admin/contents/create">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Novo Conteudo
+            Novo Conteúdo
           </Button>
         </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Conteudos</CardTitle>
-          <CardDescription>{contents?.length || 0} conteudos cadastrados</CardDescription>
+          <CardTitle>Lista de Conteúdos</CardTitle>
+          <CardDescription>{contents?.length || 0} conteúdos cadastrados</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -127,10 +127,10 @@ export default function AdminContentsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>Titulo</TableHead>
+                    <TableHead>Título</TableHead>
                     <TableHead>Tipo</TableHead>
-                    <TableHead>Topico</TableHead>
-                    <TableHead className="text-right">Acoes</TableHead>
+                    <TableHead>Tópico</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -167,10 +167,10 @@ export default function AdminContentsPage() {
             </div>
           ) : (
             <div className="py-10 text-center">
-              <p className="text-muted-foreground">Nenhum conteudo cadastrado</p>
+              <p className="text-muted-foreground">Nenhum conteúdo cadastrado</p>
               <Link href="/admin/contents/create">
                 <Button variant="outline" className="mt-4">
-                  Criar primeiro conteudo
+                  Criar primeiro conteúdo
                 </Button>
               </Link>
             </div>
@@ -187,9 +187,9 @@ export default function AdminContentsPage() {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogTitle>Deletar Conteudo</AlertDialogTitle>
+          <AlertDialogTitle>Deletar Conteúdo</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar este conteudo? Esta acao nao pode ser desfeita.
+            Tem certeza que desejá deletar este conteúdo? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

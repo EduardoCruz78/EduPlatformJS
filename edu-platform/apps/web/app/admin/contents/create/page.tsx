@@ -31,11 +31,11 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 const schema = z.object({
-  title: z.string().min(1, 'Titulo obrigatorio'),
+  title: z.string().min(1, 'Título obrigatério'),
   description: z.string().optional(),
-  topicId: z.string().min(1, 'Topico obrigatorio'),
+  topicId: z.string().min(1, 'Tópico obrigatério'),
   type: z.enum(['VIDEO', 'PDF', 'ARTICLE']),
-  link: z.string().min(1, 'Link obrigatorio'),
+  link: z.string().min(1, 'Link obrigatério'),
   thumbnailUrl: z.string().min(1, 'Thumbnail obrigatoria'),
   videoUrl: z.string().optional(),
   pdfUrl: z.string().optional(),
@@ -68,7 +68,7 @@ export default function CreateContentPage() {
     onSuccess: () => router.push('/admin/contents'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao criar conteudo';
+        error instanceof Error ? error.message : 'Erro ao criar conteúdo';
 
       form.setError('root', { message });
     },
@@ -111,17 +111,17 @@ export default function CreateContentPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Novo Conteudo</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Novo Conteúdo</h1>
           <p className="mt-2 text-muted-foreground">
-            Cadastre um novo conteudo para um topico existente
+            Cadastre um novo conteúdo para um tópico existente
           </p>
         </div>
       </div>
 
       <Card className="max-w-3xl">
         <CardHeader>
-          <CardTitle>Informacoes do Conteudo</CardTitle>
-          <CardDescription>Preencha os campos obrigatorios para criar o conteudo</CardDescription>
+          <CardTitle>Informações do Conteúdo</CardTitle>
+          <CardDescription>Preencha os campos obrigatérios para criar o conteúdo</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -131,7 +131,7 @@ export default function CreateContentPage() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Titulo</FormLabel>
+                    <FormLabel>Título</FormLabel>
                     <FormControl>
                       <Input {...field} disabled={mutation.isPending} />
                     </FormControl>
@@ -145,7 +145,7 @@ export default function CreateContentPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descricao</FormLabel>
+                    <FormLabel>Descrição</FormLabel>
                     <FormControl>
                       <Textarea {...field} disabled={mutation.isPending} />
                     </FormControl>
@@ -160,7 +160,7 @@ export default function CreateContentPage() {
                   name="topicId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Topico</FormLabel>
+                      <FormLabel>Tópico</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -168,7 +168,7 @@ export default function CreateContentPage() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione um topico" />
+                            <SelectValue placeholder="Selecione um tópico" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -305,7 +305,7 @@ export default function CreateContentPage() {
                       Criando...
                     </>
                   ) : (
-                    'Criar Conteudo'
+                    'Criar Conteúdo'
                   )}
                 </Button>
               </div>

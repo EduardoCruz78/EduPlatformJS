@@ -43,7 +43,7 @@ export default function CreateSeriesPage() {
     onSuccess: () => router.push('/admin/series'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao criar serie';
+        error instanceof Error ? error.message : 'Erro ao criar série';
 
       form.setError('root', { message });
     },
@@ -76,17 +76,17 @@ export default function CreateSeriesPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Nova Serie</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Nova Série</h1>
           <p className="mt-2 text-muted-foreground">
-            Cadastre uma nova serie no sistema
+            Cadastre uma nova série no sistema
           </p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Informacoes da Serie</CardTitle>
-          <CardDescription>Preencha os dados para criar a nova serie</CardDescription>
+          <CardTitle>Informações da Serie</CardTitle>
+          <CardDescription>Preencha os dados para criar a nova série</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>

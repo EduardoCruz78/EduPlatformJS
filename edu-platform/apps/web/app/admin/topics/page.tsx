@@ -45,7 +45,7 @@ export default function TopicsPage() {
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao deletar topico';
+        error instanceof Error ? error.message : 'Erro ao deletar tópico';
 
       alert(`Erro ao deletar: ${message}`);
       setIsDeleting(false);
@@ -77,23 +77,23 @@ export default function TopicsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Topicos</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tópicos</h1>
           <p className="mt-2 text-muted-foreground">
-            Gerencie os topicos e suas relacoes com materias
+            Gerencie os tópicos e suas relações com matérias
           </p>
         </div>
         <Link href="/admin/topics/create">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Novo Topico
+            Novo Tópico
           </Button>
         </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Topicos</CardTitle>
-          <CardDescription>{topics?.length || 0} topicos cadastrados</CardDescription>
+          <CardTitle>Lista de Tópicos</CardTitle>
+          <CardDescription>{topics?.length || 0} tópicos cadastrados</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -109,9 +109,9 @@ export default function TopicsPage() {
                   <TableRow>
                     <TableHead>ID</TableHead>
                     <TableHead>Nome</TableHead>
-                    <TableHead>Materias</TableHead>
-                    <TableHead>Conteudos</TableHead>
-                    <TableHead className="text-right">Acoes</TableHead>
+                    <TableHead>Matérias</TableHead>
+                    <TableHead>Conteúdos</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -128,7 +128,7 @@ export default function TopicsPage() {
                               </Badge>
                             ))
                           ) : (
-                            <span className="text-sm text-muted-foreground">Sem materias</span>
+                            <span className="text-sm text-muted-foreground">Sem matérias</span>
                           )}
                         </div>
                       </TableCell>
@@ -160,10 +160,10 @@ export default function TopicsPage() {
             </div>
           ) : (
             <div className="py-10 text-center">
-              <p className="text-muted-foreground">Nenhum topico cadastrado</p>
+              <p className="text-muted-foreground">Nenhum tópico cadastrado</p>
               <Link href="/admin/topics/create">
                 <Button variant="outline" className="mt-4">
-                  Criar primeiro topico
+                  Criar primeiro tópico
                 </Button>
               </Link>
             </div>
@@ -178,9 +178,9 @@ export default function TopicsPage() {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogTitle>Deletar Topico</AlertDialogTitle>
+          <AlertDialogTitle>Deletar Tópico</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar este topico? Esta acao nao pode ser desfeita.
+            Tem certeza que desejá deletar este tópico? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

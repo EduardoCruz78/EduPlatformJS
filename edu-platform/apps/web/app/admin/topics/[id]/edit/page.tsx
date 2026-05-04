@@ -26,7 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const schema = z.object({
   name: z.string().min(3, 'Informe ao menos 3 caracteres'),
-  subjectIds: z.array(z.string()).min(1, 'Selecione ao menos uma materia'),
+  subjectIds: z.array(z.string()).min(1, 'Selecione ao menos uma matéria'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -71,7 +71,7 @@ export default function EditTopicPage() {
     onSuccess: () => router.push('/admin/topics'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao atualizar topico';
+        error instanceof Error ? error.message : 'Erro ao atualizar tópico';
 
       form.setError('root', { message });
     },
@@ -113,16 +113,16 @@ export default function EditTopicPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Editar Topico</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Editar Tópico</h1>
           <p className="mt-2 text-muted-foreground">
-            Atualize o nome e as materias vinculadas
+            Atualize o nome e as matérias vinculadas
           </p>
         </div>
       </div>
 
       <Card className="max-w-3xl">
         <CardHeader>
-          <CardTitle>Informacoes do Topico</CardTitle>
+          <CardTitle>Informações do Tópico</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -135,7 +135,7 @@ export default function EditTopicPage() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do Topico</FormLabel>
+                      <FormLabel>Nome do Tópico</FormLabel>
                       <FormControl>
                         <Input {...field} disabled={mutation.isPending} />
                       </FormControl>
@@ -145,7 +145,7 @@ export default function EditTopicPage() {
                 />
 
                 <div className="space-y-3">
-                  <Label>Materias vinculadas</Label>
+                  <Label>Matérias vinculadas</Label>
                   <div className="grid gap-3 rounded-2xl border border-border p-4 md:grid-cols-2">
                     {subjects?.map((subject) => {
                       const checked = selectedSubjectIds.includes(String(subject.id));
@@ -165,7 +165,7 @@ export default function EditTopicPage() {
                           <div>
                             <p className="font-medium">{subject.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {subject.series?.name ?? 'Sem serie'}
+                              {subject.series?.name ?? 'Sem série'}
                             </p>
                           </div>
                         </label>

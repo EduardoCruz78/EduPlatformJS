@@ -45,7 +45,7 @@ export const contentRouter = router({
   create: adminProcedure
     .input(
       z.object({
-        title: requiredTrimmedString('Titulo', 160),
+        title: requiredTrimmedString('Título', 160),
         description: optionalTrimmedString(2000),
         topicId: positiveIntSchema,
         type: contentTypeSchema,

@@ -39,16 +39,11 @@ export function getSeriesMeta(name: string) {
 }
 
 export function isLockedSeriesName(name: string) {
-  const meta = getSeriesMeta(name);
-
-  if (meta.group === 'fundamental') {
-    return true;
-  }
-
-  return meta.group === 'medio' && meta.order <= 2;
+  void name;
+  return false;
 }
 
-const LOCKED_MODULE_PATHS = new Set(['/vestibulares', '/vida-pratica', '/accessibility']);
+const LOCKED_MODULE_PATHS = new Set<string>();
 
 export function isLockedModulePath(path: string) {
   const normalized = path.trim().toLowerCase();

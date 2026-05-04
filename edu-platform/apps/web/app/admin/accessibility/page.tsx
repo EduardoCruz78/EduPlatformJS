@@ -59,7 +59,7 @@ export default function AdminAccessibilityPage() {
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel criar a categoria.'),
+        message: toErrorMessage(error, 'Não foi possível criar a categoria.'),
       });
     },
   });
@@ -72,7 +72,7 @@ export default function AdminAccessibilityPage() {
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover a categoria.'),
+        message: toErrorMessage(error, 'Não foi possível remover a categoria.'),
       });
     },
   });
@@ -85,7 +85,7 @@ export default function AdminAccessibilityPage() {
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel adicionar o tema.'),
+        message: toErrorMessage(error, 'Não foi possível adicionar o tema.'),
       });
     },
   });
@@ -98,33 +98,33 @@ export default function AdminAccessibilityPage() {
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover o tema.'),
+        message: toErrorMessage(error, 'Não foi possível remover o tema.'),
       });
     },
   });
 
   const addTopicToCategory = trpc.accessibility.addTopicToCategory.useMutation({
     onSuccess: async () => {
-      setFeedback({ tone: 'success', message: 'Topico vinculado com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Tópico vinculado com sucesso.' });
       await invalidateAccessibility();
     },
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel vincular o topico.'),
+        message: toErrorMessage(error, 'Não foi possível vincular o tópico.'),
       });
     },
   });
 
   const removeTopicFromCategory = trpc.accessibility.removeTopicFromCategory.useMutation({
     onSuccess: async () => {
-      setFeedback({ tone: 'success', message: 'Vinculo removido com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Vínculo removido com sucesso.' });
       await invalidateAccessibility();
     },
     onError: (error) => {
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover o vinculo.'),
+        message: toErrorMessage(error, 'Não foi possível remover o vínculo.'),
       });
     },
   });
@@ -146,11 +146,11 @@ export default function AdminAccessibilityPage() {
   return (
     <div className="space-y-6">
       <section className="edu-hero">
-        <span className="edu-kicker">Accessibility Admin</span>
-        <h1 className="edu-section-title">Categorias, temas e topicos com leitura editorial clara.</h1>
+        <span className="edu-kicker">Administração de acessibilidade</span>
+        <h1 className="edu-section-title">Categorias, temas e tópicos com leitura editorial clara.</h1>
         <p className="edu-lead">
-          Organize o conhecimento de accessibility sem perder dominio, contexto textual
-          e relacao com os topicos reais do produto.
+          Organize o conhecimento de acessibilidade sem perder domínio, contexto textual
+          e relação com os tópicos reais do produto.
         </p>
       </section>
 
@@ -169,7 +169,7 @@ export default function AdminAccessibilityPage() {
         </Card>
         <Card className="card-interactive">
           <CardHeader>
-            <CardDescription>Topicos vinculados</CardDescription>
+            <CardDescription>Tópicos vinculados</CardDescription>
             <CardTitle>{totalTopicLinks}</CardTitle>
           </CardHeader>
         </Card>
@@ -194,7 +194,7 @@ export default function AdminAccessibilityPage() {
         <CardHeader>
           <CardTitle>Nova categoria</CardTitle>
           <CardDescription>
-            Crie uma categoria com descricao clara para orientar temas e topicos relacionados.
+            Crie uma categoria com descrição clara para orientar temas e tópicos relacionados.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
@@ -206,7 +206,7 @@ export default function AdminAccessibilityPage() {
             }
           />
           <Input
-            placeholder="Descricao"
+            placeholder="Descrição"
             value={categoryForm.description}
             onChange={(event) =>
               setCategoryForm((current) => ({
@@ -255,7 +255,7 @@ export default function AdminAccessibilityPage() {
                 <div>
                   <CardTitle>{category.name}</CardTitle>
                   <CardDescription>
-                    {category.description || 'Sem descricao adicional.'}
+                    {category.description || 'Sem descrição adicional.'}
                   </CardDescription>
                 </div>
                 <Button
@@ -270,7 +270,7 @@ export default function AdminAccessibilityPage() {
               <CardContent className="grid gap-6 xl:grid-cols-[1fr_1.15fr]">
                 <div className="space-y-4">
                   <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    Topicos vinculados
+                    Tópicos vinculados
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {category.topics?.length ? (
@@ -297,7 +297,7 @@ export default function AdminAccessibilityPage() {
                       ))
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        Nenhum topico vinculado.
+                        Nenhum tópico vinculado.
                       </span>
                     )}
                   </div>
@@ -312,7 +312,7 @@ export default function AdminAccessibilityPage() {
                         }))
                       }
                     >
-                      <option value="">Selecione um topico</option>
+                      <option value="">Selecione um tópico</option>
                       {topics.map((topic) => (
                         <option key={topic.id} value={String(topic.id)}>
                           {topic.name}
@@ -336,7 +336,7 @@ export default function AdminAccessibilityPage() {
                         setTopicSelections((current) => ({ ...current, [category.id]: '' }));
                       }}
                     >
-                      Vincular topico
+                      Vincular tópico
                     </Button>
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function AdminAccessibilityPage() {
                           <div>
                             <p className="font-medium text-foreground">{theme.title}</p>
                             <p className="mt-1 text-sm text-muted-foreground">
-                              {theme.content || 'Sem conteudo detalhado.'}
+                              {theme.content || 'Sem conteúdo detalhado.'}
                             </p>
                           </div>
                           <Button
@@ -377,7 +377,7 @@ export default function AdminAccessibilityPage() {
 
                   <div className="grid gap-3">
                     <Input
-                      placeholder="Titulo do tema"
+                      placeholder="Título do tema"
                       value={themeForms[category.id]?.title ?? ''}
                       onChange={(event) =>
                         setThemeForms((current) => ({
@@ -390,7 +390,7 @@ export default function AdminAccessibilityPage() {
                       }
                     />
                     <Textarea
-                      placeholder="Conteudo do tema"
+                      placeholder="Conteúdo do tema"
                       value={themeForms[category.id]?.content ?? ''}
                       onChange={(event) =>
                         setThemeForms((current) => ({

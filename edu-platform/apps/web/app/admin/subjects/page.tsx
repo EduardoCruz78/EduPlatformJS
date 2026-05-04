@@ -51,7 +51,7 @@ export default function SubjectsPage() {
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao deletar materia';
+        error instanceof Error ? error.message : 'Erro ao deletar matéria';
 
       alert(`Erro ao deletar: ${message}`);
       setIsDeleting(false);
@@ -93,24 +93,24 @@ export default function SubjectsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Materias</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Matérias</h1>
           <p className="mt-2 text-muted-foreground">
-            Gerencie todas as materias do sistema
+            Gerencie todas as matérias do sistema
           </p>
         </div>
         <Link href="/admin/subjects/create">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Nova materia
+            Nova matéria
           </Button>
         </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de materias</CardTitle>
+          <CardTitle>Lista de matérias</CardTitle>
           <CardDescription>
-            {subjects?.length || 0} materias cadastradas no sistema
+            {subjects?.length || 0} matérias cadastradas no sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -128,7 +128,7 @@ export default function SubjectsPage() {
                     <TableHead>ID</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Serie</TableHead>
-                    <TableHead className="text-right">Acoes</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -168,10 +168,10 @@ export default function SubjectsPage() {
             </div>
           ) : (
             <div className="py-10 text-center">
-              <p className="text-muted-foreground">Nenhuma materia cadastrada</p>
+              <p className="text-muted-foreground">Nenhuma matéria cadastrada</p>
               <Link href="/admin/subjects/create">
                 <Button variant="outline" className="mt-4">
-                  Criar primeira materia
+                  Criar primeira matéria
                 </Button>
               </Link>
             </div>
@@ -188,9 +188,9 @@ export default function SubjectsPage() {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogTitle>Deletar materia</AlertDialogTitle>
+          <AlertDialogTitle>Deletar matéria</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar esta materia? Esta acao nao pode ser
+            Tem certeza que desejá deletar esta matéria Esta ação não pode ser
             desfeita.
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">

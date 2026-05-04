@@ -25,7 +25,7 @@ import { Label } from '@/components/ui/label';
 
 const schema = z.object({
   name: z.string().min(3, 'Informe ao menos 3 caracteres'),
-  subjectIds: z.array(z.string()).min(1, 'Selecione ao menos uma materia'),
+  subjectIds: z.array(z.string()).min(1, 'Selecione ao menos uma matéria'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -52,7 +52,7 @@ export default function CreateTopicPage() {
     onSuccess: () => router.push('/admin/topics'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao criar topico';
+        error instanceof Error ? error.message : 'Erro ao criar tópico';
 
       form.setError('root', { message });
     },
@@ -97,17 +97,17 @@ export default function CreateTopicPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Novo Topico</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Novo Tópico</h1>
           <p className="mt-2 text-muted-foreground">
-            Crie um topico e vincule as materias correspondentes
+            Crie um tópico e vincule as matérias correspondentes
           </p>
         </div>
       </div>
 
       <Card className="max-w-3xl">
         <CardHeader>
-          <CardTitle>Informacoes do Topico</CardTitle>
-          <CardDescription>Preencha os dados abaixo para criar o topico</CardDescription>
+          <CardTitle>Informações do Tópico</CardTitle>
+          <CardDescription>Preencha os dados abaixo para criar o tópico</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -117,7 +117,7 @@ export default function CreateTopicPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome do Topico</FormLabel>
+                    <FormLabel>Nome do Tópico</FormLabel>
                     <FormControl>
                       <Input {...field} disabled={mutation.isPending} />
                     </FormControl>
@@ -127,7 +127,7 @@ export default function CreateTopicPage() {
               />
 
               <div className="space-y-3">
-                <Label>Materias vinculadas</Label>
+                <Label>Matérias vinculadas</Label>
                 <div className="grid gap-3 rounded-2xl border border-border p-4 md:grid-cols-2">
                   {subjects?.map((subject) => {
                     const checked = selectedSubjectIds.includes(String(subject.id));
@@ -147,7 +147,7 @@ export default function CreateTopicPage() {
                         <div>
                           <p className="font-medium">{subject.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {subject.series?.name ?? 'Sem serie'}
+                            {subject.series?.name ?? 'Sem série'}
                           </p>
                         </div>
                       </label>
@@ -180,7 +180,7 @@ export default function CreateTopicPage() {
                       Criando...
                     </>
                   ) : (
-                    'Criar Topico'
+                    'Criar Tópico'
                   )}
                 </Button>
               </div>

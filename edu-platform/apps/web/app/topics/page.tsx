@@ -20,19 +20,19 @@ function TopicsPageContent() {
   const subjectIdParam = searchParams.get('subjectId');
   const seriesIdParam = searchParams.get('seriesId');
   const subjectId = Number(subjectIdParam || 0);
-  const fallbackSeriesId = Number(seriesIdParam || 0);
+  const fallbackSériesId = Number(seriesIdParam || 0);
 
   const { data: subject, isLoading: isLoadingSubject } = trpc.subject.findById.useQuery(subjectId, {
     enabled: subjectId > 0,
   });
 
-  const resolvedSeriesId = subject?.seriesId ?? fallbackSeriesId;
+  const resolvedSériesId = subject?.seriesId ?? fallbackSériesId;
 
-  const { data: series, isLoading: isLoadingSeries } = trpc.series.findById.useQuery(resolvedSeriesId, {
-    enabled: resolvedSeriesId > 0,
+  const { data: séries, isLoading: isLoadingSéries } = trpc.series.findById.useQuery(resolvedSériesId, {
+    enabled: resolvedSériesId > 0,
   });
 
-  const seriesLocked = series ? isLockedSeriesName(series.name) : false;
+  const seriesLocked = séries ? isLockedSeriesName(séries.name) : false;
 
   const {
     data: topics = [],
@@ -40,10 +40,10 @@ function TopicsPageContent() {
     error,
   } = trpc.topic.findBySubject.useQuery(
     { subjectId },
-    { enabled: subjectId > 0 && Boolean(subject) && Boolean(series) && !seriesLocked }
+    { enabled: subjectId > 0 && Boolean(subject) && Boolean(séries) && !seriesLocked }
   );
 
-  const subjectsHref = buildSubjectsHref(resolvedSeriesId);
+  const subjectsHref = buildSubjectsHref(resolvedSériesId);
 
   useEffect(() => {
     if (seriesLocked) {
@@ -56,7 +56,7 @@ function TopicsPageContent() {
     });
   }, [seriesLocked, topics, utils]);
 
-  if (isLoadingSubject || isLoadingSeries || isLoadingTopics) {
+  if (isLoadingSubject || isLoadingSéries || isLoadingTopics) {
     return (
       <div className="edu-shell">
         <div className="space-y-8">
@@ -72,14 +72,14 @@ function TopicsPageContent() {
     );
   }
 
-  if (subjectId === 0 || !subject || !series) {
+  if (subjectId === 0 || !subject || !séries) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Selecione uma materia primeiro</p>
+            <p className="text-xl text-destructive">Selecione uma matéria primeiro</p>
             <Link href={subjectsHref} className="mt-6 inline-flex edu-nav-link">
-              Voltar as materias
+              Voltar as matérias
             </Link>
           </CardContent>
         </Card>
@@ -91,10 +91,10 @@ function TopicsPageContent() {
     return (
       <div className="edu-shell">
         <ComingSoonPanel
-          title={`${series.name} esta trancado`}
-          description="Os topicos dessa serie continuam bloqueados ate a base estar preenchida com os conteudos definitivos."
+          title={`${séries.name} está trancado`}
+          description="Os tópicos dessa série continuam bloqueados até a base estár preenchida com os conteúdos definitivos."
           backHref="/"
-          backLabel="Voltar ao inicio"
+          backLabel="Voltar ao início"
         />
       </div>
     );
@@ -105,10 +105,10 @@ function TopicsPageContent() {
       <div className="edu-shell">
         <Card className="mx-auto max-w-xl">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Nao foi possivel carregar os topicos desta materia</p>
+          <p className="text-xl text-destructive">Não foi possível carregar os tópicos desta matéria</p>
             <p className="mt-3 text-sm text-muted-foreground">{error.message}</p>
             <Link href={subjectsHref} className="mt-6 inline-flex edu-nav-link">
-              Voltar as materias
+              Voltar as matérias
             </Link>
           </CardContent>
         </Card>
@@ -120,19 +120,19 @@ function TopicsPageContent() {
     <div className="edu-shell">
       <div className="edu-topbar">
         <div className="flex items-center gap-3">
-          <span className="edu-brand">Topicos</span>
+          <span className="edu-brand">Tópicos</span>
           <span className="text-sm text-muted-foreground">
-            {subject.name ? `materia ${subject.name}` : 'selecione a camada certa'}
+            {subject.name ? `matéria ${subject.name}` : 'selecione a camada certa'}
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <Link href={subjectsHref} className="edu-nav-link">
             <ArrowLeft className="h-4 w-4" />
-            Materias
+            Matérias
           </Link>
           <Link href="/" className="edu-nav-link">
-            Inicio
+            Início
           </Link>
         </div>
       </div>
@@ -142,9 +142,9 @@ function TopicsPageContent() {
           <ListTree className="mr-2 h-4 w-4" />
           Camada de estudo
         </span>
-        <h1 className="edu-section-title">Escolha o topico para abrir os conteudos.</h1>
+        <h1 className="edu-section-title">Escolha o tópico para abrir os conteúdos.</h1>
         <p className="edu-lead">
-          Aqui o fluxo fica mais especifico: cada topico concentra materiais relacionados e prepara o checklist.
+          Aqui o fluxo fica mais específico: cada tópico concentra matériais relacionados e prepara o checklist.
         </p>
       </section>
 
@@ -152,14 +152,14 @@ function TopicsPageContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-3xl">
-              Todos os topicos
+              Todos os tópicos
               <Badge variant="secondary">{topics.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {topics.length === 0 ? (
               <p className="py-12 text-center text-muted-foreground">
-                Nenhum topico encontrado.
+                Nenhum tópico encontrado.
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -169,7 +169,7 @@ function TopicsPageContent() {
                     href={buildContentsHref({
                       topicId: topic.id,
                       subjectId,
-                      seriesId: resolvedSeriesId,
+                      seriesId: resolvedSériesId,
                     })}
                     className="edu-home-card"
                   >
@@ -177,10 +177,10 @@ function TopicsPageContent() {
                       <div>
                         <span className="block text-3xl font-black text-white">{topic.name}</span>
                         <p className="mt-3 text-sm text-muted-foreground">
-                          Clique para ver os conteudos e marcar progresso.
+                          Clique para ver os conteúdos e marcar progresso.
                         </p>
                       </div>
-                      <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translate-x-1" />
+                      <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translaté-x-1" />
                     </div>
                   </Link>
                 ))}

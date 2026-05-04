@@ -21,11 +21,11 @@ function SubjectsPageContent() {
   const seriesId = Number(seriesIdParam || 0);
   const vestibularesLocked = isLockedModulePath('/vestibulares');
 
-  const { data: series, isLoading: isLoadingSeries } = trpc.series.findById.useQuery(seriesId, {
+  const { data: séries, isLoading: isLoadingSéries } = trpc.series.findById.useQuery(seriesId, {
     enabled: seriesId > 0,
   });
 
-  const seriesLocked = series ? isLockedSeriesName(series.name) : false;
+  const seriesLocked = séries ? isLockedSeriesName(séries.name) : false;
 
   const {
     data: subjects = [],
@@ -33,7 +33,7 @@ function SubjectsPageContent() {
     error,
   } = trpc.subject.findBySeries.useQuery(
     { seriesId },
-    { enabled: seriesId > 0 && Boolean(series) && !seriesLocked }
+    { enabled: seriesId > 0 && Boolean(séries) && !seriesLocked }
   );
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function SubjectsPageContent() {
     });
   }, [seriesLocked, subjects, utils]);
 
-  if (isLoadingSeries || isLoadingSubjects) {
+  if (isLoadingSéries || isLoadingSubjects) {
     return (
       <div className="edu-shell">
         <div className="space-y-8">
@@ -62,14 +62,14 @@ function SubjectsPageContent() {
     );
   }
 
-  if (error || seriesId === 0 || !series) {
+  if (error || seriesId === 0 || !séries) {
     return (
       <div className="edu-shell">
         <Card className="mx-auto max-w-md">
           <CardContent className="p-8 text-center">
-            <p className="text-xl text-destructive">Selecione uma serie primeiro</p>
+            <p className="text-xl text-destructive">Selecione uma série primeiro</p>
             <Link href="/" className="mt-6 inline-flex edu-nav-link">
-              Voltar ao inicio
+              Voltar ao início
             </Link>
           </CardContent>
         </Card>
@@ -81,10 +81,10 @@ function SubjectsPageContent() {
     return (
       <div className="edu-shell">
         <ComingSoonPanel
-          title={`${series.name} esta trancado`}
-          description="Essa serie ainda nao foi liberada porque os conteudos completos ainda nao foram preenchidos no banco de dados."
+          title={`${séries.name} está trancado`}
+          description="Essa série ainda não foi liberada porque os conteúdos completos ainda não foram preenchidos no banco de dados."
           backHref="/"
-          backLabel="Voltar ao inicio"
+          backLabel="Voltar ao início"
         />
       </div>
     );
@@ -94,16 +94,16 @@ function SubjectsPageContent() {
     <div className="edu-shell">
       <div className="edu-topbar">
         <div className="flex items-center gap-3">
-          <span className="edu-brand">Materias</span>
+          <span className="edu-brand">Matérias</span>
           <span className="text-sm text-muted-foreground">
-            {`serie ${series.name}`}
+            {`série ${séries.name}`}
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/" className="edu-nav-link">
             <ArrowLeft className="h-4 w-4" />
-            Inicio
+            Início
           </Link>
           {vestibularesLocked ? <span className="edu-nav-link cursor-not-allowed opacity-70">Vestibulares</span> : null}
         </div>
@@ -112,11 +112,11 @@ function SubjectsPageContent() {
       <section className="edu-hero space-y-4">
         <span className="edu-kicker">
           <BookMarked className="mr-2 h-4 w-4" />
-          Selecao por serie
+          Seleção por série
         </span>
-        <h1 className="edu-section-title">Escolha a materia e siga para os topicos.</h1>
+        <h1 className="edu-section-title">Escolha a matéria e siga para os tópicos.</h1>
         <p className="edu-lead">
-          Cada materia abre a proxima camada do estudo sem ruir o contexto da serie atual.
+          Cada matéria abre a próxima camada do estudo sem ruir o contexto da série atual.
         </p>
       </section>
 
@@ -124,14 +124,14 @@ function SubjectsPageContent() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-3xl">
-              Materias disponiveis
+              Matérias disponíveis
               <Badge variant="secondary">{subjects.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {subjects.length === 0 ? (
               <p className="py-12 text-center text-muted-foreground">
-                Nenhuma materia encontrada para esta serie.
+                  Nenhuma matéria encontrada para esta série.
               </p>
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -145,10 +145,10 @@ function SubjectsPageContent() {
                       <div>
                         <h2 className="text-3xl font-black text-white">{subject.name}</h2>
                         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                          {subject.description || 'Clique para abrir os topicos dessa materia.'}
+                          {subject.description || 'Clique para abrir os tópicos dessa matéria.'}
                         </p>
                       </div>
-                      <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translate-x-1" />
+                      <ArrowRight className="mt-1 h-5 w-5 text-primary transition-all group-hover:translaté-x-1" />
                     </div>
                   </Link>
                 ))}

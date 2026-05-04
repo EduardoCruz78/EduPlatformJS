@@ -58,7 +58,7 @@ export default function EditSeriesPage() {
     onSuccess: () => router.push('/admin/series'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao atualizar serie';
+        error instanceof Error ? error.message : 'Erro ao atualizar série';
 
       form.setError('root', { message });
     },
@@ -92,14 +92,14 @@ export default function EditSeriesPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Editar Serie</h1>
           <p className="mt-2 text-muted-foreground">
-            Atualize o nome da serie selecionada
+            Atualize o nome da série selecionada
           </p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Informacoes da Serie</CardTitle>
+          <CardTitle>Informações da Serie</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

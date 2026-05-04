@@ -67,7 +67,7 @@ export default function EditSubjectPage() {
     onSuccess: () => router.push('/admin/subjects'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao atualizar materia';
+        error instanceof Error ? error.message : 'Erro ao atualizar matéria';
 
       form.setError('root', { message });
     },
@@ -113,14 +113,14 @@ export default function EditSubjectPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Editar Materia</h1>
           <p className="mt-2 text-muted-foreground">
-            Atualize as informacoes da materia selecionada
+            Atualize as informações da matéria selecionada
           </p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Informacoes da Materia</CardTitle>
+          <CardTitle>Informações da Materia</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

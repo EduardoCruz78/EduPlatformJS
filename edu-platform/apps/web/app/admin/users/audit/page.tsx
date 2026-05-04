@@ -33,9 +33,9 @@ export default function AdminUserAuditPage() {
     <div className="space-y-6">
       <section className="edu-hero">
         <span className="edu-kicker">Auditoria</span>
-        <h1 className="edu-section-title">Historico administrativo de mudancas de papel.</h1>
+        <h1 className="edu-section-title">Histórico administrativo de mudanças de papel.</h1>
         <p className="edu-lead">
-          Consulte quem alterou acessos, qual usuario foi afetado e como o papel mudou ao
+          Consulte quem alterou acessos, qual usuário foi afetado e como o papel mudou ao
           longo do tempo.
         </p>
       </section>
@@ -43,7 +43,7 @@ export default function AdminUserAuditPage() {
       <div className="flex flex-wrap items-center gap-3">
         <Link href="/admin/users" className="edu-nav-link">
           <ArrowLeft className="h-4 w-4" />
-          Voltar para usuarios
+          Voltar para usuários
         </Link>
       </div>
 
@@ -51,7 +51,7 @@ export default function AdminUserAuditPage() {
         <CardHeader>
           <CardTitle>Filtros</CardTitle>
           <CardDescription>
-            Refine a leitura por administrador responsavel ou usuario afetado.
+            Refine a leitura por administrador responsavel ou usuário afetado.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
@@ -72,7 +72,7 @@ export default function AdminUserAuditPage() {
             value={targetUserId}
             onChange={(event) => setTargetUserId(event.target.value)}
           >
-            <option value="">Todos os usuarios alvo</option>
+            <option value="">Todos os usuários alvo</option>
             {users.map((user) => (
               <option key={`target-${user.id}`} value={user.id}>
                 {user.name}
@@ -95,7 +95,7 @@ export default function AdminUserAuditPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <History className="h-5 w-5" />
-            Historico de mudancas
+            Histórico de mudanças
           </CardTitle>
           <CardDescription>{filteredCountLabel}</CardDescription>
         </CardHeader>

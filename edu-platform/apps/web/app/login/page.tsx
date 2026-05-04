@@ -17,14 +17,14 @@ export default function LoginPage() {
               Entre apenas se quiser salvar progresso e checklist.
             </h1>
             <p className="edu-lead">
-              O acesso com Google agora e opcional. Voce pode explorar series,
-              materias, topicos, conteudos, vestibulares e accessibility sem
+              O acesso com Google agora e opcional. Você pode explorar séries,
+              matérias, tópicos, conteúdos, vestibulares e accessibility sem
               conta, e entrar depois para sincronizar seu progresso.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/" className="edu-nav-link">
-              Voltar ao inicio
+              Voltar ao início
             </Link>
             <Link href="/vestibulares" className="edu-nav-link">
               Ver vestibulares

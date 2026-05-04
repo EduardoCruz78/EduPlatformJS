@@ -45,7 +45,7 @@ export default function SeriesPage() {
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao deletar serie';
+        error instanceof Error ? error.message : 'Erro ao deletar série';
 
       alert(`Erro ao deletar: ${message}`);
       setIsDeleting(false);
@@ -77,23 +77,23 @@ export default function SeriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Series</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Séries</h1>
           <p className="mt-2 text-muted-foreground">
-            Gerencie todas as series cadastradas no sistema
+            Gerencie todas as séries cadastradas no sistema
           </p>
         </div>
         <Link href="/admin/series/create">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Nova Serie
+            Nova Série
           </Button>
         </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Series</CardTitle>
-          <CardDescription>{series?.length || 0} series cadastradas</CardDescription>
+          <CardTitle>Lista de Séries</CardTitle>
+          <CardDescription>{series?.length || 0} séries cadastradas</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -109,8 +109,8 @@ export default function SeriesPage() {
                   <TableRow>
                     <TableHead>ID</TableHead>
                     <TableHead>Nome</TableHead>
-                    <TableHead>Materias</TableHead>
-                    <TableHead className="text-right">Acoes</TableHead>
+                    <TableHead>Matérias</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -146,10 +146,10 @@ export default function SeriesPage() {
             </div>
           ) : (
             <div className="py-10 text-center">
-              <p className="text-muted-foreground">Nenhuma serie cadastrada</p>
+              <p className="text-muted-foreground">Nenhuma série cadastrada</p>
               <Link href="/admin/series/create">
                 <Button variant="outline" className="mt-4">
-                  Criar primeira serie
+                  Criar primeira série
                 </Button>
               </Link>
             </div>
@@ -164,9 +164,9 @@ export default function SeriesPage() {
         }}
       >
         <AlertDialogContent>
-          <AlertDialogTitle>Deletar Serie</AlertDialogTitle>
+          <AlertDialogTitle>Deletar Série</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja deletar esta serie? Esta acao nao pode ser desfeita.
+            Tem certeza que desejá deletar esta série Esta ação não pode ser desfeita.
           </AlertDialogDescription>
           <div className="flex justify-end gap-3">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>

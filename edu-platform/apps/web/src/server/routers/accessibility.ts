@@ -71,7 +71,7 @@ export const accessibilityRouter = router({
       z.object({
         accessibilityCategoryId: positiveIntSchema,
         accessibilityNeedId: positiveIntSchema.nullable().optional(),
-        title: requiredTrimmedString('Titulo', 160),
+        title: requiredTrimmedString('Título', 160),
         content: optionalTrimmedString(4000),
       })
     )

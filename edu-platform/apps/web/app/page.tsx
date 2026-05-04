@@ -3,39 +3,28 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, BookOpen, Search, LockKeyhole } from 'lucide-react';
+import { ArrowRight, BookOpen, Search } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  COMING_SOON_LABEL,
-  getSeriesMeta,
-  isLockedModulePath,
-  isLockedSeriesName,
-} from '@/lib/content-locks';
+import { getSeriesMeta } from '@/lib/content-locks';
 import { buildSubjectsHref } from '@/lib/study-navigation';
 import { trpc } from '@/lib/trpc';
 
 import { SeriesCard } from '@/components/home/SeriesCard';
-import { LockedModuleSection } from '@/components/home/LockedModuleSection';
-import { LockedNavItem } from '@/components/home/LockedNavItem';
 import { SearchDialog } from '@/components/home/SearchDialog';
 
-const seriesIcons = ['EG', 'VB', 'AC', 'TP', 'CT', 'PR'];
+const sériesIcons = ['EG', 'VB', 'AC', 'TP', 'CT', 'PR'];
 
 export default function HomePage() {
   const { data: session } = useSession();
   const [searchOpen, setSearchOpen] = useState(false);
   const utils = trpc.useUtils();
-  
-  const vestibularesLocked = isLockedModulePath('/vestibulares');
-  const practicalLocked = isLockedModulePath('/vida-pratica');
-  const accessibilityLocked = isLockedModulePath('/accessibility');
 
-  const { data: series = [], isLoading: isLoadingSeries } = trpc.series.find.useQuery();
+  const { data: séries = [], isLoading: isLoadingSéries } = trpc.series.find.useQuery();
 
   const orderedSeries = useMemo(() => {
-    return [...series].sort((left, right) => {
+    return [...séries].sort((left, right) => {
       const leftMeta = getSeriesMeta(left.name);
       const rightMeta = getSeriesMeta(right.name);
       const groupWeight = { fundamental: 0, medio: 1 };
@@ -50,7 +39,7 @@ export default function HomePage() {
 
       return left.name.localeCompare(right.name, 'pt-BR');
     });
-  }, [series]);
+  }, [séries]);
 
   const groupedSeries = useMemo(() => {
     return {
@@ -61,7 +50,6 @@ export default function HomePage() {
 
   useEffect(() => {
     orderedSeries
-      .filter((item) => !isLockedSeriesName(item.name))
       .slice(0, 12)
       .forEach((item) => {
         void utils.subject.findBySeries.prefetch({ seriesId: item.id });
@@ -84,13 +72,19 @@ export default function HomePage() {
               </div>
 
               <div className="ml-auto flex flex-wrap items-center gap-2">
-                <nav aria-label="Navegacao principal" className="flex flex-wrap items-center gap-2">
-                  <Link href="#series" className="edu-nav-link">
-                    Series
+                <nav aria-label="Navegação principal" className="flex flex-wrap items-center gap-2">
+                  <Link href="#séries" className="edu-nav-link">
+                    Séries
                   </Link>
-                  {vestibularesLocked ? <LockedNavItem label="Vestibulares" /> : null}
-                  {practicalLocked ? <LockedNavItem label="Vida pratica" /> : null}
-                  {accessibilityLocked ? <LockedNavItem label="Accessibility" /> : null}
+                  <Link href="/vestibulares" className="edu-nav-link">
+                    Vestibulares
+                  </Link>
+                  <Link href="/vida-pratica" className="edu-nav-link">
+                    Vida prática
+                  </Link>
+                  <Link href="/accessibility" className="edu-nav-link">
+                    Acessibilidade
+                  </Link>
                 </nav>
 
                 <div className="flex items-center gap-2">
@@ -123,12 +117,11 @@ export default function HomePage() {
             <div className="mt-10">
               <div className="w-full space-y-5">
                 <h1 className="max-w-6xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
-                  Plataforma de estudos completa para todas as areas fundamentais de aprendizado
+                  Plataforma de estudos completa para todas as áreas fundamentais de aprendizado
                 </h1>
-                <p className="max-w-6xl text-lg leading-8 text-slate-300">
-                  A plataforma open source para preparar voce para vestibulares, estudo guiado e
-                  progresso visivel. Enquanto algumas trilhas ainda estao sendo preenchidas, elas
-                  ficam marcadas como em breve.
+                <p className="max-w-6xl text-lg leading-8 text-slaté-300">
+                  A plataforma aberta para preparar você para vestibulares, estudo guiado,
+                  acessibilidade e progresso visível com uma base provisória funcional.
                 </p>
               </div>
             </div>
@@ -141,18 +134,18 @@ export default function HomePage() {
       <main id="main-content" className="bg-background py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="space-y-12">
-            <section id="series" aria-labelledby="series-section-title">
+            <section id="séries" aria-labelledby="séries-section-title">
               <div className="mb-6 space-y-4">
-                <h2 id="series-section-title" className="font-display text-4xl text-white">
-                  Series educacionais
+                <h2 id="séries-section-title" className="font-display text-4xl text-white">
+                  Séries educacionais
                 </h2>
-                <p className="mt-2 text-slate-400">
-                  Do 1 ano do Fundamental ate a 2 serie do Medio, as trilhas ficam trancadas ate o
-                  banco estar completo. A 3 serie do Medio continua acessivel.
+                <p className="mt-2 text-slaté-400">
+                  Do 1º ano do Ensino Fundamental até a 3ª série do Ensino Médio, todas as trilhas
+                  estão abertas para navegação.
                 </p>
               </div>
 
-              {isLoadingSeries ? (
+              {isLoadingSéries ? (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <Skeleton key={index} className="h-40 rounded-xl bg-neutral-800" />
@@ -180,16 +173,13 @@ export default function HomePage() {
                             key={item.id}
                             name={item.name}
                             href={buildSubjectsHref(item.id)}
-                            icon={seriesIcons[index % seriesIcons.length]}
+                            icon={sériesIcons[index % sériesIcons.length]}
                             label="Ano"
                             description={
-                              isLockedSeriesName(item.name)
-                                ? 'Esse ano sera liberado quando os conteudos estiverem completos no banco.'
-                                : item.subjects?.length
-                                  ? `${item.subjects.length} materias prontas para explorar.`
-                                  : 'Trilha com materias, topicos e conteudos.'
+                              item.subjects?.length
+                                ? `${item.subjects.length} matérias prontas para explorar.`
+                                : 'Trilha com matérias, tópicos e conteúdos.'
                             }
-                            locked={isLockedSeriesName(item.name)}
                           />
                         ))}
                       </div>
@@ -207,10 +197,10 @@ export default function HomePage() {
                           Bloco 2
                         </p>
                         <h3 id="medio-title" className="mt-2 text-2xl font-black text-white">
-                          Ensino Medio
+                          Ensino Médio
                         </h3>
                       </div>
-                      <Badge variant="outline">{groupedSeries.medio.length} series</Badge>
+                      <Badge variant="outline">{groupedSeries.medio.length} séries</Badge>
                     </div>
 
                     {groupedSeries.medio.length ? (
@@ -220,22 +210,19 @@ export default function HomePage() {
                             key={item.id}
                             name={item.name}
                             href={buildSubjectsHref(item.id)}
-                            icon={seriesIcons[(index + groupedSeries.fundamental.length) % seriesIcons.length]}
-                            label="Serie"
+                            icon={sériesIcons[(index + groupedSeries.fundamental.length) % sériesIcons.length]}
+                            label="Série"
                             description={
-                              isLockedSeriesName(item.name)
-                                ? 'Essa serie sera liberada quando os conteudos estiverem completos no banco.'
-                                : item.subjects?.length
-                                  ? `${item.subjects.length} materias prontas para explorar.`
-                                  : 'Trilha com materias, topicos e conteudos.'
+                              item.subjects?.length
+                                ? `${item.subjects.length} matérias prontas para explorar.`
+                                : 'Trilha com matérias, tópicos e conteúdos.'
                             }
-                            locked={isLockedSeriesName(item.name)}
                           />
                         ))}
                       </div>
                     ) : (
                       <div className="edu-panel p-6 text-sm text-muted-foreground">
-                        Nenhuma serie do Ensino Medio encontrada.
+                        Nenhuma série do Ensino Médio encontrada.
                       </div>
                     )}
                   </section>
@@ -243,57 +230,30 @@ export default function HomePage() {
               )}
             </section>
 
-            <LockedModuleSection
-              id="a11y-section-title"
-              icon="A11Y"
-              title="Recursos de Accessibility"
-              description="Categorias, temas e topicos estruturados para alunos com necessidades especificas e estudo com mais contexto."
-            />
+            <section className="grid gap-4 md:grid-cols-3" aria-label="Módulos principais">
+              <Link href="/accessibility" className="edu-home-card">
+                <div className="edu-home-icon mb-5" aria-hidden="true">AC</div>
+                <h2 className="text-2xl font-black text-white">Acessibilidade</h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Catégorias, temas e tópicos para estudar com mais contexto e inclusão.
+                </p>
+              </Link>
 
-            <LockedModuleSection
-              id="practical-section-title"
-              icon="VP"
-              title="Vida pratica"
-              description="Guias uteis sobre CNH, trabalho, consumo e direitos basicos para o dia a dia."
-            />
+              <Link href="/vida-pratica" className="edu-home-card">
+                <div className="edu-home-icon mb-5" aria-hidden="true">VP</div>
+                <h2 className="text-2xl font-black text-white">Vida prática</h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Guias úteis sobre documentos, trabalho, consumo, finanças e direitos básicos.
+                </p>
+              </Link>
 
-            <section className="space-y-6" aria-labelledby="vestibulares-section-title">
-              <div className="edu-panel overflow-hidden">
-                <div className="flex flex-col gap-5 p-5 md:flex-row md:items-center md:justify-between md:p-7">
-                  <div>
-                    <h2 id="vestibulares-section-title" className="font-display text-4xl text-white">
-                      Vestibulares
-                    </h2>
-                    <Badge variant="secondary" className="mt-3 gap-2">
-                      <LockKeyhole className="h-3.5 w-3.5" />
-                      {COMING_SOON_LABEL}
-                    </Badge>
-                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                      Essa area vai abrir quando as trilhas especificas estiverem completas.
-                    </p>
-                  </div>
-
-                  <span className="edu-action pointer-events-none uppercase tracking-[0.12em] opacity-70">
-                    <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-                    {COMING_SOON_LABEL}
-                  </span>
-                </div>
-              </div>
-
-              <div className="edu-home-card cursor-not-allowed opacity-80" aria-disabled="true">
-                <div className="flex items-center gap-4">
-                  <div className="edu-home-icon" aria-hidden="true">
-                    VT
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-lg font-black text-white">Vestibulares trancados</h3>
-                    <p className="mt-1 text-sm leading-6 text-slate-400">
-                      Vamos liberar essa area quando materias, topicos e conteudos estiverem prontos.
-                    </p>
-                  </div>
-                  <LockKeyhole className="h-5 w-5 text-primary" aria-hidden="true" />
-                </div>
-              </div>
+              <Link href="/vestibulares" className="edu-home-card">
+                <div className="edu-home-icon mb-5" aria-hidden="true">VE</div>
+                <h2 className="text-2xl font-black text-white">Vestibulares</h2>
+                <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                  Trilhas provisórias para ENEM, FUVEST e outros processos seletivos.
+                </p>
+              </Link>
             </section>
           </div>
         </div>

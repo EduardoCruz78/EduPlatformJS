@@ -213,7 +213,7 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel criar a categoria.'),
+        message: toErrorMessage(error, 'Não foi possível criar a categoria.'),
       }),
   });
 
@@ -225,7 +225,7 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel atualizar a categoria.'),
+        message: toErrorMessage(error, 'Não foi possível atualizar a categoria.'),
       }),
   });
 
@@ -239,7 +239,7 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover a categoria.'),
+        message: toErrorMessage(error, 'Não foi possível remover a categoria.'),
       }),
   });
 
@@ -259,7 +259,7 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel criar o guia.'),
+        message: toErrorMessage(error, 'Não foi possível criar o guia.'),
       }),
   });
 
@@ -271,7 +271,7 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel atualizar o guia.'),
+        message: toErrorMessage(error, 'Não foi possível atualizar o guia.'),
       }),
   });
 
@@ -284,44 +284,44 @@ export default function AdminPracticalPage() {
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover o guia.'),
+        message: toErrorMessage(error, 'Não foi possível remover o guia.'),
       }),
   });
 
   const createGuideLink = trpc.practical.createGuideLink.useMutation({
     onSuccess: async () => {
       setLinkCreateForm({ label: '', url: '', order: '0' });
-      setFeedback({ tone: 'success', message: 'Link util criado com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Link ?til criado com sucesso.' });
       await invalidatePractical();
     },
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel criar o link util.'),
+        message: toErrorMessage(error, 'Não foi possível criar o link ?til.'),
       }),
   });
 
   const updateGuideLink = trpc.practical.updateGuideLink.useMutation({
     onSuccess: async () => {
-      setFeedback({ tone: 'success', message: 'Link util atualizado com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Link ?til atualizado com sucesso.' });
       await invalidatePractical();
     },
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel atualizar o link util.'),
+        message: toErrorMessage(error, 'Não foi possível atualizar o link ?til.'),
       }),
   });
 
   const deleteGuideLink = trpc.practical.deleteGuideLink.useMutation({
     onSuccess: async () => {
-      setFeedback({ tone: 'success', message: 'Link util removido com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Link ?til removido com sucesso.' });
       await invalidatePractical();
     },
     onError: (error) =>
       setFeedback({
         tone: 'error',
-        message: toErrorMessage(error, 'Nao foi possivel remover o link util.'),
+        message: toErrorMessage(error, 'Não foi possível remover o link ?til.'),
       }),
   });
 
@@ -336,11 +336,11 @@ export default function AdminPracticalPage() {
   return (
     <div className="space-y-6">
       <section className="edu-hero">
-        <span className="edu-kicker">Vida Pratica Admin</span>
-        <h1 className="edu-section-title">Gestao editorial de guias uteis para a vida real.</h1>
+        <span className="edu-kicker">Administração de vida prática</span>
+        <h1 className="edu-section-title">Gestão editorial de guias úteis para a vida real.</h1>
         <p className="edu-lead">
           Organize categorias, publique guias com linguagem acessivel e conecte links
-          oficiais para consulta rapida da populacao.
+          oficiais para consulta rapida da população.
         </p>
       </section>
 
@@ -359,13 +359,13 @@ export default function AdminPracticalPage() {
         </Card>
         <Card className="card-interactive">
           <CardHeader>
-            <CardDescription>Guias publicados</CardDescription>
+            <CardDescription>Guias públicados</CardDescription>
             <CardTitle>{totals.published}</CardTitle>
           </CardHeader>
         </Card>
         <Card className="card-interactive">
           <CardHeader>
-            <CardDescription>Links uteis</CardDescription>
+            <CardDescription>Links úteis</CardDescription>
             <CardTitle>{totals.links}</CardTitle>
           </CardHeader>
         </Card>
@@ -390,7 +390,7 @@ export default function AdminPracticalPage() {
         <CardHeader>
           <CardTitle>Nova categoria</CardTitle>
           <CardDescription>
-            Crie a estrutura base da area publica com nome, slug, icone e descricao.
+            Crie a estrutura base da ?rea pública com nome, slug, ?cone e descrição.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-2">
@@ -433,7 +433,7 @@ export default function AdminPracticalPage() {
           />
           <div className="md:col-span-2">
             <Textarea
-              placeholder="Descricao"
+              placeholder="Descrição"
               value={categoryCreateForm.description}
               onChange={(event) =>
                 setCategoryCreateForm((current) => ({
@@ -509,7 +509,7 @@ export default function AdminPracticalPage() {
                 <div>
                   <CardTitle>{selectedCategory.name}</CardTitle>
                   <CardDescription>
-                    {selectedCategory.description || 'Sem descricao adicional.'}
+                    {selectedCategory.description || 'Sem descrição adicional.'}
                   </CardDescription>
                 </div>
                 <Button
@@ -566,7 +566,7 @@ export default function AdminPracticalPage() {
                 />
                 <div className="md:col-span-2">
                   <Textarea
-                    placeholder="Descricao"
+                    placeholder="Descrição"
                     value={categoryEditForm.description}
                     onChange={(event) =>
                       updateSelectedCategoryForm((current) => ({
@@ -636,12 +636,12 @@ export default function AdminPracticalPage() {
                   <CardHeader>
                     <CardTitle>Novo guia</CardTitle>
                     <CardDescription>
-                      Crie um guia com resumo, conteudo e status de publicacao.
+                      Crie um guia com resumo, conteúdo e status de publicação.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="grid gap-4 md:grid-cols-2">
                     <Input
-                      placeholder="Titulo"
+                      placeholder="Título"
                       value={guideCreateForm.title}
                       onChange={(event) =>
                         setGuideCreateForm((current) => ({
@@ -700,7 +700,7 @@ export default function AdminPracticalPage() {
                     </div>
                     <div className="md:col-span-2">
                       <Textarea
-                        placeholder="Conteudo"
+                        placeholder="Conteúdo"
                         className="min-h-40"
                         value={guideCreateForm.content}
                         onChange={(event) =>
@@ -757,7 +757,7 @@ export default function AdminPracticalPage() {
                     <CardContent className="space-y-5">
                       <div className="grid gap-4 md:grid-cols-2">
                         <Input
-                          placeholder="Titulo"
+                          placeholder="Título"
                           value={guideEditForm.title}
                           onChange={(event) =>
                             updateSelectedGuideForm((current) => ({
@@ -815,7 +815,7 @@ export default function AdminPracticalPage() {
                         </div>
                         <div className="md:col-span-2">
                           <Textarea
-                            placeholder="Conteudo"
+                            placeholder="Conteúdo"
                             className="min-h-40"
                             value={guideEditForm.content}
                             onChange={(event) =>
@@ -850,7 +850,7 @@ export default function AdminPracticalPage() {
 
                       <div className="space-y-3">
                         <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                          Links uteis
+                          Links úteis
                         </h3>
                         {(selectedGuide.links ?? []).map((link) => {
                           const linkForm = linkEditForms[link.id] ?? {
@@ -967,7 +967,7 @@ export default function AdminPracticalPage() {
                 ) : (
                   <Card>
                     <CardContent className="p-8 text-center text-muted-foreground">
-                      Selecione um guia para editar publicacao, conteudo e links uteis.
+                      Selecione um guia para editar publicação, conteúdo e links úteis.
                     </CardContent>
                   </Card>
                 )}

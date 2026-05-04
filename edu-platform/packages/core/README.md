@@ -10,7 +10,7 @@
 - centralizar `AppError`
 - implementar regras de negocio em use cases
 
-## O que nao pertence aqui
+## O que não pertence aqui
 
 - Prisma
 - Next.js
@@ -91,14 +91,14 @@ Adicione no `core` quando a mudanca envolver:
 - contrato entre camadas
 - nova entidade ou DTO
 - erro de dominio
-- caso de uso reutilizavel
+- caso de uso reutilizável
 
-## Quando nao adicionar algo aqui
+## Quando não adicionar algo aqui
 
-Nao coloque no `core`:
+Não coloque no `core`:
 
 - detalhes de Prisma
-- formatacao de resposta HTTP
+- formatação de resposta HTTP
 - hooks React
 - acesso a ambiente
 - logging de framework

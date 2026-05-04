@@ -93,9 +93,9 @@ export const practicalRouter = router({
     .input(
       z.object({
         practicalCategoryId: positiveIntSchema,
-        title: requiredTrimmedString('Titulo', 160),
+        title: requiredTrimmedString('Título', 160),
         summary: requiredTrimmedString('Resumo', 320),
-        content: requiredTrimmedString('Conteudo', 12000),
+        content: requiredTrimmedString('Conteúdo', 12000),
         slug: optionalSlugString(),
         order: nonNegativeIntSchema.optional(),
         isPublished: z.boolean().optional(),

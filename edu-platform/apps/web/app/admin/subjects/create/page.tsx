@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/select';
 
 const createSubjectSchema = z.object({
-  name: z.string().min(1, 'Nome obrigatorio').min(3, 'Minimo 3 caracteres'),
+  name: z.string().min(1, 'Nome obrigatério').min(3, 'Minimo 3 caracteres'),
   seriesId: z.string().optional(),
 });
 
@@ -57,7 +57,7 @@ export default function CreateSubjectPage() {
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao criar materia';
+        error instanceof Error ? error.message : 'Erro ao criar matéria';
 
       form.setError('root', { message });
     },
@@ -98,15 +98,15 @@ export default function CreateSubjectPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Nova Materia</h1>
           <p className="mt-2 text-muted-foreground">
-            Crie uma nova materia no sistema
+            Crie uma nova matéria no sistema
           </p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Informacoes da Materia</CardTitle>
-          <CardDescription>Preencha os dados para criar uma nova materia</CardDescription>
+          <CardTitle>Informações da Materia</CardTitle>
+          <CardDescription>Preencha os dados para criar uma nova matéria</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -125,7 +125,7 @@ export default function CreateSubjectPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Nome unico para identificar a materia
+                      Nome único para identificar a matéria
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -145,7 +145,7 @@ export default function CreateSubjectPage() {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione uma serie" />
+                          <SelectValue placeholder="Selecione uma série" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -158,7 +158,7 @@ export default function CreateSubjectPage() {
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      Associe a materia a uma serie, se necessario
+                      Associe a matéria a uma série, se necessário
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

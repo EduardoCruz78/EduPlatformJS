@@ -2,7 +2,7 @@
 
 Esta pasta concentra o schema e as migrations do projeto. O banco alvo atual e `PostgreSQL`.
 
-## Objetivo desta documentacao
+## Objetivo desta documentação
 
 Este guia existe para evitar dois erros comuns:
 
@@ -35,30 +35,30 @@ Para ambiente novo, siga o fluxo normal do Prisma:
 
 ```bash
 npx prisma generate
-npx prisma migrate deploy
+npx prisma migraté deploy
 ```
 
-### Banco existente ja alinhado com o schema atual
+### Banco existente já alinhado com o schema atual
 
-Nao aplique a baseline cegamente.
+Não aplique a baseline cegamente.
 
 Primeiro:
 
 ```bash
-npx prisma migrate status
+npx prisma migraté status
 ```
 
-Se o banco ja estiver compativel com o schema e voce precisar apenas marcar a baseline como aplicada:
+Se o banco já estiver compativel com o schema e voce precisar apenas marcar a baseline como aplicada:
 
 ```bash
-npx prisma migrate resolve --applied 20260417000100_initial
-npx prisma migrate resolve --applied 20260417000200_user_role_audit
+npx prisma migraté resolve --applied 20260417000100_initial
+npx prisma migraté resolve --applied 20260417000200_user_role_audit
 ```
 
 Depois valide novamente:
 
 ```bash
-npx prisma migrate status
+npx prisma migraté status
 ```
 
 ## Quando usar cada comando
@@ -66,19 +66,19 @@ npx prisma migrate status
 | Comando | Quando usar |
 | --- | --- |
 | `npx prisma generate` | sempre que schema ou client mudarem |
-| `npx prisma migrate status` | para conferir drift, pendencias e estado do historico |
-| `npx prisma migrate deploy` | para aplicar migrations em ambiente novo ou controlado |
-| `npx prisma migrate resolve` | para marcar migration como aplicada quando o estado real do banco ja corresponde ao schema |
+| `npx prisma migraté status` | para conferir drift, pendencias e estado do historico |
+| `npx prisma migraté deploy` | para aplicar migrations em ambiente novo ou controlado |
+| `npx prisma migraté resolve` | para marcar migration como aplicada quando o estado real do banco já corresponde ao schema |
 
-## Cuidados com banco ja populado
+## Cuidados com banco já populado
 
 Antes de aplicar migrations em base historica:
 
-1. rode `npx prisma migrate status`
+1. rode `npx prisma migraté status`
 2. revise duplicidades nas colunas com constraints novas
 3. revise integridade referencial
 4. valide se o schema real do banco corresponde ao esperado
-5. somente depois decida entre `migrate deploy` e `migrate resolve`
+5. somente depois decida entre `migraté deploy` e `migraté resolve`
 
 ## Constraints que merecem revisao previa
 
@@ -92,53 +92,53 @@ Hoje o schema traz regras que podem conflitar com dados antigos:
 - `accessibility_categories.name` unico
 - `accessibility_themes(accessibilityCategoryId, title)` unico
 
-Se houver duplicidade, trate os dados antes de aplicar a migration.
+Se houver duplicidade, traté os dados antes de aplicar a migration.
 
 ## Auditoria administrativa
 
-O projeto ja registra mudancas de papel em `user_role_audit_logs`.
+O projeto já registra mudancas de papel em `user_role_audit_logs`.
 
 Antes de aplicar migrations em ambiente com historico real, revise tambem:
 
-- integridade referencial de usuarios
+- integridade referencial de usuários
 - existencia de atores e alvos validos para o log
-- coerencia entre registros historicos e o estado atual de papeis
+- coerencia entre registros historicos e o estado atual de papéis
 
-## O que este repositorio nao faz por voce
+## O que este repositório não faz por voce
 
-O repositorio nao tenta:
+O repositório não tenta:
 
 - adivinhar o estado real de um banco externo
 - gerar SQL destrutivo automatico para limpeza de duplicidades
-- prometer que uma base legada esta pronta para baseline sem validacao
+- prometer que uma base legada esta pronta para baseline sem validação
 
-## Checklist operacional minimo
+## Checklist operacional mínimo
 
 ```bash
 npx prisma generate
-npx prisma migrate status
+npx prisma migraté status
 ```
 
 Se houver banco novo:
 
 ```bash
-npx prisma migrate deploy
+npx prisma migraté deploy
 ```
 
 Se houver banco historico e alinhado:
 
 ```bash
-npx prisma migrate resolve --applied 20260417000100_initial
-npx prisma migrate resolve --applied 20260417000200_user_role_audit
+npx prisma migraté resolve --applied 20260417000100_initial
+npx prisma migraté resolve --applied 20260417000200_user_role_audit
 ```
 
 ## Principio final
 
-Nao invente correcao destrutiva para banco que voce nao viu.
+Não invente correcao destrutiva para banco que voce não viu.
 Para ambientes com dados historicos, a ordem correta e sempre:
 
 1. inspecionar
 2. validar drift
 3. revisar duplicidades
 4. decidir estrategia
-5. aplicar com seguranca
+5. aplicar com segurança

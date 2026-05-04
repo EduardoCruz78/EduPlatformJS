@@ -1,12 +1,12 @@
 # EduPlatformJS Web
 
-`apps/web` e a aplicacao principal do EduPlatformJS. Ela concentra a experiencia publica e administrativa do produto, alem da integracao entre UI, autenticacao, tRPC e os casos de uso compartilhados.
+`apps/web` e a aplicação principal do EduPlatformJS. Ela concentra a experiência pública e administrativa do produto, alem da integração entre UI, autenticação, tRPC e os casos de uso compartilhados.
 
 ## Objetivos desta workspace
 
 - entregar a interface principal do produto
 - manter routers finos e previsiveis
-- aplicar RBAC e validacao server-side nas areas administrativas
+- aplicar RBAC e validação server-side nas ?reas administrativas
 - consumir contratos de `@edu-platform/core` sem acoplar regra de negocio ao frontend
 
 ## Stack principal
@@ -21,7 +21,7 @@
 
 ## Mapa de rotas
 
-### Rotas publicas principais
+### Rotas públicas principais
 
 - `/`
 - `/login`
@@ -67,11 +67,11 @@ apps/web
 |  |- admin/                  Backoffice
 |  |- checklist/              Fluxo do usuario autenticado
 |  |- dashboard/              Painel principal
-|  |- contents/               Navegacao publica de conteudos
+|  |- contents/               Navegação pública de conteúdos
 |  `- vestibulares/           Modulo publico de vestibulares
 |- src/
 |  |- components/             Componentes compartilhados
-|  |- lib/                    Auth, env e utilitarios de app
+|  |- lib/                    Auth, env e ?tilitarios de app
 |  |- server/
 |  |  |- routers/             Routers tRPC
 |  |  |- context.ts           Composicao de sessao + repositories
@@ -89,17 +89,17 @@ apps/web
 - `checklist`
 - `accessibility`
 - `vestibular`
-- `users` para gestao administrativa de papeis
+- `users` para gestão administrativa de papéis
 - `user role audit` para historico de governanca
 
-## Seguranca aplicada no app
+## Segurança aplicada no app
 
 - `protectedProcedure` para fluxos autenticados
 - `adminProcedure` para mutacoes administrativas
-- validacao server-side de acesso em `/admin`
+- validação server-side de acesso em `/admin`
 - traducao consistente de erros de dominio via `AppError`
-- validacao de payload com `Zod`
-- headers basicos de seguranca em todas as rotas via `next.config.ts`
+- validação de payload com `Zod`
+- headers basicos de segurança em todas as rotas via `next.config.ts`
 
 Headers configurados hoje:
 
@@ -112,20 +112,20 @@ Headers configurados hoje:
 
 O app depende de:
 
-| Variavel | Descricao |
+| Variável | Descrição |
 | --- | --- |
 | `AUTH_SECRET` | segredo do Auth.js |
 | `GOOGLE_CLIENT_ID` | OAuth Google |
 | `GOOGLE_CLIENT_SECRET` | OAuth Google |
-| `DATABASE_URL` ou `DIRECT_URL` | conexao de banco usada por Prisma e repositories |
-| `ADMIN_EMAILS` | bootstrap/recuperacao inicial de admins |
+| `DATABASE_URL` ou `DIRECT_URL` | conexão de banco usada por Prisma e repositories |
+| `ADMIN_EMAILS` | bootstrap/recuperação inicial de admins |
 
-Validacao:
+Validação:
 
 - auth: [apps/web/src/lib/env.ts](./src/lib/env.ts)
 - banco: [packages/infrastructure/src/config/env.ts](../../packages/infrastructure/src/config/env.ts)
 
-## Scripts uteis
+## Scripts ?teis
 
 ```bash
 npm run dev --workspace web
@@ -137,10 +137,10 @@ npx tsc -p apps/web/tsconfig.json --noEmit
 
 ## Regras de manutencao
 
-- nao mover regra de negocio para componentes ou pages sem necessidade
-- routers devem ficar finos: validacao + chamada de use case
+- não mover regra de negocio para componentes ou pages sem necessidade
+- routers devem ficar finos: validação + chamada de use case
 - todo fluxo admin deve continuar atras de `adminProcedure`
-- componentes de formulario devem manter validacao coerente com os routers
+- componentes de formulario devem manter validação coerente com os routers
 - se um erro vem do dominio, preserve `AppError` em vez de recriar mensagens arbitrarias no frontend
 
 ## Quando editar cada pasta
@@ -148,19 +148,19 @@ npx tsc -p apps/web/tsconfig.json --noEmit
 | Pasta | Quando mexer |
 | --- | --- |
 | `app/` | novas paginas, layouts, UX, metadata e fluxos do App Router |
-| `src/server/routers/` | endpoints tRPC e validacao de entrada |
-| `src/lib/` | auth, env, clientes e utilitarios |
+| `src/server/routers/` | endpoints tRPC e validação de entrada |
+| `src/lib/` | auth, env, clientes e ?tilitarios |
 | `src/components/` | UI compartilhada entre paginas |
 | `src/types/` | augmentations de tipos do app |
 
 ## Estado atual
 
-- a aplicacao principal esta operacional
-- `dashboard`, `checklist` e `vestibulares` publicos ja receberam rodada de maturidade funcional
-- `accessibility` admin e `vestibular` admin ja receberam rodada inicial de refinamento visual e textual
-- a governanca de usuarios e auditoria administrativa ja estao presentes no painel
+- a aplicação principal esta operacional
+- `dashboard`, `checklist` e `vestibulares` publicos já receberam rodada de maturidade funcional
+- `accessibility` admin e `vestibular` admin já receberam rodada inicial de refinamento visual e textual
+- a governanca de usuários e auditoria administrativa já estao presentes no painel
 
-## Validacao recomendada para alteracoes no app
+## Validação recomendada para alteracoes no app
 
 ```bash
 npm test

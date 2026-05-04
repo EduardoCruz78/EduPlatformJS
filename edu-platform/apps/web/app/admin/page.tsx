@@ -6,43 +6,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 const sections = [
   {
     href: '/admin/users',
-    title: 'Usuarios',
-    description: 'Gerencie papeis, governanca e protecoes da equipe administrativa.',
+    title: 'Usuários',
+    description: 'Gerencie papéis, governança e proteções da equipe administrativa.',
   },
   {
     href: '/admin/users/audit',
     title: 'Auditoria',
-    description: 'Consulte o historico administrativo de mudancas de papel.',
+    description: 'Consulte o histórico administrativo de mudanças de papel.',
   },
   {
     href: '/admin/subjects',
-    title: 'Materias',
-    description: 'Gerencie materias e vinculacao com series.',
+    title: 'Matérias',
+    description: 'Gerencie matérias e vinculação com series.',
   },
   {
     href: '/admin/series',
-    title: 'Series',
-    description: 'Cadastre, edite e remova series do sistema.',
+    title: 'Séries',
+    description: 'Cadastre, edite e remova séries do sistema.',
   },
   {
     href: '/admin/topics',
-    title: 'Topicos',
-    description: 'Controle topicos e as materias associadas.',
+    title: 'Tópicos',
+    description: 'Controle tópicos e as matérias associadas.',
   },
   {
     href: '/admin/contents',
-    title: 'Conteudos',
-    description: 'Administre conteudos por topico e tipo.',
+    title: 'Conteúdos',
+    description: 'Administre conteúdos por tópico e tipo.',
   },
   {
     href: '/admin/accessibility',
-    title: 'Accessibility',
-    description: 'Organize categorias, temas e vinculos com topicos.',
+    title: 'Acessibilidade',
+    description: 'Organize categorias, temas e vínculos com tópicos.',
   },
   {
     href: '/admin/vestibulares',
     title: 'Vestibulares',
-    description: 'Estruture trilhas especiais com materias, topicos e conteudos.',
+    description: 'Estruture trilhas especiais com matérias, tópicos e conteúdos.',
   },
 ];
 
@@ -50,13 +50,13 @@ export default function AdminPage() {
   return (
     <div className="space-y-6">
       <section className="edu-hero">
-        <span className="edu-kicker">Backoffice</span>
+        <span className="edu-kicker">Administrativo</span>
         <h1 className="edu-section-title">
-          Painel administrativo com leitura forte e navegacao clara.
+          Painel administrativo com leitura forte e navegação clara.
         </h1>
         <p className="edu-lead">
-          Use este painel para manter o produto consistente, com governanca de acesso
-          e operacao editorial no mesmo sistema visual da plataforma.
+          Use este painel para manter o produto consistente, com governança de acesso
+          e operação editorial no mesmo sistema visual da plataforma.
         </p>
       </section>
 
@@ -69,7 +69,7 @@ export default function AdminPage() {
                 <CardDescription>{section.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.16em] text-foreground">
-                <span>Abrir area</span>
+                <span>Abrir área</span>
                 <ArrowRight className="h-4 w-4" />
               </CardContent>
             </Card>

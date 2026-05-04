@@ -32,11 +32,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 
 const schema = z.object({
-  title: z.string().min(1, 'Titulo obrigatorio'),
+  title: z.string().min(1, 'Título obrigatério'),
   description: z.string().optional(),
-  topicId: z.string().min(1, 'Topico obrigatorio'),
+  topicId: z.string().min(1, 'Tópico obrigatério'),
   type: z.enum(['VIDEO', 'PDF', 'ARTICLE']),
-  link: z.string().min(1, 'Link obrigatorio'),
+  link: z.string().min(1, 'Link obrigatério'),
   thumbnailUrl: z.string().min(1, 'Thumbnail obrigatoria'),
   videoUrl: z.string().optional(),
   pdfUrl: z.string().optional(),
@@ -93,7 +93,7 @@ export default function EditContentPage() {
     onSuccess: () => router.push('/admin/contents'),
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : 'Erro ao atualizar conteudo';
+        error instanceof Error ? error.message : 'Erro ao atualizar conteúdo';
 
       form.setError('root', { message });
     },
@@ -133,16 +133,16 @@ export default function EditContentPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Editar Conteudo</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Editar Conteúdo</h1>
           <p className="mt-2 text-muted-foreground">
-            Atualize os dados do conteudo selecionado
+            Atualize os dados do conteúdo selecionado
           </p>
         </div>
       </div>
 
       <Card className="max-w-3xl">
         <CardHeader>
-          <CardTitle>Informacoes do Conteudo</CardTitle>
+          <CardTitle>Informações do Conteúdo</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -155,7 +155,7 @@ export default function EditContentPage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Titulo</FormLabel>
+                      <FormLabel>Título</FormLabel>
                       <FormControl>
                         <Input {...field} disabled={mutation.isPending} />
                       </FormControl>
@@ -169,7 +169,7 @@ export default function EditContentPage() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descricao</FormLabel>
+                      <FormLabel>Descrição</FormLabel>
                       <FormControl>
                         <Textarea {...field} disabled={mutation.isPending} />
                       </FormControl>
@@ -184,7 +184,7 @@ export default function EditContentPage() {
                     name="topicId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Topico</FormLabel>
+                        <FormLabel>Tópico</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -192,7 +192,7 @@ export default function EditContentPage() {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione um topico" />
+                              <SelectValue placeholder="Selecione um tópico" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

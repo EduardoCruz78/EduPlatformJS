@@ -21,6 +21,7 @@
     "test:infrastructure": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/infrastructure/src/**/*.test.ts\"",
     "test:web": "vitest run --config apps/web/vitest.config.ts",
     "prisma:generate": "prisma generate",
+    "db:seed": "node --experimental-transform-types --experimental-specifier-resolution=node prisma/seed.ts",
     "import:curriculum:pdf": "node --experimental-transform-types --experimental-specifier-resolution=node prisma/import-series-pdf.ts",
     "sync:first-grade:bncc": "node --experimental-transform-types --experimental-specifier-resolution=node prisma/sync-first-grade-bncc.ts",
     "audit:full": "npm audit",

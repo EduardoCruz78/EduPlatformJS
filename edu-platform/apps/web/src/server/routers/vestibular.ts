@@ -136,7 +136,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
-        title: requiredTrimmedString('Titulo', 160),
+        title: requiredTrimmedString('Título', 160),
         type: z.enum(['VIDEO', 'PDF', 'ARTICLE']).optional().nullable(),
         link: optionalUrlString(),
         pdfUrl: optionalUrlString(),

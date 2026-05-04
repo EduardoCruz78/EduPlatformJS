@@ -1,21 +1,21 @@
 # EduPlatformJS
 
-EduPlatformJS e um monorepo focado em plataforma educacional com arquitetura em camadas, regras de dominio isoladas do framework e operacao centrada em `Next.js`, `tRPC`, `Prisma` e `PostgreSQL`.
+EduPlatformJS e um monorepo focado em plataforma educacional com arquitetura em camadas, regras de dominio isoladas do framework e operação centrada em `Next.js`, `tRPC`, `Prisma` e `PostgreSQL`.
 
-O repositorio foi estruturado para manter separacao clara entre:
+O repositório foi estruturado para manter separação clara entre:
 
 - dominio e casos de uso em `packages/core`
-- implementacoes concretas em `packages/infrastructure`
-- experiencia web em `apps/web`
+- implementações concretas em `packages/infrastructure`
+- experiência web em `apps/web`
 - experimento mobile isolado em `apps/native`
 
 ## Visao geral
 
-O objetivo do projeto e entregar uma base profissional para:
+O objetivo do projeto ? entregar uma base profissional para:
 
 - catalogo educacional por `series -> subjects -> topics -> contents`
 - modulos publicos e administrativos para `accessibility` e `vestibular`
-- autenticacao com papeis `USER` e `ADMIN`
+- autenticação com papéis `USER` e `ADMIN`
 - checklist por usuario autenticado
 - governanca administrativa com auditoria de troca de papel
 
@@ -32,46 +32,46 @@ flowchart LR
 
 Principios centrais:
 
-- `core` nao depende de `infrastructure`
-- `use cases` nao conhecem Prisma, Next.js, sessao ou contexto HTTP
-- `routers` ficam finos: validacao + orquestracao
-- `repositories` retornam dominio, nao objetos Prisma crus
-- o frontend nao acessa repositories diretamente
+- `core` não depende de `infrastructure`
+- `use cases` não conhecem Prisma, Next.js, sessao ou contexto HTTP
+- `routers` ficam finos: validação + orquestração
+- `repositories` retornam dominio, não objetos Prisma crus
+- o frontend não acessa repositories diretamente
 
 ## Estrutura do monorepo
 
 ```text
 .
 |- apps/
-|  |- web/                     Aplicacao principal em Next.js App Router
+|  |- web/                     Aplicação principal em Next.js App Router
 |  `- native/                  Shell experimental em Expo
-|- docs/                       Documentacao operacional e material auxiliar
+|- docs/                       Documentação operacional e material auxiliar
 |- packages/
 |  |- core/                    Entidades, DTOs, contratos, erros e use cases
 |  |- infrastructure/          Prisma, mappers, container e repositories
 |  `- typescript-config/       Configs compartilhadas de TypeScript
-`- prisma/                     Schema, migrations e guias de operacao
+`- prisma/                     Schema, migrations e guias de operação
 ```
 
 ## Workspaces
 
 ### `apps/web`
 
-Aplicacao principal do produto. Reune:
+Aplicação principal do produto. Reune:
 
-- paginas publicas
+- paginas públicas
 - painel administrativo
-- autenticacao
+- autenticação
 - contexto tRPC
-- integracao com os casos de uso
+- integração com os casos de uso
 
-Documentacao: [apps/web/README.md](./apps/web/README.md)
+Documentação: [apps/web/README.md](./apps/web/README.md)
 
 ### `apps/native`
 
-Shell experimental em Expo/React Native. Nao acompanha a maturidade do `web` e deve ser tratado como trilha pausada ate nova priorizacao.
+Shell experimental em Expo/React Native. Não acompanha a maturidade do `web` e deve ser tratado como trilha pausada até nova priorização.
 
-Documentacao: [apps/native/README.md](./apps/native/README.md)
+Documentação: [apps/native/README.md](./apps/native/README.md)
 
 ### `packages/core`
 
@@ -83,25 +83,25 @@ Camada de dominio do projeto. Contem:
 - `AppError`
 - use cases por modulo
 
-Documentacao: [packages/core/README.md](./packages/core/README.md)
+Documentação: [packages/core/README.md](./packages/core/README.md)
 
 ### `packages/infrastructure`
 
-Camada de implementacao concreta. Contem:
+Camada de implementação concreta. Contem:
 
 - client Prisma
 - mappers
 - repositories
 - container de composicao
-- validacao de ambiente de banco
+- validação de ambiente de banco
 
-Documentacao: [packages/infrastructure/README.md](./packages/infrastructure/README.md)
+Documentação: [packages/infrastructure/README.md](./packages/infrastructure/README.md)
 
 ### `packages/typescript-config`
 
-Configs compartilhadas para padronizacao de TypeScript entre workspaces.
+Configs compartilhadas para padronização de TypeScript entre workspaces.
 
-Documentacao: [packages/typescript-config/README.md](./packages/typescript-config/README.md)
+Documentação: [packages/typescript-config/README.md](./packages/typescript-config/README.md)
 
 ## Modulos funcionais
 
@@ -115,22 +115,22 @@ O estado atual validado do produto inclui:
 - `accessibility`
 - `vestibular`
 - `auth`
-- `admin users` com gestao de papel
+- `admin users` com gestão de papel
 - `user role audit log`
 
-## Seguranca e governanca
+## Segurança e governanca
 
-O monorepo ja incorpora uma base importante de hardening:
+O monorepo já incorpora uma base importante de hardening:
 
 - RBAC com `USER` e `ADMIN`
 - `adminProcedure` para mutacoes administrativas
-- validacao server-side do layout `/admin`
+- validação server-side do layout `/admin`
 - ownership no checklist
 - `AppError` com traducao consistente para tRPC
-- validacao tipada de ambiente
+- validação tipada de ambiente
 - auditoria persistida para troca de papel
-- headers basicos de seguranca no `web`
-- CI, lint moderno e scripts de validacao consistentes
+- headers basicos de segurança no `web`
+- CI, lint moderno e scripts de validação consistentes
 
 ## Comeco rapido
 
@@ -142,18 +142,18 @@ npm install
 
 ### 2. Configurar ambiente
 
-As variaveis minimas esperadas hoje sao:
+As variáveis mínimas esperadas hoje sao:
 
-| Variavel | Obrigatoria | Finalidade |
+| Variável | Obrigatoria | Finalidade |
 | --- | --- | --- |
-| `DATABASE_URL` | sim* | conexao principal com PostgreSQL |
-| `DIRECT_URL` | sim* | conexao direta alternativa para Prisma |
-| `AUTH_SECRET` | sim | segredo do Auth.js, minimo de 32 caracteres |
+| `DATABASE_URL` | sim* | conexão principal com PostgreSQL |
+| `DIRECT_URL` | sim* | conexão direta alternativa para Prisma |
+| `AUTH_SECRET` | sim | segredo do Auth.js, mínimo de 32 caracteres |
 | `GOOGLE_CLIENT_ID` | sim | OAuth do Google |
 | `GOOGLE_CLIENT_SECRET` | sim | OAuth do Google |
-| `ADMIN_EMAILS` | nao | bootstrap e recuperacao inicial de administradores |
+| `ADMIN_EMAILS` | não | bootstrap e recuperação inicial de administradores |
 
-\* E necessario ter `DATABASE_URL` ou `DIRECT_URL`.
+\* ? necessário ter `DATABASE_URL` ou `DIRECT_URL`.
 
 ### 3. Gerar o client Prisma
 
@@ -161,7 +161,7 @@ As variaveis minimas esperadas hoje sao:
 npm run prisma:generate
 ```
 
-### 4. Rodar a aplicacao web
+### 4. Rodar a aplicação web
 
 ```bash
 npm run dev --workspace web
@@ -172,19 +172,20 @@ npm run dev --workspace web
 | Comando | Finalidade |
 | --- | --- |
 | `npm run dev` | executa `turbo run dev` para workspaces com script `dev` |
-| `npm run dev --workspace web` | sobe apenas a aplicacao principal |
+| `npm run dev --workspace web` | sobe apenas a aplicação principal |
 | `npm run build` | build do monorepo via Turbo |
 | `npm run build --workspace web` | build do app principal |
 | `npm run lint` | lint oficial do projeto, hoje centralizado no `web` |
 | `npm run typecheck` | typecheck de `core`, `infrastructure` e `web` |
 | `npm test` | testes de arquitetura, `core`, `infrastructure` e routers do `web` |
+| `npm run db:seed` | recria a base provisória de catálogo, vida prática, acessibilidade e vestibulares |
 | `npm run test:architecture` | guardrails de dependencia entre camadas |
 | `npm run test:web` | testes dos routers tRPC do app web |
 | `npm run audit:prod` | `npm audit --omit=dev` |
 | `npm run audit:full` | `npm audit` completo |
-| `npm run format` | formatacao com Prettier |
+| `npm run format` | formatação com Prettier |
 
-## Validacao recomendada antes de merge ou deploy
+## Validação recomendada antes de merge ou deploy
 
 ```bash
 npm test
@@ -196,7 +197,7 @@ npm run lint --workspace web
 npm run build --workspace web
 ```
 
-Se houver alteracao de dependencias:
+Se houver alteração de dependencias:
 
 ```bash
 npm audit
@@ -209,12 +210,13 @@ Leia [prisma/README.md](./prisma/README.md) antes de aplicar migrations em ambie
 
 Pontos importantes:
 
-- o repositorio ja possui baseline de migrations
-- a estrategia para banco novo e diferente da estrategia para banco ja populado
+- o repositório já possui baseline de migrations
+- a estrategia para banco novo e diferente da estrategia para banco já populado
+- `npm run db:seed` preserva usuários e autenticação, mas recria as tabelas de catálogo educacional e conteúdos públicos
 - drift e duplicidade devem ser avaliados antes de aplicar constraints em base historica
-- nao existe recomendacao de SQL destrutivo automatico no repositorio
+- não existe recomendação de SQL destrutivo automatico no repositório
 
-## Documentacao adicional
+## Documentação adicional
 
 - [docs/README.md](./docs/README.md)
 - [docs/dependency-audit.md](./docs/dependency-audit.md)
@@ -228,12 +230,12 @@ Pontos importantes:
 
 ## Estado atual e limitacoes honestas
 
-- `apps/web` e a experiencia principal e mais madura do produto
+- `apps/web` e a experiência principal e mais madura do produto
 - `apps/native` continua experimental e pausado
 - `npm audit --omit=dev` esta limpo para producao
 - `npm audit` completo esta limpo com overrides auditados para dependencias transitivas sem patch direto seguro
 - a suite automatizada cobre arquitetura, dominio, mappers de infraestrutura e routers tRPC criticos do `web`
-- a validacao final de drift e duplicidades em banco ja populado depende do estado real do banco fora do repositorio
+- a validação final de drift e duplicidades em banco já populado depende do estado real do banco fora do repositório
 
 ## Quando editar cada camada
 
@@ -241,11 +243,11 @@ Pontos importantes:
 | --- | --- |
 | Nova regra de negocio | `packages/core` |
 | Nova persistencia ou mapper | `packages/infrastructure` |
-| Nova rota ou validacao de entrada | `apps/web/src/server` |
+| Nova rota ou validação de entrada | `apps/web/src/server` |
 | Nova tela, fluxo ou UX | `apps/web/app` |
 | Mudanca de schema e persistencia | `prisma/` + `packages/infrastructure` |
-| Documentacao operacional | `README.md`, `docs/`, `prisma/README.md` |
+| Documentação operacional | `README.md`, `docs/`, `prisma/README.md` |
 
 ## Status de maturidade
 
-O projeto ja esta em um nivel avancado de estrutura tecnica. A prioridade atual nao e reconstruir base, e sim manter consistencia, documentacao honesta e refinamentos finais de produto e operacao.
+O projeto já esta em um nivel avancado de estrutura tecnica. A prioridade atual não e reconstruir base, e sim manter consistencia, documentação honesta e refinamentos finais de produto e operação.
