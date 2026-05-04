@@ -158,7 +158,7 @@ As variaveis minimas esperadas hoje sao:
 ### 3. Gerar o client Prisma
 
 ```bash
-npx prisma generate
+npm run prisma:generate
 ```
 
 ### 4. Rodar a aplicacao web
@@ -177,7 +177,9 @@ npm run dev --workspace web
 | `npm run build --workspace web` | build do app principal |
 | `npm run lint` | lint oficial do projeto, hoje centralizado no `web` |
 | `npm run typecheck` | typecheck de `core`, `infrastructure` e `web` |
-| `npm test` | testes de `core` e `infrastructure` |
+| `npm test` | testes de arquitetura, `core`, `infrastructure` e routers do `web` |
+| `npm run test:architecture` | guardrails de dependencia entre camadas |
+| `npm run test:web` | testes dos routers tRPC do app web |
 | `npm run audit:prod` | `npm audit --omit=dev` |
 | `npm run audit:full` | `npm audit` completo |
 | `npm run format` | formatacao com Prettier |
@@ -186,7 +188,7 @@ npm run dev --workspace web
 
 ```bash
 npm test
-npx prisma generate
+npm run prisma:generate
 npx tsc -p packages/core/tsconfig.json --noEmit
 npx tsc -p packages/infrastructure/tsconfig.json --noEmit
 npx tsc -p apps/web/tsconfig.json --noEmit
@@ -229,7 +231,8 @@ Pontos importantes:
 - `apps/web` e a experiencia principal e mais madura do produto
 - `apps/native` continua experimental e pausado
 - `npm audit --omit=dev` esta limpo para producao
-- `npm audit` completo ainda reporta vulnerabilidades moderadas em toolchain de desenvolvimento; a decisao atual esta documentada em `docs/dependency-audit.md`
+- `npm audit` completo esta limpo com overrides auditados para dependencias transitivas sem patch direto seguro
+- a suite automatizada cobre arquitetura, dominio, mappers de infraestrutura e routers tRPC criticos do `web`
 - a validacao final de drift e duplicidades em banco ja populado depende do estado real do banco fora do repositorio
 
 ## Quando editar cada camada

@@ -2,11 +2,11 @@
 
 ## Objetivo
 
-Registrar de forma objetiva o estado atual do `npm audit` no monorepo e a decisao tecnica adotada para o risco residual de dependencias de desenvolvimento.
+Registrar o estado atual do `npm audit` no monorepo e as decisoes adotadas para manter a arvore de dependencias apresentavel para producao e portfolio tecnico.
 
 ## Ultima revisao
 
-- data: `2026-04-17`
+- data: `2026-05-04`
 - comando de producao: `npm audit --omit=dev`
 - comando completo: `npm audit`
 
@@ -15,47 +15,38 @@ Registrar de forma objetiva o estado atual do `npm audit` no monorepo e a decisa
 | Escopo | Estado atual | Interpretacao |
 | --- | --- | --- |
 | Producao (`--omit=dev`) | limpo | nao ha vulnerabilidades abertas no recorte de runtime principal |
-| Toolchain completo | 4 moderadas | risco concentrado em dependencias de desenvolvimento ligadas a Prisma/Hono |
+| Toolchain completo | limpo | nao ha vulnerabilidades abertas no audit completo do monorepo |
 
-## Dependencias apontadas
+## Correcoes aplicadas
 
-O `npm audit` completo ainda reporta vulnerabilidades moderadas envolvendo:
+- `npm audit fix` atualizou dependencias transitivas seguras, incluindo o patch de `@xmldom/xmldom`.
+- `overrides` foram adicionados no `package.json` raiz para dependencias transitivas sem atualizacao direta segura nos pacotes consumidores atuais.
+- O lockfile foi regenerado e validado com `npm ci`.
 
-- `@hono/node-server < 1.19.13`
-- `hono < 4.12.14`
-- dependencias transitivas via `@prisma/dev`
+## Overrides documentados
+
+| Dependencia | Versao forçada | Origem do risco |
+| --- | --- | --- |
+| `@hono/node-server` | `1.19.14` | dependencia transitiva do toolchain Prisma |
+| `postcss` | `8.5.13` | dependencia transitiva de `next` e `@expo/metro-config` |
+| `uuid` | `14.0.0` | dependencia transitiva de `xcode` via Expo |
 
 ## Decisao atual
 
-Nao aplicar `npm audit fix --force` automaticamente.
+Manter overrides explicitos enquanto os pacotes consumidores nao publicarem uma trilha direta que resolva os mesmos avisos sem downgrade ou ruptura.
 
-## Justificativa
+## Validacao esperada
 
-- o caminho sugerido localmente tenta forcar uma troca relevante no ecossistema do Prisma
-- nao existe evidencia suficiente no codigo atual de que essa trilha e segura sem regressao
-- o recorte de producao ja esta limpo, entao a urgencia e menor do que o risco de quebrar o setup
-
-## Impacto real hoje
-
-- nao bloqueia build
-- nao bloqueia lint
-- nao bloqueia testes
-- nao bloqueia typecheck
-- nao bloqueia execucao do produto principal
-- nao caracteriza vulnerabilidade aberta no recorte de runtime de producao validado por `npm audit --omit=dev`
-
-## O que faria sentido antes de atualizar
-
-1. validar changelogs e compatibilidade das versoes atuais de Prisma 7
-2. confirmar se existe patch seguro sem downgrade ou ruptura de toolchain
-3. rodar `npx prisma generate`, `npm test`, typecheck, lint e build apos qualquer tentativa
-4. somente aplicar upgrade quando a trilha estiver comprovadamente segura
+```bash
+npm ci
+npm audit
+npm audit --omit=dev
+npm test
+npm run typecheck
+npm run lint
+npm run build --workspace web
+```
 
 ## Conclusao operacional
 
-A pendencia existe e e valida, mas hoje esta encapsulada como risco de desenvolvimento, nao de producao.
-No estado atual do repositorio, a decisao tecnica correta continua sendo:
-
-- manter documentado
-- nao forcar atualizacao arriscada
-- revisar novamente quando houver trilha segura e testavel
+O monorepo esta com audit limpo no recorte completo e de producao. Os overrides sao intencionais, pequenos e documentados para evitar downgrades inseguros sugeridos automaticamente pelo `npm audit fix --force`.

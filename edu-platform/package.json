@@ -11,13 +11,16 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "npm run lint --workspace web",
-    "typecheck": "npm run typecheck:core && npm run typecheck:infrastructure && npm run typecheck:web",
+    "typecheck": "npm run prisma:generate && npm run typecheck:core && npm run typecheck:infrastructure && npm run typecheck:web",
     "typecheck:core": "npx tsc -p packages/core/tsconfig.json --noEmit",
     "typecheck:infrastructure": "npx tsc -p packages/infrastructure/tsconfig.json --noEmit",
     "typecheck:web": "npx tsc -p apps/web/tsconfig.json --noEmit",
-    "test": "npm run test:core && npm run test:infrastructure",
+    "test": "npm run test:architecture && npm run test:core && npm run test:infrastructure && npm run test:web",
+    "test:architecture": "node --test \"tests/**/*.test.mjs\"",
     "test:core": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/core/src/**/*.test.ts\"",
     "test:infrastructure": "node --test --experimental-transform-types --experimental-specifier-resolution=node \"packages/infrastructure/src/**/*.test.ts\"",
+    "test:web": "vitest run --config apps/web/vitest.config.ts",
+    "prisma:generate": "prisma generate",
     "import:curriculum:pdf": "node --experimental-transform-types --experimental-specifier-resolution=node prisma/import-series-pdf.ts",
     "sync:first-grade:bncc": "node --experimental-transform-types --experimental-specifier-resolution=node prisma/sync-first-grade-bncc.ts",
     "audit:full": "npm audit",
@@ -32,12 +35,13 @@
     "autoprefixer": "^10.4.27",
     "dotenv": "^17.4.1",
     "pdf-parse": "^2.4.5",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.13",
     "prettier": "^3.1.1",
     "prisma": "^7.7.0",
     "rimraf": "^6.1.0",
     "tailwindcss": "^4.2.2",
-    "turbo": "^2.9.3"
+    "turbo": "^2.9.3",
+    "vitest": "^4.1.5"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -53,5 +57,17 @@
     "pg": "^8.20.0",
     "react-hook-form": "^7.72.1",
     "zod": "^4.3.6"
+  },
+  "overrides": {
+    "@hono/node-server": "1.19.14",
+    "@expo/metro-config": {
+      "postcss": "8.5.13"
+    },
+    "next": {
+      "postcss": "8.5.13"
+    },
+    "xcode": {
+      "uuid": "14.0.0"
+    }
   }
 }

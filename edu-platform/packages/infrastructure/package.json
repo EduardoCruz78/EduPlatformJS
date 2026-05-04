@@ -11,6 +11,9 @@
       "default": "./src/index.ts"
     }
   },
+  "scripts": {
+    "prisma:generate": "prisma generate --schema ../../prisma/schema.prisma"
+  },
   "dependencies": {
     "@edu-platform/core": "*",
     "@prisma/adapter-pg": "^7.7.0",

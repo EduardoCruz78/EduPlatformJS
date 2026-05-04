@@ -129,6 +129,7 @@ Validacao:
 
 ```bash
 npm run dev --workspace web
+npm run test:web
 npm run lint --workspace web
 npm run build --workspace web
 npx tsc -p apps/web/tsconfig.json --noEmit
@@ -163,7 +164,8 @@ npx tsc -p apps/web/tsconfig.json --noEmit
 
 ```bash
 npm test
-npx prisma generate
+npm run test:web
+npm run prisma:generate
 npx tsc -p packages/core/tsconfig.json --noEmit
 npx tsc -p packages/infrastructure/tsconfig.json --noEmit
 npx tsc -p apps/web/tsconfig.json --noEmit

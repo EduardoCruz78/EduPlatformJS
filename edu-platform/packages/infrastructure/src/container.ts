@@ -1,4 +1,4 @@
-﻿// packages/infrastructure/src/container.ts
+// packages/infrastructure/src/container.ts
 
 import {
     SeriesRepository,
@@ -12,7 +12,7 @@ import {
     PracticalRepository,
 } from './repositories';
 
-export function makeRepositories() {
+function makeRepositories() {
     return {
         seriesRepository: new SeriesRepository(),
         subjectRepository: new SubjectRepository(),
@@ -26,4 +26,6 @@ export function makeRepositories() {
     };
 }
 
-export type Repositories = ReturnType<typeof makeRepositories>;
+export const container = makeRepositories();
+
+export type Repositories = typeof container;

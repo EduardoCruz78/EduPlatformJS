@@ -1,9 +1,8 @@
 import { auth } from "@/lib/auth";
-import { makeRepositories } from "@edu-platform/infrastructure";
+import { container } from "@edu-platform/infrastructure";
 
 export async function createContext() {
   const session = await auth();
-  const repositories = makeRepositories();
 
   return {
     session,
@@ -14,7 +13,7 @@ export async function createContext() {
           role: session.user.role,
         }
         : null,
-    ...repositories,
+    ...container,
   };
 }
 
