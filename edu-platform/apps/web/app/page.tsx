@@ -14,7 +14,15 @@ import { trpc } from '@/lib/trpc';
 import { SeriesCard } from '@/components/home/SeriesCard';
 import { SearchDialog } from '@/components/home/SearchDialog';
 
-const sériesIcons = ['EG', 'VB', 'AC', 'TP', 'CT', 'PR'];
+function getSeriesIcon(name: string) {
+  const meta = getSeriesMeta(name);
+
+  if (meta.group === 'medio') {
+    return `M${meta.order}`;
+  }
+
+  return `F${meta.order}`;
+}
 
 export default function HomePage() {
   const { data: session } = useSession();
@@ -168,12 +176,12 @@ export default function HomePage() {
 
                     {groupedSeries.fundamental.length ? (
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {groupedSeries.fundamental.map((item, index) => (
+                        {groupedSeries.fundamental.map((item) => (
                           <SeriesCard
                             key={item.id}
                             name={item.name}
                             href={buildSubjectsHref(item.id)}
-                            icon={sériesIcons[index % sériesIcons.length]}
+                            icon={getSeriesIcon(item.name)}
                             label="Ano"
                             description={
                               item.subjects?.length
@@ -205,12 +213,12 @@ export default function HomePage() {
 
                     {groupedSeries.medio.length ? (
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {groupedSeries.medio.map((item, index) => (
+                        {groupedSeries.medio.map((item) => (
                           <SeriesCard
                             key={item.id}
                             name={item.name}
                             href={buildSubjectsHref(item.id)}
-                            icon={sériesIcons[(index + groupedSeries.fundamental.length) % sériesIcons.length]}
+                            icon={getSeriesIcon(item.name)}
                             label="Série"
                             description={
                               item.subjects?.length
