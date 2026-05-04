@@ -29,6 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
+      data-scroll-behavior="smooth"
       className={cn("font-sans", inter.variable, poppins.variable)}
     >
       <body className="min-h-screen bg-background text-foreground antialiased">

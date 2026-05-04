@@ -16,6 +16,12 @@ function getMaterialIcon(type: string | null | undefined) {
   );
 }
 
+function getMaterialLabel(type: string | null | undefined) {
+  if (type === 'VIDEO') return 'Vídeo';
+  if (type === 'PDF') return 'PDF';
+  return 'Artigo';
+}
+
 export default function AccessibilityThemePage() {
   const params = useParams<{ categoryId: string; themeId: string }>();
   const categoryId = Number(params.categoryId);
@@ -75,12 +81,12 @@ export default function AccessibilityThemePage() {
               rel="noreferrer"
               className="edu-home-card"
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-3">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
                   {getMaterialIcon(material.type)}
-                  <div>
-                    <Badge variant="secondary">{material.type}</Badge>
-                    <h2 className="mt-3 text-2xl font-black text-white">
+                  <div className="min-w-0">
+                    <Badge variant="secondary">{getMaterialLabel(material.type)}</Badge>
+                    <h2 className="mt-3 text-xl font-black text-white sm:text-2xl">
                       {material.title}
                     </h2>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">

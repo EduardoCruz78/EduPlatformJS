@@ -81,9 +81,9 @@ export default function VestibularDetailPage() {
       </section>
 
       <section className="mt-8">
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex items-start gap-3 sm:items-center">
           <BookOpen className="h-5 w-5 text-primary" />
-          <h2 className="text-2xl font-black text-white">Escolha uma matéria</h2>
+          <h2 className="text-xl font-black text-white sm:text-2xl">Escolha uma matéria</h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -96,7 +96,7 @@ export default function VestibularDetailPage() {
               >
                 <div>
                   <Badge variant="secondary">{subject.series?.name ?? 'Ensino Médio'}</Badge>
-                  <h3 className="mt-4 text-2xl font-black text-white">{subject.name}</h3>
+                  <h3 className="mt-4 text-xl font-black text-white sm:text-2xl">{subject.name}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     Tópicos e conteúdos aplicados ao {vestibular.name}.
                   </p>

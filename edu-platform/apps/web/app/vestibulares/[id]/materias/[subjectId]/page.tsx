@@ -80,7 +80,7 @@ export default function VestibularSubjectPage() {
                 <Badge variant={topic.isShared ? 'secondary' : 'outline'}>
                   {topic.isShared ? 'Base compartilhada' : 'Exclusivo'}
                 </Badge>
-                <h2 className="mt-4 text-2xl font-black text-white">{topic.name}</h2>
+                <h2 className="mt-4 text-xl font-black text-white sm:text-2xl">{topic.name}</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {topic.notes || `Conteúdos de ${subject.name} aplicados ao ${vestibular.name}.`}
                 </p>

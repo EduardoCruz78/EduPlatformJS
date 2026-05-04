@@ -21,18 +21,18 @@ export default function SidebarAdmin() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-6 h-fit rounded-[2rem] border border-[rgba(168,124,29,0.38)] bg-[#090909] p-5 text-white shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
-      <div className="mb-6 rounded-[1.5rem] border border-[rgba(168,124,29,0.22)] bg-[#111111] p-4">
+    <aside className="h-fit rounded-[1.5rem] border border-[rgba(168,124,29,0.38)] bg-[#090909] p-4 text-white shadow-[0_24px_60px_rgba(0,0,0,0.4)] lg:sticky lg:top-6 lg:rounded-[2rem] lg:p-5">
+      <div className="mb-4 rounded-[1.25rem] border border-[rgba(168,124,29,0.22)] bg-[#111111] p-4 lg:mb-6 lg:rounded-[1.5rem]">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
           Administrativo
         </p>
-        <h2 className="mt-3 text-3xl text-white">EduPlatform</h2>
+        <h2 className="mt-3 text-2xl text-white lg:text-3xl">EduPlatform</h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Navegação central do painel com governança, catálogo e fluxos do produto.
         </p>
       </div>
 
-      <nav className="space-y-2">
+      <nav className="grid gap-2 sm:grid-cols-2 lg:block lg:space-y-2">
         {links.map((link) => {
           const active =
             pathname === link.href || pathname.startsWith(`${link.href}/`);

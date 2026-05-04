@@ -61,18 +61,18 @@ export default function HomePage() {
       <header className="bg-black">
         <div className="edu-topbar-shell">
           <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-            <div className="edu-topbar mb-0 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-3">
+            <div className="edu-topbar mb-0 flex-col items-stretch md:flex-row md:items-center md:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
                 <div className="edu-home-icon h-11 w-11" aria-hidden="true">
                   <BookOpen className="h-5 w-5" strokeWidth={2.5} />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="font-display text-2xl leading-none text-white">EduPlatform</p>
                 </div>
               </div>
 
-              <div className="ml-auto flex flex-wrap items-center gap-2">
-                <nav aria-label="Navegação principal" className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col gap-2 md:ml-auto md:flex-row md:flex-wrap md:items-center">
+                <nav aria-label="Navegação principal" className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center">
                   <Link href="#séries" className="edu-nav-link">
                     Séries
                   </Link>
@@ -87,7 +87,7 @@ export default function HomePage() {
                   </Link>
                 </nav>
 
-                <div className="flex items-center gap-2">
+                <div className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-2 md:flex">
                   <button
                     type="button"
                     aria-label="Abrir busca"
@@ -97,12 +97,12 @@ export default function HomePage() {
                     <Search className="h-4 w-4" aria-hidden="true" />
                   </button>
                   {session ? (
-                    <Link href="/dashboard" className="edu-action">
+                    <Link href="/dashboard" className="edu-action md:w-auto">
                       Abrir meu painel
                       <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   ) : (
-                    <Link href="/login" className="edu-action">
+                    <Link href="/login" className="edu-action md:w-auto">
                       Entrar com Google
                     </Link>
                   )}
@@ -113,13 +113,13 @@ export default function HomePage() {
         </div>
 
         <div className="border-b border-white/8">
-          <div className="mx-auto max-w-7xl px-4 pb-16 pt-36 sm:px-6 sm:pt-40 lg:px-8 lg:pb-24 lg:pt-44">
+          <div className="mx-auto max-w-7xl px-4 pb-16 pt-72 sm:px-6 sm:pt-52 lg:px-8 lg:pb-24 lg:pt-44">
             <div className="mt-10">
               <div className="w-full space-y-5">
-                <h1 className="max-w-6xl font-display text-5xl leading-[0.95] text-white sm:text-6xl lg:text-7xl">
+                <h1 className="max-w-6xl font-display text-4xl leading-tight text-white sm:text-6xl sm:leading-[0.95] lg:text-7xl">
                   Plataforma de estudos completa para todas as áreas fundamentais de aprendizado
                 </h1>
-                <p className="max-w-6xl text-lg leading-8 text-slaté-300">
+                <p className="max-w-6xl text-lg leading-8 text-slate-300">
                   A plataforma aberta para preparar você para vestibulares, estudo guiado,
                   acessibilidade e progresso visível com uma base provisória funcional.
                 </p>
@@ -139,7 +139,7 @@ export default function HomePage() {
                 <h2 id="séries-section-title" className="font-display text-4xl text-white">
                   Séries educacionais
                 </h2>
-                <p className="mt-2 text-slaté-400">
+                <p className="mt-2 text-slate-400">
                   Do 1º ano do Ensino Fundamental até a 3ª série do Ensino Médio, todas as trilhas
                   estão abertas para navegação.
                 </p>

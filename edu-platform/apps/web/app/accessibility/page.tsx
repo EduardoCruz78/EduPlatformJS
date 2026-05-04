@@ -53,12 +53,12 @@ export default function AcessibilidadePage() {
                 href={`/accessibility/${category.id}`}
                 className="edu-home-card"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <div className="edu-home-icon mb-5" aria-hidden="true">
                       <Eye className="h-6 w-6" />
                     </div>
-                    <h2 className="text-3xl font-black text-white">
+                    <h2 className="text-2xl font-black text-white sm:text-3xl">
                       {category.name}
                     </h2>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">

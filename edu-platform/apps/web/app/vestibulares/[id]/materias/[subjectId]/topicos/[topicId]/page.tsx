@@ -110,13 +110,13 @@ export default function VestibularTopicPage() {
                 className="edu-home-card group flex min-h-56 flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <Badge variant={content.isShared ? 'secondary' : 'outline'}>
                       {content.isShared ? 'Conteúdo geral' : 'Aplicado ao vestibular'}
                     </Badge>
                     <Icon className="h-5 w-5 text-primary" />
                   </div>
-                  <h2 className="mt-4 text-2xl font-black text-white">{content.title}</h2>
+                  <h2 className="mt-4 text-xl font-black text-white sm:text-2xl">{content.title}</h2>
                   <p className="mt-2 text-sm text-muted-foreground">
                     {getContentLabel(content.type)} com apoio de transcrição, Libras e descrição
                     quando disponível.

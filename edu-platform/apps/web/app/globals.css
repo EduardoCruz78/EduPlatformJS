@@ -86,6 +86,18 @@
     text-decoration: none;
   }
 
+  input,
+  select,
+  textarea,
+  button {
+    max-width: 100%;
+  }
+
+  select {
+    width: 100%;
+    min-width: 0;
+  }
+
   h1,
   h2,
   h3,
@@ -201,11 +213,11 @@
   .edu-shell {
     margin-inline: auto;
     max-width: 82rem;
-    padding: 1.5rem 1rem 3rem;
+    padding: 1rem 0.75rem 2.5rem;
   }
 
   .edu-topbar {
-    @apply mb-8 flex flex-wrap items-center justify-between gap-4 rounded-[1.4rem] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.36)];
+    @apply mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[1.2rem] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.36)];
     border: 1px solid rgba(168, 124, 29, 0.32);
     background: #090909;
   }
@@ -227,12 +239,12 @@
   }
 
   .edu-brand {
-    @apply inline-flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-black uppercase tracking-[0.06em] text-primary-foreground;
+    @apply inline-flex min-w-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-black uppercase tracking-[0.06em] text-primary-foreground;
     background: #ffc627;
   }
 
   .edu-nav-link {
-    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-200 transition;
+    @apply inline-flex min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-center text-sm font-bold text-slate-200 transition;
     border: 1px solid rgba(168, 124, 29, 0.38);
     background: #101010;
   }
@@ -255,41 +267,43 @@
   .edu-hero {
     position: relative;
     overflow: hidden;
-    padding: 2rem 1.5rem;
+    padding: 1.25rem;
     border: 1px solid rgba(168, 124, 29, 0.38);
-    border-radius: 1.75rem;
+    border-radius: 1.25rem;
     background: #090909;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
   }
 
   .edu-kicker {
-    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em];
+    @apply inline-flex max-w-full items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.12em];
     border: 1px solid rgba(255, 198, 39, 0.42);
     background: rgba(255, 198, 39, 0.12);
     color: #ffd66a;
+    overflow-wrap: anywhere;
   }
 
   .edu-section-title {
-    font-size: clamp(2.75rem, 5vw, 5.25rem);
-    line-height: 0.98;
+    font-size: clamp(2rem, 12vw, 5.25rem);
+    line-height: 1;
     color: #fff;
+    overflow-wrap: anywhere;
   }
 
   .edu-lead {
     max-width: 48rem;
     color: #b7b7b7;
-    font-size: 1.06rem;
-    line-height: 1.75;
+    font-size: 0.98rem;
+    line-height: 1.7;
   }
 
   .edu-metric {
-    @apply rounded-2xl p-5 text-white shadow-[0_16px_40px_rgba(0,0,0,0.3)];
+    @apply rounded-2xl p-4 text-white shadow-[0_16px_40px_rgba(0,0,0,0.3)];
     border: 1px solid rgba(168, 124, 29, 0.32);
     background: #0e0e0e;
   }
 
   .edu-panel {
-    @apply rounded-[1.6rem] p-6 shadow-[0_18px_46px_rgba(0,0,0,0.3)];
+    @apply rounded-[1.25rem] p-4 shadow-[0_18px_46px_rgba(0,0,0,0.3)];
     border: 1px solid rgba(168, 124, 29, 0.32);
     background: #090909;
   }
@@ -341,7 +355,7 @@
   }
 
   .edu-subtle-card {
-    @apply rounded-[1.5rem] p-4;
+    @apply rounded-[1.25rem] p-4;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: #141414;
   }
@@ -353,8 +367,17 @@
   }
 
   .edu-home-card {
-    @apply relative overflow-hidden rounded-3xl border bg-card p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1;
+    @apply relative min-w-0 overflow-hidden rounded-[1.25rem] border bg-card p-4 shadow-[0_24px_60px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-1;
     border-color: rgba(168, 124, 29, 0.38);
+  }
+
+  .edu-home-card h2,
+  .edu-home-card h3,
+  .edu-home-card p,
+  .edu-panel h1,
+  .edu-panel h2,
+  .edu-panel p {
+    overflow-wrap: anywhere;
   }
 
   .edu-home-card:hover {
@@ -389,16 +412,52 @@
 @media (min-width: 640px) {
   .edu-shell {
     padding-inline: 1.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
   }
 
   .edu-hero {
     padding-inline: 2rem;
     padding-block: 2.25rem;
+    border-radius: 1.75rem;
+  }
+
+  .edu-topbar {
+    @apply mb-8 rounded-[1.4rem] p-4;
+  }
+
+  .edu-home-card {
+    @apply rounded-3xl p-5;
+  }
+
+  .edu-panel {
+    @apply rounded-[1.6rem] p-6;
   }
 }
 
 @media (min-width: 1024px) {
   .edu-shell {
     padding-inline: 2rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .edu-topbar {
+    align-items: stretch;
+  }
+
+  .edu-topbar > * {
+    min-width: 0;
+  }
+
+  .edu-topbar > .edu-nav-link {
+    flex: 1 1 100%;
+  }
+
+  .edu-action,
+  .edu-action-outline,
+  .btn {
+    width: 100%;
+    padding-inline: 1rem;
   }
 }

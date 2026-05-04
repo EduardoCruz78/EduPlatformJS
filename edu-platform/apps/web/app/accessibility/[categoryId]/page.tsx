@@ -67,7 +67,7 @@ export default function AccessibilityCategoryPage() {
               href={`/accessibility/${category.id}/${theme.id}`}
               className="edu-home-card"
             >
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="text-2xl font-black text-white">{theme.title}</h2>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">

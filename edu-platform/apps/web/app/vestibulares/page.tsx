@@ -50,10 +50,10 @@ export default function VestibularesPage() {
                 href={`/vestibulares/${vestibular.id}`}
                 className="edu-home-card"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
                     <Badge variant="secondary">{vestibular.year ?? 'Atual'}</Badge>
-                    <h2 className="mt-4 text-3xl font-black text-white">{vestibular.name}</h2>
+                    <h2 className="mt-4 text-2xl font-black text-white sm:text-3xl">{vestibular.name}</h2>
                     <p className="mt-3 text-sm leading-6 text-muted-foreground">
                       {vestibular.description || 'Trilha provisória para estudo.'}
                     </p>
