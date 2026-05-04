@@ -7,6 +7,8 @@ export * from './accessibility/create-category.use-case';
 export * from './accessibility/delete-category.use-case';
 export * from './accessibility/create-theme.use-case';
 export * from './accessibility/delete-theme.use-case';
+export * from './accessibility/create-theme-material.use-case';
+export * from './accessibility/delete-theme-material.use-case';
 export * from './accessibility/add-topic-to-category.use-case';
 export * from './accessibility/remove-topic-from-category.use-case';
 

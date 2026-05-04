@@ -244,7 +244,7 @@ export default function DashboardPage() {
                   Acessibilidade
                 </div>
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  Catégorias, temas e vínculos para recursos adaptados.
+                  Categorias, temas e vínculos para recursos adaptados.
                 </p>
               </Link>
             </CardContent>

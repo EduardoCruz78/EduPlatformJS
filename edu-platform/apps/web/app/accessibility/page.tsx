@@ -48,7 +48,11 @@ export default function AcessibilidadePage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {categories.map((category) => (
-              <article key={category.id} className="edu-home-card">
+              <Link
+                key={category.id}
+                href={`/accessibility/${category.id}`}
+                className="edu-home-card"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="edu-home-icon mb-5" aria-hidden="true">
@@ -133,7 +137,7 @@ export default function AcessibilidadePage() {
                     )}
                   </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

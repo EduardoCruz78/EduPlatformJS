@@ -5,12 +5,12 @@ import type { IVestibularRepository } from '../../repositories/IVestibularReposi
 export class FindVestibularContentsUseCase {
   constructor(private readonly vestibularRepository: IVestibularRepository) {}
 
-  async execute(vestibularId: number): Promise<VestibularContent[]> {
+  async execute(vestibularId: number, vestibularTopicId?: number): Promise<VestibularContent[]> {
     if (!vestibularId) {
       throw AppError.validation('Vestibular invalido.');
     }
 
-    return this.vestibularRepository.findContents(vestibularId);
+    return this.vestibularRepository.findContents(vestibularId, vestibularTopicId);
   }
 }
 

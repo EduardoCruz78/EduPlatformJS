@@ -58,7 +58,8 @@ function createVestibularRepositoryMock(options?: {
         notes: data.notes ?? null,
         tags: data.tags ?? null,
         isShared: false,
-        originalTopicId: null,
+        subjectId: data.subjectId ?? null,
+        originalTopicId: data.originalTopicId ?? null,
       };
     },
     async deleteTopic() {
@@ -76,6 +77,7 @@ function createVestibularRepositoryMock(options?: {
         link: data.link ?? null,
         pdfUrl: data.pdfUrl ?? null,
         isShared: false,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         originalContentId: null,
       };
     },
@@ -88,6 +90,7 @@ function createVestibularRepositoryMock(options?: {
         link: null,
         pdfUrl: null,
         isShared: true,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         originalContentId: data.contentId,
       };
     },

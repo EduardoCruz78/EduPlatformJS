@@ -2,9 +2,11 @@ import type {
   AddAccessibilityCategoryTopicInput,
   CreateAccessibilityCategoryInput,
   CreateAccessibilityThemeInput,
+  CreateAccessibilityThemeMaterialInput,
 } from '../dtos';
 import type {
   AccessibilityCategory,
+  AccessibilityThemeMaterial,
   AccessibilityTheme,
   Topic,
 } from '../entities';
@@ -17,6 +19,8 @@ export interface IAccessibilityRepository {
   deleteCategory(id: number): Promise<void>;
   createTheme(data: CreateAccessibilityThemeInput): Promise<AccessibilityTheme>;
   deleteTheme(id: number): Promise<void>;
+  createThemeMaterial(data: CreateAccessibilityThemeMaterialInput): Promise<AccessibilityThemeMaterial>;
+  deleteThemeMaterial(id: number): Promise<void>;
   addTopicToCategory(data: AddAccessibilityCategoryTopicInput): Promise<void>;
   removeTopicFromCategory(data: AddAccessibilityCategoryTopicInput): Promise<void>;
 }

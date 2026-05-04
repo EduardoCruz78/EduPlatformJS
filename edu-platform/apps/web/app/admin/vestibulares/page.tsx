@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 type FeedbackState = { tone: 'success' | 'error'; message: string } | null;
+type ContentType = 'VIDEO' | 'PDF' | 'ARTICLE';
 
 function toErrorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
@@ -25,6 +26,7 @@ export default function AdminVestibularesPage() {
 
   const { data: vestibulares = [], isLoading } = trpc.vestibular.find.useQuery();
   const { data: allContents = [] } = trpc.content.find.useQuery();
+  const { data: allTopics = [] } = trpc.topic.find.useQuery();
 
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -35,14 +37,21 @@ export default function AdminVestibularesPage() {
     imageUrl: '',
   });
   const [subjectName, setSubjectName] = useState('');
-  const [topicForm, setTopicForm] = useState({ name: '', notes: '', tags: '' });
+  const [topicForm, setTopicForm] = useState({
+    name: '',
+    notes: '',
+    tags: '',
+    subjectId: '',
+    originalTopicId: '',
+  });
   const [contentForm, setContentForm] = useState({
     title: '',
-    type: 'ARTICLE' as 'VIDEO' | 'PDF' | 'ARTICLE',
+    type: 'ARTICLE' as ContentType,
     link: '',
     pdfUrl: '',
+    vestibularTopicId: '',
   });
-  const [shareContentId, setShareContentId] = useState('');
+  const [shareForm, setShareForm] = useState({ contentId: '', vestibularTopicId: '' });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -51,7 +60,6 @@ export default function AdminVestibularesPage() {
   }, [status, router]);
 
   const effectiveSelectedId = selectedId ?? vestibulares[0]?.id ?? null;
-
   const selectedVestibular = useMemo(
     () => vestibulares.find((item) => item.id === effectiveSelectedId) ?? null,
     [effectiveSelectedId, vestibulares]
@@ -122,7 +130,7 @@ export default function AdminVestibularesPage() {
   const createSubject = trpc.vestibular.createSubject.useMutation({
     onSuccess: async () => {
       setSubjectName('');
-      setFeedback({ tone: 'success', message: 'Materia adicionada com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Matéria adicionada com sucesso.' });
       await invalidateVestibulares();
     },
     onError: (error) => {
@@ -135,7 +143,7 @@ export default function AdminVestibularesPage() {
 
   const deleteSubject = trpc.vestibular.deleteSubject.useMutation({
     onSuccess: async () => {
-      setFeedback({ tone: 'success', message: 'Materia removida com sucesso.' });
+      setFeedback({ tone: 'success', message: 'Matéria removida com sucesso.' });
       await invalidateVestibulares();
     },
     onError: (error) => {
@@ -148,7 +156,7 @@ export default function AdminVestibularesPage() {
 
   const createTopic = trpc.vestibular.createTopic.useMutation({
     onSuccess: async () => {
-      setTopicForm({ name: '', notes: '', tags: '' });
+      setTopicForm({ name: '', notes: '', tags: '', subjectId: '', originalTopicId: '' });
       setFeedback({ tone: 'success', message: 'Tópico adicionado com sucesso.' });
       await invalidateVestibulares();
     },
@@ -175,7 +183,7 @@ export default function AdminVestibularesPage() {
 
   const createContent = trpc.vestibular.createContent.useMutation({
     onSuccess: async () => {
-      setContentForm({ title: '', type: 'ARTICLE', link: '', pdfUrl: '' });
+      setContentForm({ title: '', type: 'ARTICLE', link: '', pdfUrl: '', vestibularTopicId: '' });
       setFeedback({ tone: 'success', message: 'Conteúdo exclusivo adicionado com sucesso.' });
       await invalidateVestibulares();
     },
@@ -189,7 +197,7 @@ export default function AdminVestibularesPage() {
 
   const shareContent = trpc.vestibular.shareContent.useMutation({
     onSuccess: async () => {
-      setShareContentId('');
+      setShareForm({ contentId: '', vestibularTopicId: '' });
       setFeedback({ tone: 'success', message: 'Conteúdo compartilhado com sucesso.' });
       await invalidateVestibulares();
     },
@@ -225,11 +233,11 @@ export default function AdminVestibularesPage() {
   return (
     <div className="space-y-6">
       <section className="edu-hero">
-        <span className="edu-kicker">Vestibular Admin</span>
-        <h1 className="edu-section-title">Gestão de trilhas especiais com leitura mais clara.</h1>
+        <span className="edu-kicker">Administração de vestibulares</span>
+        <h1 className="edu-section-title">Trilhas por matéria, tópico e aplicação em prova.</h1>
         <p className="edu-lead">
-          Organize vestibulares, matérias, tópicos e conteúdos exclusivos ou compartilhados
-          com menos atrito operacional e mais contexto visual.
+          Organize vestibulares com a mesma lógica das séries: escolha matéria, cadastre tópicos e
+          vincule conteúdos gerais ou materiais exclusivos do exame.
         </p>
       </section>
 
@@ -400,27 +408,6 @@ export default function AdminVestibularesPage() {
               </CardHeader>
             </Card>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card className="card-interactive">
-                <CardHeader>
-                  <CardDescription>Matérias</CardDescription>
-                  <CardTitle>{subjects.length}</CardTitle>
-                </CardHeader>
-              </Card>
-              <Card className="card-interactive">
-                <CardHeader>
-                  <CardDescription>Tópicos</CardDescription>
-                  <CardTitle>{topics.length}</CardTitle>
-                </CardHeader>
-              </Card>
-              <Card className="card-interactive">
-                <CardHeader>
-                  <CardDescription>Conteúdos exclusivos</CardDescription>
-                  <CardTitle>{contents.length - sharedContentCount}</CardTitle>
-                </CardHeader>
-              </Card>
-            </div>
-
             <div className="grid gap-6 xl:grid-cols-3">
               <Card>
                 <CardHeader>
@@ -490,6 +477,20 @@ export default function AdminVestibularesPage() {
                   <CardDescription>{topics.length} cadastrados</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <select
+                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    value={topicForm.subjectId}
+                    onChange={(event) =>
+                      setTopicForm((current) => ({ ...current, subjectId: event.target.value }))
+                    }
+                  >
+                    <option value="">Matéria do vestibular</option>
+                    {subjects.map((subject) => (
+                      <option key={subject.id} value={String(subject.id)}>
+                        {subject.name}
+                      </option>
+                    ))}
+                  </select>
                   <Input
                     placeholder="Nome do tópico"
                     value={topicForm.name}
@@ -497,6 +498,23 @@ export default function AdminVestibularesPage() {
                       setTopicForm((current) => ({ ...current, name: event.target.value }))
                     }
                   />
+                  <select
+                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    value={topicForm.originalTopicId}
+                    onChange={(event) =>
+                      setTopicForm((current) => ({
+                        ...current,
+                        originalTopicId: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Tópico global relacionado</option>
+                    {allTopics.map((topic) => (
+                      <option key={topic.id} value={String(topic.id)}>
+                        {topic.name}
+                      </option>
+                    ))}
+                  </select>
                   <Textarea
                     placeholder="Notas"
                     value={topicForm.notes}
@@ -505,7 +523,7 @@ export default function AdminVestibularesPage() {
                     }
                   />
                   <Input
-                    placeholder="Tags separadas por virgula"
+                    placeholder="Tags separadas por vírgula"
                     value={topicForm.tags}
                     onChange={(event) =>
                       setTopicForm((current) => ({ ...current, tags: event.target.value }))
@@ -513,10 +531,16 @@ export default function AdminVestibularesPage() {
                   />
                   <Button
                     variant="outline"
-                    disabled={createTopic.isPending || !topicForm.name.trim()}
+                    disabled={
+                      createTopic.isPending || !topicForm.name.trim() || !topicForm.subjectId
+                    }
                     onClick={() =>
                       createTopic.mutate({
                         vestibularId: selectedVestibular.id,
+                        subjectId: Number(topicForm.subjectId),
+                        originalTopicId: topicForm.originalTopicId
+                          ? Number(topicForm.originalTopicId)
+                          : undefined,
                         name: topicForm.name,
                         notes: topicForm.notes || undefined,
                         tags: topicForm.tags || undefined,
@@ -535,7 +559,7 @@ export default function AdminVestibularesPage() {
                           <div>
                             <p className="font-medium text-foreground">{topic.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {topic.notes || 'Sem notas'}
+                              {topic.subject?.name || 'Sem matéria'} • {topic.notes || 'Sem notas'}
                             </p>
                           </div>
                           <Button
@@ -566,10 +590,28 @@ export default function AdminVestibularesPage() {
                 <CardHeader>
                   <CardTitle>Conteúdos</CardTitle>
                   <CardDescription>
-                    {contents.length} disponiveis, {sharedContentCount} compartilhado(s)
+                    {contents.length} disponíveis, {sharedContentCount} compartilhado(s)
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <select
+                    className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    value={contentForm.vestibularTopicId}
+                    onChange={(event) =>
+                      setContentForm((current) => ({
+                        ...current,
+                        vestibularTopicId: event.target.value,
+                      }))
+                    }
+                  >
+                    <option value="">Tópico do vestibular</option>
+                    {topics.map((topic) => (
+                      <option key={topic.id} value={String(topic.id)}>
+                        {topic.subject?.name ? `${topic.subject.name} • ` : ''}
+                        {topic.name}
+                      </option>
+                    ))}
+                  </select>
                   <Input
                     placeholder="Título"
                     value={contentForm.title}
@@ -583,12 +625,12 @@ export default function AdminVestibularesPage() {
                     onChange={(event) =>
                       setContentForm((current) => ({
                         ...current,
-                        type: event.target.value as 'VIDEO' | 'PDF' | 'ARTICLE',
+                        type: event.target.value as ContentType,
                       }))
                     }
                   >
-                    <option value="ARTICLE">ARTICLE</option>
-                    <option value="VIDEO">VIDEO</option>
+                    <option value="ARTICLE">Artigo</option>
+                    <option value="VIDEO">Vídeo</option>
                     <option value="PDF">PDF</option>
                   </select>
                   <Input
@@ -599,7 +641,7 @@ export default function AdminVestibularesPage() {
                     }
                   />
                   <Input
-                    placeholder="PDF URL"
+                    placeholder="URL do PDF"
                     value={contentForm.pdfUrl}
                     onChange={(event) =>
                       setContentForm((current) => ({ ...current, pdfUrl: event.target.value }))
@@ -607,10 +649,15 @@ export default function AdminVestibularesPage() {
                   />
                   <Button
                     variant="outline"
-                    disabled={createContent.isPending || !contentForm.title.trim()}
+                    disabled={
+                      createContent.isPending ||
+                      !contentForm.title.trim() ||
+                      !contentForm.vestibularTopicId
+                    }
                     onClick={() =>
                       createContent.mutate({
                         vestibularId: selectedVestibular.id,
+                        vestibularTopicId: Number(contentForm.vestibularTopicId),
                         title: contentForm.title,
                         type: contentForm.type,
                         link: contentForm.link || undefined,
@@ -627,8 +674,28 @@ export default function AdminVestibularesPage() {
                     </p>
                     <select
                       className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                      value={shareContentId}
-                      onChange={(event) => setShareContentId(event.target.value)}
+                      value={shareForm.vestibularTopicId}
+                      onChange={(event) =>
+                        setShareForm((current) => ({
+                          ...current,
+                          vestibularTopicId: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Tópico de destino</option>
+                      {topics.map((topic) => (
+                        <option key={topic.id} value={String(topic.id)}>
+                          {topic.subject?.name ? `${topic.subject.name} • ` : ''}
+                          {topic.name}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                      value={shareForm.contentId}
+                      onChange={(event) =>
+                        setShareForm((current) => ({ ...current, contentId: event.target.value }))
+                      }
                     >
                       <option value="">Selecionar conteúdo global</option>
                       {allContents.map((content) => (
@@ -639,19 +706,16 @@ export default function AdminVestibularesPage() {
                     </select>
                     <Button
                       variant="outline"
-                      disabled={shareContent.isPending || !shareContentId}
-                      onClick={() => {
-                        const contentId = Number(shareContentId);
-
-                        if (!contentId) {
-                          return;
-                        }
-
+                      disabled={
+                        shareContent.isPending || !shareForm.contentId || !shareForm.vestibularTopicId
+                      }
+                      onClick={() =>
                         shareContent.mutate({
                           vestibularId: selectedVestibular.id,
-                          contentId,
-                        });
-                      }}
+                          contentId: Number(shareForm.contentId),
+                          vestibularTopicId: Number(shareForm.vestibularTopicId),
+                        })
+                      }
                     >
                       Compartilhar conteúdo existente
                     </Button>
@@ -669,6 +733,9 @@ export default function AdminVestibularesPage() {
                             <p className="text-sm text-muted-foreground">
                               {content.type || 'Material'}
                               {content.isShared ? ' • compartilhado' : ' • exclusivo'}
+                              {content.vestibularTopicId
+                                ? ` • tópico #${content.vestibularTopicId}`
+                                : ''}
                             </p>
                           </div>
                           <Button
@@ -688,7 +755,7 @@ export default function AdminVestibularesPage() {
                       ))
                     ) : (
                       <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                        Nenhum conteúdo disponivel ainda.
+                        Nenhum conteúdo disponível ainda.
                       </div>
                     )}
                   </div>

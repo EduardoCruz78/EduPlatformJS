@@ -152,6 +152,16 @@ export interface CreateAccessibilityThemeInput {
   content?: string | null;
 }
 
+export interface CreateAccessibilityThemeMaterialInput {
+  accessibilityThemeId: number;
+  title: string;
+  summary: string;
+  content: string;
+  type: ContentType;
+  link: string;
+  order?: number;
+}
+
 export interface AddAccessibilityCategoryTopicInput {
   accessibilityCategoryId: number;
   topicId: number;
@@ -174,7 +184,9 @@ export interface DeleteVestibularSubjectInput {
 
 export interface CreateVestibularTopicInput {
   vestibularId: number;
+  subjectId?: number | null;
   name: string;
+  originalTopicId?: number | null;
   notes?: string | null;
   tags?: string | null;
 }
@@ -186,6 +198,7 @@ export interface DeleteVestibularTopicInput {
 
 export interface CreateVestibularContentInput {
   vestibularId: number;
+  vestibularTopicId?: number | null;
   title: string;
   type?: string | null;
   link?: string | null;
@@ -198,6 +211,7 @@ export interface CreateVestibularContentInput {
 
 export interface ShareVestibularContentInput {
   vestibularId: number;
+  vestibularTopicId?: number | null;
   contentId: number;
 }
 

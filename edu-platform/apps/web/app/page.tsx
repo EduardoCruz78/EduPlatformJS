@@ -235,7 +235,7 @@ export default function HomePage() {
                 <div className="edu-home-icon mb-5" aria-hidden="true">AC</div>
                 <h2 className="text-2xl font-black text-white">Acessibilidade</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Catégorias, temas e tópicos para estudar com mais contexto e inclusão.
+                  Categorias, temas e tópicos para estudar com mais contexto e inclusão.
                 </p>
               </Link>
 

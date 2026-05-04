@@ -3,9 +3,11 @@ import { AccessibilityMapper } from '../mappers/accessibility.mapper';
 import type {
   AccessibilityCategory,
   AccessibilityTheme,
+  AccessibilityThemeMaterial,
   AddAccessibilityCategoryTopicInput,
   CreateAccessibilityCategoryInput,
   CreateAccessibilityThemeInput,
+  CreateAccessibilityThemeMaterialInput,
   IAccessibilityRepository,
   Topic,
 } from '@edu-platform/core';
@@ -15,7 +17,10 @@ export class AccessibilityRepository implements IAccessibilityRepository {
     const data = await prisma.accessibilityCategory.findMany({
       include: {
         needs: true,
-        themes: true,
+        themes: {
+          include: { materials: true },
+          orderBy: { title: 'asc' },
+        },
         categoryTopics: {
           include: {
             topic: true,
@@ -31,6 +36,7 @@ export class AccessibilityRepository implements IAccessibilityRepository {
   async findThemesByCategory(categoryId: number): Promise<AccessibilityTheme[]> {
     const data = await prisma.accessibilityTheme.findMany({
       where: { accessibilityCategoryId: categoryId },
+      include: { materials: { orderBy: { order: 'asc' } } },
       orderBy: { title: 'asc' },
     });
 
@@ -85,11 +91,35 @@ export class AccessibilityRepository implements IAccessibilityRepository {
       },
     });
 
-    return AccessibilityMapper.toTheme(created);
+    return AccessibilityMapper.toTheme({ ...created, materials: [] });
   }
 
   async deleteTheme(id: number): Promise<void> {
     await prisma.accessibilityTheme.delete({
+      where: { id },
+    });
+  }
+
+  async createThemeMaterial(
+    data: CreateAccessibilityThemeMaterialInput
+  ): Promise<AccessibilityThemeMaterial> {
+    const created = await prisma.accessibilityThemeMaterial.create({
+      data: {
+        accessibilityThemeId: data.accessibilityThemeId,
+        title: data.title,
+        summary: data.summary,
+        content: data.content,
+        type: data.type,
+        link: data.link,
+        order: data.order ?? 0,
+      },
+    });
+
+    return AccessibilityMapper.toThemeMaterial(created);
+  }
+
+  async deleteThemeMaterial(id: number): Promise<void> {
+    await prisma.accessibilityThemeMaterial.delete({
       where: { id },
     });
   }

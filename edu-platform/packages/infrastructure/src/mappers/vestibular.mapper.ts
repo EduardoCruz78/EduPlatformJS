@@ -28,6 +28,7 @@ type PrismaVestibularSubject = {
 type PrismaVestibularContent = {
   id: number;
   vestibularId: number;
+  vestibularTopicId?: number | null;
   title: string;
   type: string | null;
   link: string | null;
@@ -59,11 +60,18 @@ type PrismaVestibularContent = {
 type PrismaVestibularTopic = {
   id: number;
   vestibularId: number;
+  subjectId: number | null;
   name: string;
   originalTopicId: number | null;
   isShared: boolean;
   notes: string | null;
   tags: string | null;
+  subject?: PrismaVestibularSubject['subject'] | null;
+  originalTopic?: {
+    id: number;
+    name: string;
+  } | null;
+  contents?: PrismaVestibularContent[];
 };
 
 type PrismaVestibular = {
@@ -90,6 +98,7 @@ export class VestibularMapper {
     return {
       id: data.id,
       vestibularId: data.vestibularId,
+      vestibularTopicId: data.vestibularTopicId ?? null,
       title: data.title,
       type: data.type,
       link: data.link,
@@ -108,11 +117,15 @@ export class VestibularMapper {
     return {
       id: data.id,
       vestibularId: data.vestibularId,
+      subjectId: data.subjectId,
       name: data.name,
       originalTopicId: data.originalTopicId,
       isShared: data.isShared,
       notes: data.notes,
       tags: data.tags,
+      subject: data.subject ? SubjectMapper.toDomain(data.subject) : null,
+      topic: data.originalTopic ? TopicMapper.toDomain(data.originalTopic) : null,
+      contents: data.contents?.map((content) => this.toVestibularContent(content)),
     };
   }
 

@@ -29,7 +29,7 @@ export default function PracticalCategoryPage() {
     return (
       <div className="edu-shell">
         <div className="edu-panel p-8 text-center">
-          <p className="text-lg text-destructive">Catégoria não encontrada.</p>
+          <p className="text-lg text-destructive">Categoria não encontrada.</p>
           <Link href="/vida-pratica" className="mt-6 inline-flex edu-nav-link">
             Voltar para vida prática
           </Link>
@@ -52,7 +52,7 @@ export default function PracticalCategoryPage() {
         <span className="edu-kicker">{category.icon || 'Guia'}</span>
         <h1 className="edu-section-title">{category.name}</h1>
         <p className="edu-lead">
-          {category.description || 'Catégoria provisória com guias de consulta rápida.'}
+          {category.description || 'Categoria provisória com guias de consulta rápida.'}
         </p>
       </section>
 

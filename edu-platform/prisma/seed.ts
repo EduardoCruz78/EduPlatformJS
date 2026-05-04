@@ -15,6 +15,8 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const contentTypes = ['VIDEO', 'PDF', 'ARTICLE'] as const;
+const provisionalVideoUrl = 'https://youtu.be/BggrpKfqh1c?si=kTGSzLCK9NiZIe0z';
+const provisionalTextUrl = 'https://pt.wikipedia.org/wiki/Lorem_ipsum';
 
 const seriesNames = [
   '1º ano do Ensino Fundamental',
@@ -241,6 +243,12 @@ const vestibulares = [
   },
 ];
 
+type SubjectTopicCatalog = {
+  subject: Subject;
+  topic: Topic;
+  contents: Content[];
+};
+
 async function clearCatalog() {
   await prisma.$transaction([
     prisma.checklist.deleteMany(),
@@ -249,6 +257,7 @@ async function clearCatalog() {
     prisma.vestibularSubject.deleteMany(),
     prisma.vestibular.deleteMany(),
     prisma.accessibilityCategoryTopic.deleteMany(),
+    prisma.accessibilityThemeMaterial.deleteMany(),
     prisma.accessibilityTheme.deleteMany(),
     prisma.accessibilityNeed.deleteMany(),
     prisma.accessibilityCategory.deleteMany(),
@@ -270,19 +279,20 @@ function getSubjectsForSeries(seriesName: string) {
 function buildContentData(topic: Topic, subject: Subject, order: number) {
   const type = contentTypes[order % contentTypes.length];
   const slug = `${subject.name}-${topic.name}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const materialUrl = type === 'VIDEO' ? provisionalVideoUrl : provisionalTextUrl;
 
   return {
     title: `${topic.name} em ${subject.name}`,
     description: `Material provisório para estudar ${topic.name.toLowerCase()} com exemplos, revisão guiada e exercícios de fixação.`,
     type,
-    link: `https://example.com/aulas/${slug}`,
+    link: materialUrl,
     thumbnailUrl: `https://picsum.photos/seed/${slug}/960/540`,
-    videoUrl: type === 'VIDEO' ? `https://example.com/videos/${slug}` : null,
-    pdfUrl: type === 'PDF' ? `https://example.com/pdfs/${slug}.pdf` : null,
+    videoUrl: type === 'VIDEO' ? provisionalVideoUrl : null,
+    pdfUrl: type === 'PDF' ? provisionalTextUrl : null,
     transcript: `Transcrição provisória da aula sobre ${topic.name}. O conteúdo apresenta conceitos, exemplo resolvido e proposta de prática.`,
-    captionsUrl: `https://example.com/legendas/${slug}.vtt`,
-    librasUrl: `https://example.com/libras/${slug}`,
-    audioDescriptionUrl: `https://example.com/audiodescricao/${slug}.mp3`,
+    captionsUrl: materialUrl,
+    librasUrl: type === 'VIDEO' ? provisionalVideoUrl : provisionalTextUrl,
+    audioDescriptionUrl: materialUrl,
     order,
     topicId: topic.id,
   };
@@ -306,6 +316,7 @@ async function seedSeriesCatalog() {
   const allSubjects: Subject[] = [];
   const allTopics: Topic[] = [];
   const allContents: Content[] = [];
+  const topicCatalog: SubjectTopicCatalog[] = [];
 
   for (const [seriesIndex, seriesName] of seriesNames.entries()) {
     const series = await prisma.series.create({ data: { name: seriesName } });
@@ -330,18 +341,21 @@ async function seedSeriesCatalog() {
         });
         allTopics.push(topic);
 
+        const topicContents: Content[] = [];
         for (let contentIndex = 0; contentIndex < 2; contentIndex += 1) {
           const order = seriesIndex * 1000 + subjectIndex * 100 + topicIndex * 10 + contentIndex + 1;
           const content = await prisma.content.create({
             data: buildContentData(topic, subject, order),
           });
           allContents.push(content);
+          topicContents.push(content);
         }
+        topicCatalog.push({ subject, topic, contents: topicContents });
       }
     }
   }
 
-  return { allSubjects, allTopics, allContents };
+  return { allSubjects, allTopics, allContents, topicCatalog };
 }
 
 async function seedPracticalLife() {
@@ -373,14 +387,14 @@ async function seedPracticalLife() {
         data: [
           {
             practicalGuideId: guide.id,
-            label: 'Portal Gov.br',
-            url: 'https://www.gov.br',
+            label: 'Referência provisória',
+            url: provisionalTextUrl,
             order: 1,
           },
           {
             practicalGuideId: guide.id,
-            label: 'Canal oficial de atendimento',
-            url: 'https://example.com/atendimento',
+            label: 'Texto de apoio',
+            url: provisionalTextUrl,
             order: 2,
           },
         ],
@@ -409,18 +423,39 @@ async function seedAccessibility(topics: Topic[]) {
       )
     );
 
-    await Promise.all(
-      categoryData.themes.map((themeTitle, themeIndex) =>
-        prisma.accessibilityTheme.create({
-          data: {
-            accessibilityCategoryId: category.id,
-            accessibilityNeedId: needs[themeIndex % needs.length]?.id ?? null,
-            title: themeTitle,
-            content: `Orientação provisória para ${themeTitle.toLowerCase()}, com foco em autonomia, clareza e adaptação do conteúdo educacional.`,
+    for (const [themeIndex, themeTitle] of categoryData.themes.entries()) {
+      const theme = await prisma.accessibilityTheme.create({
+        data: {
+          accessibilityCategoryId: category.id,
+          accessibilityNeedId: needs[themeIndex % needs.length]?.id ?? null,
+          title: themeTitle,
+          content: `Orientação provisória para ${themeTitle.toLowerCase()}, com foco em autonomia, clareza e adaptação do conteúdo educacional.`,
+        },
+      });
+
+      await prisma.accessibilityThemeMaterial.createMany({
+        data: [
+          {
+            accessibilityThemeId: theme.id,
+            title: `Vídeo de apoio: ${themeTitle}`,
+            summary: `Aula provisória com demonstração visual sobre ${themeTitle.toLowerCase()}.`,
+            content: `Material em vídeo para apresentar ${themeTitle.toLowerCase()} com linguagem clara, legendas revisadas e indicações visuais para autonomia do estudante.`,
+            type: 'VIDEO',
+            link: provisionalVideoUrl,
+            order: 1,
           },
-        })
-      )
-    );
+          {
+            accessibilityThemeId: theme.id,
+            title: `Artigo de referência: ${themeTitle}`,
+            summary: `Texto provisório para orientar adaptações sobre ${themeTitle.toLowerCase()}.`,
+            content: `Artigo provisório em estilo lorem ipsum para documentar recomendações, exemplos de aplicação e cuidados editoriais relacionados a ${themeTitle.toLowerCase()}.`,
+            type: 'ARTICLE',
+            link: provisionalTextUrl,
+            order: 2,
+          },
+        ],
+      });
+    }
 
     const topicSlice = topics.slice(categoryIndex * 4, categoryIndex * 4 + 4);
     await prisma.accessibilityCategoryTopic.createMany({
@@ -433,10 +468,25 @@ async function seedAccessibility(topics: Topic[]) {
   }
 }
 
-async function seedVestibulares(subjects: Subject[], topics: Topic[], contents: Content[]) {
+async function seedVestibulares(subjects: Subject[], topicCatalog: SubjectTopicCatalog[]) {
+  const preferredSubjectNames = [
+    'Língua Portuguesa',
+    'Matemática',
+    'Biologia',
+    'Física',
+    'Química',
+    'História',
+    'Geografia',
+    'Redação',
+  ];
   const highSchoolSubjects = subjects.filter((subject) =>
-    ['Língua Portuguesa', 'Matemática', 'Biologia', 'Física', 'Química', 'História', 'Geografia', 'Redação'].includes(subject.name)
+    preferredSubjectNames.includes(subject.name)
   );
+  const subjectByName = new Map<string, Subject>();
+
+  for (const subject of highSchoolSubjects) {
+    subjectByName.set(subject.name, subject);
+  }
 
   for (const [vestibularIndex, data] of vestibulares.entries()) {
     const vestibular = await prisma.vestibular.create({
@@ -448,7 +498,10 @@ async function seedVestibulares(subjects: Subject[], topics: Topic[], contents: 
       },
     });
 
-    const selectedSubjects = highSchoolSubjects.slice(vestibularIndex * 8, vestibularIndex * 8 + 10);
+    const selectedSubjects = preferredSubjectNames
+      .map((subjectName) => subjectByName.get(subjectName))
+      .filter((subject): subject is Subject => Boolean(subject));
+
     await prisma.vestibularSubject.createMany({
       data: selectedSubjects.map((subject) => ({
         vestibularId: vestibular.id,
@@ -457,34 +510,56 @@ async function seedVestibulares(subjects: Subject[], topics: Topic[], contents: 
       skipDuplicates: true,
     });
 
-    const selectedTopics = topics.slice(vestibularIndex * 8, vestibularIndex * 8 + 8);
-    await prisma.vestibularTopic.createMany({
-      data: selectedTopics.map((topic) => ({
-        vestibularId: vestibular.id,
-        name: topic.name,
-        originalTopicId: topic.id,
-        isShared: true,
-        notes: `Tópico provisório usado como referência para ${data.name} ${data.year}.`,
-        tags: 'provisório,revisão,vestibular',
-      })),
-    });
+    for (const subject of selectedSubjects) {
+      const subjectTopics = topicCatalog.filter((entry) => entry.subject.id === subject.id);
 
-    const selectedContents = contents.slice(vestibularIndex * 8, vestibularIndex * 8 + 8);
-    await prisma.vestibularContent.createMany({
-      data: selectedContents.map((content) => ({
-        vestibularId: vestibular.id,
-        title: `${content.title} para ${data.name}`,
-        type: content.type,
-        link: content.link,
-        pdfUrl: content.pdfUrl,
-        transcript: content.transcript,
-        captionsUrl: content.captionsUrl,
-        librasUrl: content.librasUrl,
-        audioDescriptionUrl: content.audioDescriptionUrl,
-        isShared: true,
-        originalContentId: content.id,
-      })),
-    });
+      for (const entry of subjectTopics) {
+        const vestibularTopic = await prisma.vestibularTopic.create({
+          data: {
+            vestibularId: vestibular.id,
+            subjectId: subject.id,
+            name: entry.topic.name,
+            originalTopicId: entry.topic.id,
+            isShared: true,
+            notes: `Tópico provisório usado como referência para ${data.name} ${data.year}.`,
+            tags: `${data.name.toLowerCase()},${subject.name.toLowerCase()},aplicação`,
+          },
+        });
+
+        await prisma.vestibularContent.createMany({
+          data: [
+            ...entry.contents.map((content) => ({
+              vestibularId: vestibular.id,
+              vestibularTopicId: vestibularTopic.id,
+              title: `${content.title} para ${data.name}`,
+              type: content.type,
+              link: content.link,
+              pdfUrl: content.pdfUrl,
+              transcript: content.transcript,
+              captionsUrl: content.captionsUrl,
+              librasUrl: content.librasUrl,
+              audioDescriptionUrl: content.audioDescriptionUrl,
+              isShared: true,
+              originalContentId: content.id,
+            })),
+            {
+              vestibularId: vestibular.id,
+              vestibularTopicId: vestibularTopic.id,
+              title: `${entry.topic.name} aplicado ao ${data.name}`,
+              type: 'ARTICLE',
+              link: provisionalTextUrl,
+              pdfUrl: null,
+              transcript: `Texto provisório com leitura aplicada de ${entry.topic.name} para o ${data.name}.`,
+              captionsUrl: provisionalTextUrl,
+              librasUrl: provisionalTextUrl,
+              audioDescriptionUrl: provisionalTextUrl,
+              isShared: false,
+              originalContentId: null,
+            },
+          ],
+        });
+      }
+    }
   }
 }
 
@@ -492,10 +567,10 @@ async function main() {
   console.log('Iniciando seed provisório completo...');
   await clearCatalog();
 
-  const { allSubjects, allTopics, allContents } = await seedSeriesCatalog();
+  const { allSubjects, allTopics, topicCatalog } = await seedSeriesCatalog();
   await seedPracticalLife();
   await seedAccessibility(allTopics);
-  await seedVestibulares(allSubjects, allTopics, allContents);
+  await seedVestibulares(allSubjects, topicCatalog);
 
   const [
     seriesCount,

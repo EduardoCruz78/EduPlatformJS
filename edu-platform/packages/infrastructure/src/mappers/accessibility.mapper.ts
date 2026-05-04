@@ -2,6 +2,7 @@ import type {
   AccessibilityCategory,
   AccessibilityNeed,
   AccessibilityTheme,
+  AccessibilityThemeMaterial,
   Topic,
 } from '@edu-platform/core';
 
@@ -17,6 +18,18 @@ type PrismaAccessibilityTheme = {
   accessibilityCategoryId: number;
   accessibilityNeedId: number | null;
   content: string | null;
+  materials?: PrismaAccessibilityThemeMaterial[];
+};
+
+type PrismaAccessibilityThemeMaterial = {
+  id: number;
+  accessibilityThemeId: number;
+  title: string;
+  summary: string;
+  content: string;
+  type: string;
+  link: string;
+  order: number;
 };
 
 type PrismaTopic = {
@@ -53,6 +66,22 @@ export class AccessibilityMapper {
       accessibilityCategoryId: data.accessibilityCategoryId,
       accessibilityNeedId: data.accessibilityNeedId,
       content: data.content,
+      materials: data.materials?.map((material) => this.toThemeMaterial(material)),
+    };
+  }
+
+  static toThemeMaterial(
+    data: PrismaAccessibilityThemeMaterial
+  ): AccessibilityThemeMaterial {
+    return {
+      id: data.id,
+      accessibilityThemeId: data.accessibilityThemeId,
+      title: data.title,
+      summary: data.summary,
+      content: data.content,
+      type: data.type as AccessibilityThemeMaterial['type'],
+      link: data.link,
+      order: data.order,
     };
   }
 

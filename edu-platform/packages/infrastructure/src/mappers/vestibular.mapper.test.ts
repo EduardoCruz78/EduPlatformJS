@@ -37,6 +37,7 @@ test('VestibularMapper.toVestibularContent keeps the vestibular content metadata
   const content = VestibularMapper.toVestibularContent({
     id: 9,
     vestibularId: 42,
+    vestibularTopicId: 5,
     title: 'Lista exclusiva',
     type: 'PDF',
     link: null,
@@ -52,6 +53,7 @@ test('VestibularMapper.toVestibularContent keeps the vestibular content metadata
   assert.deepEqual(content, {
     id: 9,
     vestibularId: 42,
+    vestibularTopicId: 5,
     title: 'Lista exclusiva',
     type: 'PDF',
     link: null,

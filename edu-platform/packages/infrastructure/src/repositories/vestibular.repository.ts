@@ -22,7 +22,13 @@ import { prisma } from '../prisma/client';
 const vestibularInclude = {
   vestibularSubjects: { include: { subject: { include: { series: true } } } },
   vestibularContents: { include: { originalContent: true } },
-  vestibularTopics: true,
+  vestibularTopics: {
+    include: {
+      subject: { include: { series: true } },
+      originalTopic: true,
+      contents: { include: { originalContent: true }, orderBy: { title: 'asc' } },
+    },
+  },
 } as const;
 
 export class VestibularRepository implements IVestibularRepository {
@@ -98,9 +104,14 @@ export class VestibularRepository implements IVestibularRepository {
     });
   }
 
-  async findTopics(vestibularId: number): Promise<VestibularTopic[]> {
+  async findTopics(vestibularId: number, subjectId?: number): Promise<VestibularTopic[]> {
     const data = await prisma.vestibularTopic.findMany({
-      where: { vestibularId },
+      where: { vestibularId, ...(subjectId ? { subjectId } : {}) },
+      include: {
+        subject: { include: { series: true } },
+        originalTopic: true,
+        contents: { include: { originalContent: true }, orderBy: { title: 'asc' } },
+      },
       orderBy: { name: 'asc' },
     });
 
@@ -111,7 +122,9 @@ export class VestibularRepository implements IVestibularRepository {
     const created = await prisma.vestibularTopic.create({
       data: {
         vestibularId: data.vestibularId,
+        subjectId: data.subjectId ?? null,
         name: data.name,
+        originalTopicId: data.originalTopicId ?? null,
         notes: data.notes ?? null,
         tags: data.tags ?? null,
       },
@@ -129,9 +142,9 @@ export class VestibularRepository implements IVestibularRepository {
     });
   }
 
-  async findContents(vestibularId: number): Promise<VestibularContent[]> {
+  async findContents(vestibularId: number, vestibularTopicId?: number): Promise<VestibularContent[]> {
     const data = await prisma.vestibularContent.findMany({
-      where: { vestibularId },
+      where: { vestibularId, ...(vestibularTopicId ? { vestibularTopicId } : {}) },
       include: {
         originalContent: true,
       },
@@ -145,6 +158,7 @@ export class VestibularRepository implements IVestibularRepository {
     const created = await prisma.vestibularContent.create({
       data: {
         vestibularId: data.vestibularId,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         title: data.title,
         type: data.type ?? null,
         link: data.link ?? null,
@@ -175,6 +189,7 @@ export class VestibularRepository implements IVestibularRepository {
     const created = await prisma.vestibularContent.create({
       data: {
         vestibularId: data.vestibularId,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         title: content.title,
         type: content.type,
         link: content.link,

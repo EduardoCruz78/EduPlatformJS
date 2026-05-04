@@ -1,8 +1,10 @@
 import {
   AddAccessibilityTopicToCategoryUseCase,
   CreateAccessibilityCategoryUseCase,
+  CreateAccessibilityThemeMaterialUseCase,
   CreateAccessibilityThemeUseCase,
   DeleteAccessibilityCategoryUseCase,
+  DeleteAccessibilityThemeMaterialUseCase,
   DeleteAccessibilityThemeUseCase,
   FindAccessibilityThemesByCategoryUseCase,
   FindAccessibilityTopicsByCategoryUseCase,
@@ -14,6 +16,7 @@ import { adminProcedure, publicProcedure, router } from '@/server/trpc';
 import {
   optionalTrimmedString,
   positiveIntSchema,
+  requiredUrlString,
   requiredTrimmedString,
 } from '@/server/validation';
 
@@ -82,10 +85,38 @@ export const accessibilityRouter = router({
       return useCase.execute(input);
     }),
 
+  createThemeMaterial: adminProcedure
+    .input(
+      z.object({
+        accessibilityThemeId: positiveIntSchema,
+        title: requiredTrimmedString('Título', 160),
+        summary: requiredTrimmedString('Resumo', 500),
+        content: requiredTrimmedString('Conteúdo', 4000),
+        type: z.enum(['VIDEO', 'PDF', 'ARTICLE']),
+        link: requiredUrlString('Link'),
+        order: z.number().int().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new CreateAccessibilityThemeMaterialUseCase(
+        ctx.accessibilityRepository
+      );
+      return useCase.execute(input);
+    }),
+
   deleteTheme: adminProcedure
     .input(positiveIntSchema)
     .mutation(async ({ input, ctx }) => {
       const useCase = new DeleteAccessibilityThemeUseCase(
+        ctx.accessibilityRepository
+      );
+      return useCase.execute(input);
+    }),
+
+  deleteThemeMaterial: adminProcedure
+    .input(positiveIntSchema)
+    .mutation(async ({ input, ctx }) => {
+      const useCase = new DeleteAccessibilityThemeMaterialUseCase(
         ctx.accessibilityRepository
       );
       return useCase.execute(input);

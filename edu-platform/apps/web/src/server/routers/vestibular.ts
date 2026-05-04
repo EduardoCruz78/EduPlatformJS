@@ -43,17 +43,17 @@ export const vestibularRouter = router({
     }),
 
   findTopics: publicProcedure
-    .input(z.object({ vestibularId: positiveIntSchema }))
+    .input(z.object({ vestibularId: positiveIntSchema, subjectId: positiveIntSchema.optional() }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindVestibularTopicsUseCase(ctx.vestibularRepository);
-      return useCase.execute(input.vestibularId);
+      return useCase.execute(input.vestibularId, input.subjectId);
     }),
 
   findContents: publicProcedure
-    .input(z.object({ vestibularId: positiveIntSchema }))
+    .input(z.object({ vestibularId: positiveIntSchema, vestibularTopicId: positiveIntSchema.optional() }))
     .query(async ({ input, ctx }) => {
       const useCase = new FindVestibularContentsUseCase(ctx.vestibularRepository);
-      return useCase.execute(input.vestibularId);
+      return useCase.execute(input.vestibularId, input.vestibularTopicId);
     }),
 
   create: adminProcedure
@@ -110,6 +110,8 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
+        subjectId: positiveIntSchema.optional(),
+        originalTopicId: positiveIntSchema.optional(),
         name: requiredTrimmedString('Nome', 160),
         notes: optionalTrimmedString(2000),
         tags: optionalTrimmedString(500),
@@ -136,6 +138,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
+        vestibularTopicId: positiveIntSchema.optional(),
         title: requiredTrimmedString('Título', 160),
         type: z.enum(['VIDEO', 'PDF', 'ARTICLE']).optional().nullable(),
         link: optionalUrlString(),
@@ -155,6 +158,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
+        vestibularTopicId: positiveIntSchema.optional(),
         contentId: positiveIntSchema,
       })
     )

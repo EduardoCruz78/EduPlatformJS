@@ -19,6 +19,7 @@ export class CreateVestibularContentUseCase {
 
     return this.vestibularRepository.createContent({
       vestibularId: input.vestibularId,
+      vestibularTopicId: input.vestibularTopicId ?? null,
       title,
       type: input.type?.trim() || null,
       link: input.link?.trim() || null,

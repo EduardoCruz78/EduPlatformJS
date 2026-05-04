@@ -116,6 +116,7 @@ model Subject {
   series             Series?             @relation(fields: [seriesId], references: [id])
   topicSubjects      TopicSubject[]
   vestibularSubjects VestibularSubject[]
+  vestibularTopics   VestibularTopic[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
@@ -128,6 +129,7 @@ model Topic {
   contents                    Content[]
   topicSubjects               TopicSubject[]
   accessibilityCategoryTopics AccessibilityCategoryTopic[]
+  vestibularTopics            VestibularTopic[]
   createdAt                   DateTime                     @default(now())
   updatedAt                   DateTime                     @updatedAt
 
@@ -197,6 +199,7 @@ model VestibularSubject {
 model VestibularContent {
   id                Int        @id @default(autoincrement())
   vestibularId      Int
+  vestibularTopicId Int?
   title             String
   type              String?
   link              String?
@@ -208,26 +211,33 @@ model VestibularContent {
   isShared          Boolean    @default(false)
   originalContentId Int?
   vestibular        Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
+  vestibularTopic   VestibularTopic? @relation(fields: [vestibularTopicId], references: [id], onDelete: Cascade)
   originalContent   Content?   @relation(fields: [originalContentId], references: [id])
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 
   @@map("vestibular_contents")
+  @@index([vestibularId, vestibularTopicId])
 }
 
 model VestibularTopic {
   id              Int        @id @default(autoincrement())
   vestibularId    Int
+  subjectId       Int?
   name            String
   originalTopicId Int?
   isShared        Boolean    @default(false)
   notes           String?
   tags            String?
   vestibular      Vestibular @relation(fields: [vestibularId], references: [id], onDelete: Cascade)
+  subject         Subject?   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  originalTopic   Topic?     @relation(fields: [originalTopicId], references: [id])
+  contents        VestibularContent[]
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
   @@map("vestibular_topics")
+  @@index([vestibularId, subjectId])
 }
 
 model PracticalCategory {
@@ -319,9 +329,27 @@ model AccessibilityTheme {
   content                 String?
   accessibilityCategory   AccessibilityCategory @relation(fields: [accessibilityCategoryId], references: [id], onDelete: Cascade)
   accessibilityNeed       AccessibilityNeed?    @relation(fields: [accessibilityNeedId], references: [id])
+  materials               AccessibilityThemeMaterial[]
   createdAt               DateTime              @default(now())
   updatedAt               DateTime              @updatedAt
 
   @@map("accessibility_themes")
   @@unique([accessibilityCategoryId, title])
+}
+
+model AccessibilityThemeMaterial {
+  id                   Int                @id @default(autoincrement())
+  accessibilityThemeId Int
+  title                String
+  summary              String
+  content              String
+  type                 String
+  link                 String
+  order                Int                @default(0)
+  theme                AccessibilityTheme @relation(fields: [accessibilityThemeId], references: [id], onDelete: Cascade)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([accessibilityThemeId, order, title])
+  @@map("accessibility_theme_materials")
 }

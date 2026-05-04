@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, BookOpen, FileText } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, GraduationCap } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,8 +55,8 @@ export default function VestibularDetailPage() {
 
       <section className="edu-hero space-y-4">
         <span className="edu-kicker">
-          <BookOpen className="mr-2 h-4 w-4" />
-          Trilha de estudo
+          <GraduationCap className="mr-2 h-4 w-4" />
+          Trilha por matéria
         </span>
         <h1 className="edu-section-title">{vestibular.name}</h1>
         <p className="edu-lead">
@@ -80,49 +80,38 @@ export default function VestibularDetailPage() {
         </div>
       </section>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="edu-panel">
-          <h2 className="text-2xl font-black text-white">Matérias relacionadas</h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {subjects.length ? (
-              subjects.map((subject) => (
-                <Badge key={subject.id} variant="secondary">
-                  {subject.name}
-                </Badge>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhuma matéria vinculada.</p>
-            )}
-          </div>
+      <section className="mt-8">
+        <div className="mb-4 flex items-center gap-3">
+          <BookOpen className="h-5 w-5 text-primary" />
+          <h2 className="text-2xl font-black text-white">Escolha uma matéria</h2>
         </div>
 
-        <div className="edu-panel">
-          <h2 className="text-2xl font-black text-white">Conteúdos provisórios</h2>
-          <div className="mt-4 space-y-3">
-            {contents.length ? (
-              contents.map((content) => (
-                <a
-                  key={content.id}
-                  href={content.link ?? content.pdfUrl ?? '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="edu-subtle-card block"
-                >
-                  <div className="flex items-start gap-3">
-                    <FileText className="mt-1 h-4 w-4 shrink-0 text-primary" />
-                    <div>
-                      <p className="font-semibold text-white">{content.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {content.type || 'Matérial'} de apoio para a trilha.
-                      </p>
-                    </div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Nenhum conteúdo vinculado.</p>
-            )}
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {subjects.length ? (
+            subjects.map((subject) => (
+              <Link
+                key={subject.id}
+                href={`/vestibulares/${vestibular.id}/materias/${subject.id}`}
+                className="edu-home-card group flex min-h-44 flex-col justify-between"
+              >
+                <div>
+                  <Badge variant="secondary">{subject.series?.name ?? 'Ensino Médio'}</Badge>
+                  <h3 className="mt-4 text-2xl font-black text-white">{subject.name}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Tópicos e conteúdos aplicados ao {vestibular.name}.
+                  </p>
+                </div>
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                  Abrir matéria
+                  <ChevronRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                </span>
+              </Link>
+            ))
+          ) : (
+            <div className="edu-panel p-6 text-sm text-muted-foreground">
+              Nenhuma matéria vinculada a este vestibular ainda.
+            </div>
+          )}
         </div>
       </section>
     </div>

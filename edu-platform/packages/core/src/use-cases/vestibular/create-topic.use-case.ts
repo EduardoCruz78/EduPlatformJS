@@ -19,6 +19,8 @@ export class CreateVestibularTopicUseCase {
 
     return this.vestibularRepository.createTopic({
       vestibularId: input.vestibularId,
+      subjectId: input.subjectId ?? null,
+      originalTopicId: input.originalTopicId ?? null,
       name,
       notes: input.notes?.trim() || null,
       tags: input.tags?.trim() || null,

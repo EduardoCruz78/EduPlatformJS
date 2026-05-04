@@ -65,7 +65,8 @@ function createVestibularRepositoryMock(options?: {
         notes: data.notes ?? null,
         tags: data.tags ?? null,
         isShared: false,
-        originalTopicId: null,
+        subjectId: data.subjectId ?? null,
+        originalTopicId: data.originalTopicId ?? null,
       } satisfies VestibularTopic;
     },
     async deleteTopic() {},
@@ -82,6 +83,7 @@ function createVestibularRepositoryMock(options?: {
         link: data.link ?? null,
         pdfUrl: data.pdfUrl ?? null,
         isShared: false,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         originalContentId: null,
       } satisfies VestibularContent;
     },
@@ -95,6 +97,7 @@ function createVestibularRepositoryMock(options?: {
         link: null,
         pdfUrl: null,
         isShared: true,
+        vestibularTopicId: data.vestibularTopicId ?? null,
         originalContentId: data.contentId,
       } satisfies VestibularContent;
     },
@@ -204,6 +207,8 @@ test('CreateVestibularTopicUseCase trims notes and tags before persisting', asyn
 
   const result = await useCase.execute({
     vestibularId: 5,
+    subjectId: 12,
+    originalTopicId: 44,
     name: '  Geometria analítica  ',
     notes: '  Revisar exercícios  ',
     tags: '  enem, matematica  ',
@@ -211,6 +216,8 @@ test('CreateVestibularTopicUseCase trims notes and tags before persisting', asyn
 
   assert.deepEqual(calls.createTopic[0], {
     vestibularId: 5,
+    subjectId: 12,
+    originalTopicId: 44,
     name: 'Geometria analítica',
     notes: 'Revisar exercícios',
     tags: 'enem, matematica',
@@ -224,6 +231,7 @@ test('CreateVestibularContentUseCase requires title and normalizes optional fiel
 
   const result = await useCase.execute({
     vestibularId: 4,
+    vestibularTopicId: 31,
     title: '  Lista 1  ',
     type: 'PDF',
     pdfUrl: '  https://example.com/lista.pdf  ',
@@ -231,6 +239,7 @@ test('CreateVestibularContentUseCase requires title and normalizes optional fiel
 
   assert.deepEqual(calls.createContent[0], {
     vestibularId: 4,
+    vestibularTopicId: 31,
     title: 'Lista 1',
     type: 'PDF',
     link: null,
@@ -258,11 +267,13 @@ test('ShareVestibularContentUseCase forwards validated ids to the repository', a
 
   const result = await useCase.execute({
     vestibularId: 4,
+    vestibularTopicId: 9,
     contentId: 22,
   });
 
   assert.deepEqual(calls.shareContent[0], {
     vestibularId: 4,
+    vestibularTopicId: 9,
     contentId: 22,
   });
   assert.equal(result.originalContentId, 22);

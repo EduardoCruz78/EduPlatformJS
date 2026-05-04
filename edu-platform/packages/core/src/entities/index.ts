@@ -85,6 +85,7 @@ export interface Checklist {
 export interface VestibularContent {
   id: number;
   vestibularId: number;
+  vestibularTopicId?: number | null;
   title: string;
   type?: string | null;
   link?: string | null;
@@ -101,12 +102,15 @@ export interface VestibularContent {
 export interface VestibularTopic {
   id: number;
   vestibularId: number;
+  subjectId?: number | null;
   name: string;
   originalTopicId?: number | null;
   isShared: boolean;
   notes?: string | null;
   tags?: string | null;
   topic?: Topic | null;
+  subject?: Subject | null;
+  contents?: VestibularContent[];
 }
 
 export interface VestibularSubject {
@@ -138,6 +142,18 @@ export interface AccessibilityTheme {
   accessibilityCategoryId: number;
   accessibilityNeedId?: number | null;
   content?: string | null;
+  materials?: AccessibilityThemeMaterial[];
+}
+
+export interface AccessibilityThemeMaterial {
+  id: number;
+  accessibilityThemeId: number;
+  title: string;
+  summary: string;
+  content: string;
+  type: ContentType;
+  link: string;
+  order?: number;
 }
 
 export interface AccessibilityCategory {

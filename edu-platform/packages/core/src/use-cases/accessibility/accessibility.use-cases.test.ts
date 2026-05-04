@@ -4,13 +4,16 @@ import assert from 'node:assert/strict';
 import { AddAccessibilityTopicToCategoryUseCase } from './add-topic-to-category.use-case.ts';
 import { CreateAccessibilityCategoryUseCase } from './create-category.use-case.ts';
 import { CreateAccessibilityThemeUseCase } from './create-theme.use-case.ts';
+import { CreateAccessibilityThemeMaterialUseCase } from './create-theme-material.use-case.ts';
 import type {
   AddAccessibilityCategoryTopicInput,
   CreateAccessibilityCategoryInput,
+  CreateAccessibilityThemeMaterialInput,
   CreateAccessibilityThemeInput,
 } from '../../dtos/index.ts';
 import type {
   AccessibilityCategory,
+  AccessibilityThemeMaterial,
   AccessibilityTheme,
   Topic,
 } from '../../entities/index.ts';
@@ -20,10 +23,12 @@ function createAccessibilityRepositoryMock() {
   const calls: {
     createCategory: CreateAccessibilityCategoryInput[];
     createTheme: CreateAccessibilityThemeInput[];
+    createThemeMaterial: CreateAccessibilityThemeMaterialInput[];
     addTopicToCategory: AddAccessibilityCategoryTopicInput[];
   } = {
     createCategory: [],
     createTheme: [],
+    createThemeMaterial: [],
     addTopicToCategory: [],
   };
 
@@ -57,6 +62,20 @@ function createAccessibilityRepositoryMock() {
       } satisfies AccessibilityTheme;
     },
     async deleteTheme() {},
+    async createThemeMaterial(data: CreateAccessibilityThemeMaterialInput) {
+      calls.createThemeMaterial.push(data);
+      return {
+        id: 12,
+        accessibilityThemeId: data.accessibilityThemeId,
+        title: data.title,
+        summary: data.summary,
+        content: data.content,
+        type: data.type,
+        link: data.link,
+        order: data.order ?? 0,
+      } satisfies AccessibilityThemeMaterial;
+    },
+    async deleteThemeMaterial() {},
     async addTopicToCategory(data: AddAccessibilityCategoryTopicInput) {
       calls.addTopicToCategory.push(data);
     },
@@ -108,6 +127,32 @@ test('CreateAccessibilityThemeUseCase trims title/content and rejects empty titl
       }),
     /T.tulo.+obrigat.rio/i
   );
+});
+
+test('CreateAccessibilityThemeMaterialUseCase trims material fields and stores ordering', async () => {
+  const { repository, calls } = createAccessibilityRepositoryMock();
+  const useCase = new CreateAccessibilityThemeMaterialUseCase(repository);
+
+  const result = await useCase.execute({
+    accessibilityThemeId: 8,
+    title: '  Vídeo com legenda  ',
+    summary: '  Apoio visual  ',
+    content: '  Conteúdo detalhado  ',
+    type: 'VIDEO',
+    link: '  https://example.com/video  ',
+    order: 2,
+  });
+
+  assert.deepEqual(calls.createThemeMaterial[0], {
+    accessibilityThemeId: 8,
+    title: 'Vídeo com legenda',
+    summary: 'Apoio visual',
+    content: 'Conteúdo detalhado',
+    type: 'VIDEO',
+    link: 'https://example.com/video',
+    order: 2,
+  });
+  assert.equal(result.title, 'Vídeo com legenda');
 });
 
 test('AddAccessibilityTopicToCategoryUseCase forwards validated ids to the repository', async () => {
