@@ -42,6 +42,8 @@ function createContentRepositoryMock(existingById: Content | null = null) {
       return {
         id: 1,
         ...data,
+        link: data.link ?? 'https://example.com',
+        thumbnailUrl: data.thumbnailUrl ?? 'thumb.png',
       } satisfies Content;
     },
     async update(id: number, data: Omit<UpdateContentInput, 'id'>) {
@@ -146,6 +148,37 @@ test('CreateContentUseCase trims fields and fills default values before creating
   assert.equal(result.title, 'Algebra Linear');
 });
 
+test('CreateContentUseCase generates a YouTube thumbnail when none is provided', async () => {
+  const { repository, calls } = createContentRepositoryMock();
+  const useCase = new CreateContentUseCase(repository);
+
+  await useCase.execute({
+    title: 'Aula de geometria',
+    topicId: 8,
+    type: 'VIDEO',
+    link: 'https://youtu.be/BggrpKfqh1c?si=test',
+  });
+
+  assert.equal(calls.create[0].thumbnailUrl, 'https://img.youtube.com/vi/BggrpKfqh1c/hqdefault.jpg');
+  assert.equal(calls.create[0].link, 'https://youtu.be/BggrpKfqh1c?si=test');
+});
+
+test('CreateContentUseCase accepts PDF content with only a PDF URL', async () => {
+  const { repository, calls } = createContentRepositoryMock();
+  const useCase = new CreateContentUseCase(repository);
+
+  await useCase.execute({
+    title: 'Lista de revisão',
+    topicId: 10,
+    type: 'PDF',
+    pdfUrl: '  https://example.com/lista.pdf  ',
+  });
+
+  assert.equal(calls.create[0].link, 'https://example.com/lista.pdf');
+  assert.equal(calls.create[0].pdfUrl, 'https://example.com/lista.pdf');
+  assert.match(calls.create[0].thumbnailUrl ?? '', /material-pdf/);
+});
+
 test('CreateContentUseCase rejects blank required fields', async () => {
   const { repository } = createContentRepositoryMock();
   const useCase = new CreateContentUseCase(repository);
@@ -160,6 +193,21 @@ test('CreateContentUseCase rejects blank required fields', async () => {
         thumbnailUrl: 'thumb.png',
       }),
     /obrigat/i
+  );
+});
+
+test('CreateContentUseCase rejects article content without a link', async () => {
+  const { repository } = createContentRepositoryMock();
+  const useCase = new CreateContentUseCase(repository);
+
+  await assert.rejects(
+    () =>
+      useCase.execute({
+        title: 'Resumo teórico',
+        topicId: 1,
+        type: 'ARTICLE',
+      }),
+    /Artigo precisa de link/i
   );
 });
 

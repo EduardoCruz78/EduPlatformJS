@@ -101,32 +101,34 @@ export class TopicRepository implements ITopicRepository {
   }
 
   async update(id: number, data: Omit<UpdateTopicInput, 'id'>): Promise<Topic> {
-    if (data.subjectIds !== undefined) {
-      await prisma.topicSubject.deleteMany({ where: { topicId: id } });
+    const updated = await prisma.$transaction(async (tx) => {
+      if (data.subjectIds !== undefined) {
+        await tx.topicSubject.deleteMany({ where: { topicId: id } });
 
-      if (data.subjectIds.length > 0) {
-        await prisma.topicSubject.createMany({
-          data: [...new Set(data.subjectIds)].map((subjectId) => ({
-            topicId: id,
-            subjectId,
-          })),
+        if (data.subjectIds.length > 0) {
+          await tx.topicSubject.createMany({
+            data: [...new Set(data.subjectIds)].map((subjectId) => ({
+              topicId: id,
+              subjectId,
+            })),
+          });
+        }
+      }
+
+      if (data.name !== undefined) {
+        await tx.topic.update({
+          where: { id },
+          data: { name: data.name },
         });
       }
-    }
 
-    if (data.name !== undefined) {
-      await prisma.topic.update({
+      return tx.topic.findUniqueOrThrow({
         where: { id },
-        data: { name: data.name },
+        include: {
+          contents: true,
+          topicSubjects: { include: { subject: true } },
+        },
       });
-    }
-
-    const updated = await prisma.topic.findUniqueOrThrow({
-      where: { id },
-      include: {
-        contents: true,
-        topicSubjects: { include: { subject: true } },
-      },
     });
 
     return TopicMapper.toDomain(updated);

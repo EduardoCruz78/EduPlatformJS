@@ -17,13 +17,33 @@ export class CreateVestibularContentUseCase {
       throw AppError.validation('Titulo do conteudo e obrigatorio.');
     }
 
+    if (!input.vestibularTopicId) {
+      throw AppError.validation('Topico do vestibular e obrigatorio.');
+    }
+
+    const type = input.type?.trim() || null;
+    const link = input.link?.trim() || null;
+    const pdfUrl = input.pdfUrl?.trim() || null;
+
+    if (type === 'VIDEO' && !link) {
+      throw AppError.validation('Video precisa de link.');
+    }
+
+    if (type === 'PDF' && !pdfUrl && !link) {
+      throw AppError.validation('PDF precisa de URL do arquivo ou link.');
+    }
+
+    if (type === 'ARTICLE' && !link) {
+      throw AppError.validation('Artigo precisa de link.');
+    }
+
     return this.vestibularRepository.createContent({
       vestibularId: input.vestibularId,
-      vestibularTopicId: input.vestibularTopicId ?? null,
+      vestibularTopicId: input.vestibularTopicId,
       title,
-      type: input.type?.trim() || null,
-      link: input.link?.trim() || null,
-      pdfUrl: input.pdfUrl?.trim() || null,
+      type,
+      link,
+      pdfUrl,
       transcript: input.transcript?.trim() || null,
       captionsUrl: input.captionsUrl?.trim() || null,
       librasUrl: input.librasUrl?.trim() || null,

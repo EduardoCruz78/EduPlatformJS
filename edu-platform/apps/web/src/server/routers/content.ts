@@ -7,11 +7,11 @@ import {
 } from '@/server/trpc';
 import { z } from 'zod';
 import {
+  nonNegativeIntSchema,
   optionalTrimmedString,
   optionalUrlString,
   positiveIntSchema,
   requiredTrimmedString,
-  requiredUrlString,
 } from '@/server/validation';
 import {
   CreateContentUseCase,
@@ -49,15 +49,15 @@ export const contentRouter = router({
         description: optionalTrimmedString(2000),
         topicId: positiveIntSchema,
         type: contentTypeSchema,
-        link: requiredUrlString('Link'),
-        thumbnailUrl: requiredUrlString('Thumbnail'),
+        link: optionalUrlString(),
+        thumbnailUrl: optionalUrlString(),
         videoUrl: optionalUrlString(),
         pdfUrl: optionalUrlString(),
         transcript: optionalTrimmedString(8000),
         captionsUrl: optionalUrlString(),
         librasUrl: optionalUrlString(),
         audioDescriptionUrl: optionalUrlString(),
-        order: positiveIntSchema.optional(),
+        order: nonNegativeIntSchema.optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -81,7 +81,7 @@ export const contentRouter = router({
         captionsUrl: optionalUrlString(),
         librasUrl: optionalUrlString(),
         audioDescriptionUrl: optionalUrlString(),
-        order: positiveIntSchema.optional(),
+        order: nonNegativeIntSchema.optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {

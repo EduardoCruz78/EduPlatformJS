@@ -25,7 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const schema = z.object({
   name: z.string().min(3, 'Minimo 3 caracteres'),
-  seriesId: z.string().optional(),
+  seriesId: z.string().min(1, 'Selecione uma série'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -45,7 +45,7 @@ export default function EditSubjectPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: '',
-      seriesId: 'none',
+      seriesId: '',
     },
   });
   const selectedSeriesId =
@@ -58,7 +58,7 @@ export default function EditSubjectPage() {
     if (subject) {
       form.reset({
         name: subject.name,
-        seriesId: subject.seriesId ? String(subject.seriesId) : 'none',
+        seriesId: subject.seriesId ? String(subject.seriesId) : '',
       });
     }
   }, [subject, form]);
@@ -83,10 +83,7 @@ export default function EditSubjectPage() {
     await mutation.mutateAsync({
       id: subjectId,
       name: data.name.trim(),
-      seriesId:
-        data.seriesId && data.seriesId !== 'none'
-          ? Number(data.seriesId)
-          : null,
+      seriesId: Number(data.seriesId),
     });
   };
 
@@ -138,7 +135,6 @@ export default function EditSubjectPage() {
                   <SelectValue placeholder="Serie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Nenhuma</SelectItem>
                   {series?.map((item: Series) => (
                     <SelectItem key={item.id} value={String(item.id)}>
                       {item.name}

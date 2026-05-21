@@ -32,7 +32,7 @@ import {
 function getTypeLabel(type: Content['type']) {
   switch (type) {
     case 'VIDEO':
-      return 'Video';
+      return 'Vídeo';
     case 'PDF':
       return 'PDF';
     case 'ARTICLE':
@@ -81,8 +81,19 @@ export default function AdminContentsPage() {
     await deleteContentMutation.mutateAsync(deleteId);
   };
 
-  const getTopicName = (topicId: number) =>
-    topics?.find((topic: Topic) => topic.id === topicId)?.name ?? `Tópico #${topicId}`;
+  const getTopicName = (topicId: number) => {
+    const topic = topics?.find((item: Topic) => item.id === topicId);
+
+    if (!topic) {
+      return `Tópico #${topicId}`;
+    }
+
+    const subjectPath = topic.subjects
+      ?.map((subject) => `${subject.series?.name ?? 'Sem série'} / ${subject.name}`)
+      .join(', ');
+
+    return subjectPath ? `${topic.name} (${subjectPath})` : topic.name;
+  };
 
   if (status === 'loading') {
     return <div className="p-8 text-center">Carregando...</div>;

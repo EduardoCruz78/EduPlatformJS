@@ -33,7 +33,7 @@ import {
 
 const createSubjectSchema = z.object({
   name: z.string().min(1, 'Nome obrigatério').min(3, 'Minimo 3 caracteres'),
-  seriesId: z.string().optional(),
+  seriesId: z.string().min(1, 'Selecione uma série'),
 });
 
 type CreateSubjectFormData = z.infer<typeof createSubjectSchema>;
@@ -72,10 +72,7 @@ export default function CreateSubjectPage() {
   const onSubmit = async (data: CreateSubjectFormData) => {
     await createSubjectMutation.mutateAsync({
       name: data.name.trim(),
-      seriesId:
-        data.seriesId && data.seriesId !== 'none'
-          ? Number(data.seriesId)
-          : undefined,
+      seriesId: Number(data.seriesId),
     });
   };
 
@@ -140,7 +137,7 @@ export default function CreateSubjectPage() {
                     <FormLabel>Serie (Opcional)</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value || 'none'}
+                      value={field.value}
                       disabled={createSubjectMutation.isPending}
                     >
                       <FormControl>
@@ -149,7 +146,6 @@ export default function CreateSubjectPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="none">Nenhuma</SelectItem>
                         {series?.map((item: Series) => (
                           <SelectItem key={item.id} value={String(item.id)}>
                             {item.name}

@@ -23,6 +23,7 @@ import type { IVestibularRepository } from '../../repositories/IVestibularReposi
 
 function createVestibularRepositoryMock(options?: {
   existingSubjects?: Subject[];
+  existingContents?: VestibularContent[];
 }) {
   const calls: {
     attachSubject: AttachVestibularSubjectInput[];
@@ -71,7 +72,7 @@ function createVestibularRepositoryMock(options?: {
     },
     async deleteTopic() {},
     async findContents() {
-      return [];
+      return options?.existingContents ?? [];
     },
     async createContent(data: CreateVestibularContentInput) {
       calls.createContent.push(data);
@@ -256,8 +257,25 @@ test('CreateVestibularContentUseCase requires title and normalizes optional fiel
       useCase.execute({
         vestibularId: 4,
         title: '   ',
+        vestibularTopicId: 31,
       }),
     /T.tulo.+obrigat.rio/i
+  );
+});
+
+test('CreateVestibularContentUseCase rejects content without a vestibular topic', async () => {
+  const { repository } = createVestibularRepositoryMock();
+  const useCase = new CreateVestibularContentUseCase(repository);
+
+  await assert.rejects(
+    () =>
+      useCase.execute({
+        vestibularId: 4,
+        title: 'Lista 2',
+        type: 'PDF',
+        pdfUrl: 'https://example.com/lista.pdf',
+      }),
+    /Topico do vestibular/i
   );
 });
 
@@ -277,4 +295,34 @@ test('ShareVestibularContentUseCase forwards validated ids to the repository', a
     contentId: 22,
   });
   assert.equal(result.originalContentId, 22);
+});
+
+test('ShareVestibularContentUseCase rejects duplicate content in the same vestibular topic', async () => {
+  const { repository, calls } = createVestibularRepositoryMock({
+    existingContents: [
+      {
+        id: 44,
+        vestibularId: 4,
+        vestibularTopicId: 9,
+        title: 'Compartilhado',
+        type: 'ARTICLE',
+        link: null,
+        pdfUrl: null,
+        isShared: true,
+        originalContentId: 22,
+      },
+    ],
+  });
+  const useCase = new ShareVestibularContentUseCase(repository);
+
+  await assert.rejects(
+    () =>
+      useCase.execute({
+        vestibularId: 4,
+        vestibularTopicId: 9,
+        contentId: 22,
+      }),
+    /ja compartilhado/i
+  );
+  assert.equal(calls.shareContent.length, 0);
 });

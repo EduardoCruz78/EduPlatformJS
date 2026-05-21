@@ -110,7 +110,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
-        subjectId: positiveIntSchema.optional(),
+        subjectId: positiveIntSchema,
         originalTopicId: positiveIntSchema.optional(),
         name: requiredTrimmedString('Nome', 160),
         notes: optionalTrimmedString(2000),
@@ -138,7 +138,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
-        vestibularTopicId: positiveIntSchema.optional(),
+        vestibularTopicId: positiveIntSchema,
         title: requiredTrimmedString('Título', 160),
         type: z.enum(['VIDEO', 'PDF', 'ARTICLE']).optional().nullable(),
         link: optionalUrlString(),
@@ -158,7 +158,7 @@ export const vestibularRouter = router({
     .input(
       z.object({
         vestibularId: positiveIntSchema,
-        vestibularTopicId: positiveIntSchema.optional(),
+        vestibularTopicId: positiveIntSchema,
         contentId: positiveIntSchema,
       })
     )

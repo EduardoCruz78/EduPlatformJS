@@ -44,8 +44,8 @@ export interface CreateContentInput {
   description?: string | null;
   topicId: number;
   type: ContentType;
-  link: string;
-  thumbnailUrl: string;
+  link?: string | null;
+  thumbnailUrl?: string | null;
   videoUrl?: string | null;
   pdfUrl?: string | null;
   transcript?: string | null;

@@ -17,9 +17,13 @@ export class CreateVestibularTopicUseCase {
       throw AppError.validation('Nome do topico e obrigatorio.');
     }
 
+    if (!input.subjectId) {
+      throw AppError.validation('Materia do vestibular e obrigatoria.');
+    }
+
     return this.vestibularRepository.createTopic({
       vestibularId: input.vestibularId,
-      subjectId: input.subjectId ?? null,
+      subjectId: input.subjectId,
       originalTopicId: input.originalTopicId ?? null,
       name,
       notes: input.notes?.trim() || null,
