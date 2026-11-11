@@ -1,5 +1,29 @@
 # EduPlatformJS
 
+[![CI](https://github.com/EduardoCruz78/EduPlatformJS/actions/workflows/ci.yml/badge.svg)](https://github.com/EduardoCruz78/EduPlatformJS/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/demo-live-22c55e?logo=vercel&logoColor=white)](https://edu-platform-js-five.vercel.app)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white)
+![tRPC](https://img.shields.io/badge/tRPC-2596BE?logo=trpc&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+
+**Education platform built as a layered monorepo**, with domain rules isolated from the framework.
+
+- **Content catalog** organized as series → subjects → topics → contents, plus public and admin modules for accessibility and university entrance exams
+- **Google sign-in** (Auth.js) with `USER` / `ADMIN` roles, server-side checks on admin routes and an **audit trail** for role changes
+- **Per-user checklist** with ownership rules
+- **Clean Architecture**: use cases in `packages/core` know nothing about Prisma, Next.js or HTTP; thin tRPC routers; repositories return domain objects
+- **Quality gates in CI**: unit tests (Vitest), typecheck of every package, lint and production build on each push
+
+**Stack:** Next.js (App Router) · React · TypeScript · tRPC · Zod · Prisma · PostgreSQL · Auth.js · Tailwind CSS · Vitest · Turborepo · GitHub Actions · Vercel
+
+> 🇧🇷 The full documentation below is in Portuguese.
+
+---
+
+## Documentação (português)
+
 EduPlatformJS e um monorepo focado em plataforma educacional com arquitetura em camadas, regras de dominio isoladas do framework e operacao centrada em `Next.js`, `tRPC`, `Prisma` e `PostgreSQL`.
 
 O repositorio foi estruturado para manter separacao clara entre:
