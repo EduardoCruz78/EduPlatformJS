@@ -18,10 +18,7 @@ export function SeriesCard({
     <div className="relative flex h-full flex-col justify-between gap-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-            {label}
-          </p>
-          <h4 className="mt-3 text-2xl font-black leading-tight text-white">{name}</h4>
+          <h4 className="text-2xl font-bold leading-tight text-white">{name}</h4>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{description}</p>
         </div>
 

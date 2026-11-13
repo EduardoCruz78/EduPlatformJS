@@ -178,8 +178,8 @@ export default function DashboardPage() {
                   Seu estudo agora está organizado por anos e séries.
                 </h1>
                 <p className="edu-lead">
-                  A base provisória já libera todas as séries, matérias, tópicos, conteúdos,
-                  vestibulares, vida prática e acessibilidade para navegação completa.
+                  Todas as séries, matérias, tópicos, conteúdos, vestibulares, vida prática e
+                  acessibilidade estão abertos para navegação.
                 </p>
               </div>
             </div>

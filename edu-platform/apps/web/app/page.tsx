@@ -128,8 +128,8 @@ export default function HomePage() {
                   Plataforma de estudos completa para todas as áreas fundamentais de aprendizado
                 </h1>
                 <p className="max-w-6xl text-lg leading-8 text-slate-300">
-                  A plataforma aberta para preparar você para vestibulares, estudo guiado,
-                  acessibilidade e progresso visível com uma base provisória funcional.
+                  Plataforma aberta para estudar por série, se preparar para vestibulares e
+                  acompanhar o próprio progresso, com trilhas de acessibilidade e vida prática.
                 </p>
               </div>
             </div>
@@ -164,10 +164,7 @@ export default function HomePage() {
                   <section aria-labelledby="fundamental-title">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                          Bloco 1
-                        </p>
-                        <h3 id="fundamental-title" className="mt-2 text-2xl font-black text-white">
+                        <h3 id="fundamental-title" className="text-2xl font-bold text-white">
                           Ensino Fundamental
                         </h3>
                       </div>
@@ -201,10 +198,7 @@ export default function HomePage() {
                   <section aria-labelledby="medio-title">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-xs font-black uppercase tracking-[0.18em] text-gradient-primary">
-                          Bloco 2
-                        </p>
-                        <h3 id="medio-title" className="mt-2 text-2xl font-black text-white">
+                        <h3 id="medio-title" className="text-2xl font-bold text-white">
                           Ensino Médio
                         </h3>
                       </div>
@@ -241,7 +235,7 @@ export default function HomePage() {
             <section className="grid gap-4 md:grid-cols-3" aria-label="Módulos principais">
               <Link href="/accessibility" className="edu-home-card">
                 <div className="edu-home-icon mb-5" aria-hidden="true">AC</div>
-                <h2 className="text-2xl font-black text-white">Acessibilidade</h2>
+                <h2 className="text-2xl font-bold text-white">Acessibilidade</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
                   Categorias, temas e tópicos para estudar com mais contexto e inclusão.
                 </p>
@@ -249,7 +243,7 @@ export default function HomePage() {
 
               <Link href="/vida-pratica" className="edu-home-card">
                 <div className="edu-home-icon mb-5" aria-hidden="true">VP</div>
-                <h2 className="text-2xl font-black text-white">Vida prática</h2>
+                <h2 className="text-2xl font-bold text-white">Vida prática</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
                   Guias úteis sobre documentos, trabalho, consumo, finanças e direitos básicos.
                 </p>
@@ -257,7 +251,7 @@ export default function HomePage() {
 
               <Link href="/vestibulares" className="edu-home-card">
                 <div className="edu-home-icon mb-5" aria-hidden="true">VE</div>
-                <h2 className="text-2xl font-black text-white">Vestibulares</h2>
+                <h2 className="text-2xl font-bold text-white">Vestibulares</h2>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
                   Trilhas provisórias para ENEM, FUVEST e outros processos seletivos.
                 </p>
